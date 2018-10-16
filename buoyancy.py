@@ -15,8 +15,9 @@ class Buoyancy(ExplicitComponent):
 		D_secs  = inputs['D_secs']
 		L_secs  = inputs['L_secs']
 
-		volume = np.pi / 4. * D_secs[0]**2. * (L_secs[0] - 10.) + np.pi / 4. * D_secs[1]**2. * L_secs[1] + np.pi / 4. * D_secs[-1]**2. * L_secs[-1]
+		volume = np.pi / 4. * D_secs[0]**2. * L_secs[0] + np.pi / 4. * D_secs[1]**2. * L_secs[1] + np.pi / 4. * D_secs[-1]**2. * (L_secs[-1] - 10.)
 
 		outputs['buoy_spar'] = volume * 1025. * 9.80665
-		outputs['CoB'] = (-2. * np.pi / 4. * D_secs[0]**2. * L_secs[0] + -8. * np.pi / 4. * D_secs[1]**2. * L_secs[1] + (-L_secs[-1] / 2. - L_secs[0] - L_secs[1] + 10.) * np.pi/4. * D_secs[-1]**2. * L_secs[-1]) / volume
+		outputs['CoB'] = (-2. * np.pi / 4. * D_secs[-1]**2. * (L_secs[-1] - 10.) + -8. * np.pi / 4. * D_secs[1]**2. * L_secs[1] + (-L_secs[0] / 2. - L_secs[1] - L_secs[-1] + 10.) * np.pi/4. * D_secs[0]**2. * L_secs[0]) / volume
+		
 		#TODO: make this more general with respect to number of sections and where they start

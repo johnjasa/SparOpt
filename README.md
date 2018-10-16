@@ -1,1 +1,1 @@
-"# SparOpt" 
+# SparOpt

@@ -14,4 +14,4 @@ class Ccontrl(ExplicitComponent):
 		k_i = inputs['k_i']
 		k_p = inputs['k_p']
 
-		outputs['C_contrl'] = np.array([[0., 0.],[k_i, k_p]])
+		outputs['C_contrl'] = np.array([[0., 0.],[0.25104*k_i, 0.25104*k_p]])

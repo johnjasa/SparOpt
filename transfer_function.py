@@ -22,6 +22,7 @@ class TransferFunction(ImplicitComponent):
 
 	def solve_nonlinear(self, inputs, outputs):
 		omega = inputs['omega']
+		N_omega = len(omega)
 
 		for i in xrange(N_omega):
 			H_feedbk = np.matmul(np.linalg.inv(1j*omega[i] * np.identity(9) - inputs['A_feedbk']), inputs['B_feedbk'])

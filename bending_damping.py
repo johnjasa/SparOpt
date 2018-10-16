@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import scipy.interpolate as si
 
@@ -37,10 +38,11 @@ class BendingDamping(ExplicitComponent):
 		#TODO: Stiffness-proportional Rayleigh damping coefficient should not be hard-coded
 
 		for i in xrange(N_elem):
-			z = 10. + i / N_elem * np.sum(L_tower)
+			z = 10. + (i + 0.5) / N_elem * np.sum(L_tower)
 			dz = np.sum(L_tower) / N_elem
 			for j in xrange(len(Z_tower)-1):
 				if (z < Z_tower[j+1]) and (z >= Z_tower[j]):
 					EI = EI_tower[j]
-			
-			outputs['B_struct_77']+= 0.007 * dz * EI * f_psi_dd(z)**2.
+					break
+
+			outputs['B_struct_77'] += 0.007 * dz * EI * f_psi_dd(z)**2.

@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.interpolate as si
 
 from openmdao.api import ExplicitComponent
 
@@ -78,7 +77,7 @@ class Modeshape(ExplicitComponent):
 		for i in xrange(N_sparelem):
 			L[i] = z_sparmode[i+1] - z_sparmode[i]
 			for j in xrange(N_spar):
-				if z_sparmode[i+1] < Z_spar[j+1]:
+				if z_sparmode[i+1] <= Z_spar[j+1]:
 					sparidx = j
 					break
 			EI[i] = 1e15 #np.pi / 64. * (D_secs[j]**4. - (D_secs[j] - 2. * wt_secs[j])**4.) * 2.1e11

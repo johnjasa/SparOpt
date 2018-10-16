@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import scipy.interpolate as si
 
@@ -21,23 +22,26 @@ class BendingAddedMass(ExplicitComponent):
 		spar_draft = inputs['spar_draft']
 		D_secs = inputs['D_secs']
 
-		f_psi = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
+		f_psi_spar = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
 
 		N_elem = 200
+
+		D = 0.
 
 		outputs['A17'] = 0.
 		outputs['A57'] = 0.
 		outputs['A77'] = 0.
 
 		for i in xrange(N_elem):
-			z = - spar_draft * (1. - i / N_elem)
+			z = -spar_draft + (i + 0.5) / N_elem * spar_draft
 			dz = spar_draft / N_elem
 			for j in xrange(len(Z_spar) - 1):
 				if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
-					idx = j
+					D = D_secs[j]
 					break
-			a11 = np.pi / 4. * D_secs[idx]**2.
 
-			outputs['A17'] += dz * a11 * f_psi(z)
-			outputs['A57'] += dz * a11 * z * f_psi(z)
-			outputs['A77'] += dz * a11 * f_psi(z)**2.
+			a11 = 1025. * np.pi / 4. * D**2.
+
+			outputs['A17'] += dz * a11 * f_psi_spar(z)
+			outputs['A57'] += dz * a11 * z * f_psi_spar(z)
+			outputs['A77'] += dz * a11 * f_psi_spar(z)**2.

@@ -59,7 +59,6 @@ class WaveLoads(ExplicitComponent):
 						z = -2.
 					else:
 						z = -120. + np.sum(L_secs[0:j]) + L_elem * (k + 0.5)
-					psi_z = (psi_d_0 * z + psi_SWL)
 					J = ss.jvp(1,wavenum*a,1)
 					Y = ss.yvp(1,wavenum*a,1)
 					G = 1. / np.sqrt(J**2. + Y**2.)

@@ -24,7 +24,7 @@ class SparInertia(ExplicitComponent):
 
 		outputs['I_spar'] = 0.
 
-		for i in xrange(len(L_secs)):			
+		for i in xrange(len(L_secs)):	
 			CoG_sec = 10. - np.sum(L_secs[0:i]) - L_secs[i] / 2.
 			outputs['I_spar'] += M_secs[i] * CoG_sec**2.
 

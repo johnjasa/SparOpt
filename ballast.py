@@ -30,7 +30,7 @@ class Ballast(ExplicitComponent):
 		rho_ball = inputs['rho_ball']
 		wt_ball = inputs['wt_ball']
 
-		outputs['L_ball'] = (buoy_spar / 9.80665 - (M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_secs[-1] - 2. * wt_ball)**2. * rho_ball) #height of ballast, m above inner wall spar bottom
+		outputs['L_ball'] = (buoy_spar / 9.80665 - (M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_secs[0] - 2. * wt_ball)**2. * rho_ball) #height of ballast, m above inner wall spar bottom
 
-		outputs['M_ball'] = np.pi / 4. * (D_secs[-1] - 2. * wt_ball)**2. * outputs['L_ball'] * rho_ball
+		outputs['M_ball'] = np.pi / 4. * (D_secs[0] - 2. * wt_ball)**2. * outputs['L_ball'] * rho_ball
 		outputs['CoG_ball'] = wt_ball + outputs['L_ball'] / 2. - draft_spar

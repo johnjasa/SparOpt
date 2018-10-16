@@ -18,7 +18,7 @@ class SparCoG(ExplicitComponent):
 		CoG_t_mass = 0.
 
 		for i in xrange(len(L_secs)):
-			CoG_sec = 10. - np.sum(L_secs[0:i]) - L_secs[i] / 2.
+			CoG_sec = -120. + np.sum(L_secs[0:i]) + L_secs[i] / 2.
 			
 			CoG_t_mass += M_secs[i] * CoG_sec
 		

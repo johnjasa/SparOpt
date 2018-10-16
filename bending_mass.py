@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import scipy.interpolate as si
 
@@ -44,6 +45,7 @@ class BendingMass(ExplicitComponent):
 		z_ball = -inputs['spar_draft'] + inputs['wt_ball'] + inputs['L_ball'] #top of ballast
 
 		f_psi_spar = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
+		f_psi_d_spar = f_psi_spar.derivative(n=1)
 		f_psi_tower = si.UnivariateSpline(inputs['z_towermode'], inputs['x_towermode'], s=0)
 		f_psi_d_tower = f_psi_tower.derivative(n=1)
 
@@ -58,25 +60,27 @@ class BendingMass(ExplicitComponent):
 		m = 0.
 
 		N_elem = 200
-
+		
 		for i in xrange(N_elem):
-			z = inputs['spar_draft'] + i / N_elem * np.sum(L_secs)
+			z = -inputs['spar_draft'] + (i + 0.5) / N_elem * np.sum(L_secs)
 			dz = np.sum(L_secs) / N_elem
 			for j in xrange(len(Z_spar) - 1):
 				if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
 					m = m_elem_spar[j]
-				if z < z_ball:
-					m += m_elem_ball
+			if z < z_ball:
+				m += m_elem_ball
 			outputs['M17'] += dz * m * f_psi_spar(z)
 			outputs['M57'] += dz * m * z * f_psi_spar(z)
 			outputs['M77'] += dz * m * f_psi_spar(z)**2.
 
 		for i in xrange(N_elem):
-			z = 10. + i / N_elem * np.sum(L_tower)
+			z = 10. + (i + 0.5) / N_elem * np.sum(L_tower)
 			dz = np.sum(L_tower) / N_elem
 			for j in xrange(len(Z_tower) - 1):
 				if (z < Z_tower[j+1]) and (z >= Z_tower[j]):
 					m = m_elem_tower[j]
+					break
+
 			outputs['M17'] += dz * m * f_psi_tower(z)
 			outputs['M57'] += dz * m * z * f_psi_tower(z)
 			outputs['M77'] += dz * m * f_psi_tower(z)**2.

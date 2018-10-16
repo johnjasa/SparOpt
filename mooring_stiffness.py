@@ -37,5 +37,5 @@ class MooringStiffness(ExplicitComponent):
 		l_eff = sol.x[0]
 		t_hor = sol.x[1]
 
-		outputs['M_moor'] = 3. * l_eff * mu
+		outputs['M_moor'] = 330000.#3. * l_eff * mu
 		outputs['K_moor'] = 1.5 * (sol_fin_diff.x[1] - sol.x[1]) / step #1.5 due to 3 lines (sum of cos(angle)^2)

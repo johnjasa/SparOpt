@@ -38,7 +38,7 @@ class GlobalStiffness(ExplicitComponent):
 		CoG_turb = (np.sum(inputs['M_tower']) * inputs['CoG_tower'] + inputs['M_nacelle'] * inputs['CoG_nacelle'] + inputs['M_rotor'] * inputs['CoG_rotor']) / M_turb
 		CoG_ball = inputs['CoG_ball']
 		M_moor = inputs['M_moor']
-		K11 = inputs['K11']
+		K_moor = inputs['K_moor']
 		K17 = inputs['K17']
 		K57 = inputs['K57']
 		K77 = inputs['K77']
@@ -50,11 +50,11 @@ class GlobalStiffness(ExplicitComponent):
 
 		outputs['K_global'] = np.zeros((3,3))
 
-		outputs['K_global'][0,0] += K11
-		outputs['K_global'][0,1] += K11 * CoG_tot
+		outputs['K_global'][0,0] += K_moor
+		outputs['K_global'][0,1] += K_moor * CoG_tot
 		outputs['K_global'][0,2] += K17
-		outputs['K_global'][1,0] += K11 * CoG_tot
-		outputs['K_global'][1,1] += K11 * CoG_tot**2. - M_moor * 9.80665 * CoG_tot + hydrostatic_pitch
+		outputs['K_global'][1,0] += K_moor * CoG_tot
+		outputs['K_global'][1,1] += K_moor * CoG_tot**2. - M_moor * 9.80665 * CoG_tot + hydrostatic_pitch
 		outputs['K_global'][1,2] += K57
 		outputs['K_global'][2,0] += K17
 		outputs['K_global'][2,1] += K57

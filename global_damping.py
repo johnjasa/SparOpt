@@ -19,12 +19,12 @@ class GlobalDamping(ExplicitComponent):
 
 		outputs['B_global'] = np.zeros((3,3))
 
-		outputs['B_global'][0,0] += B_aero_11
-		outputs['B_global'][0,1] += B_aero_15
-		outputs['B_global'][0,2] += B_aero_17
-		outputs['B_global'][1,0] += B_aero_15
-		outputs['B_global'][1,1] += B_aero_55
-		outputs['B_global'][1,2] += B_aero_57
-		outputs['B_global'][2,0] += B_aero_17
-		outputs['B_global'][2,1] += B_aero_57
-		outputs['B_global'][2,2] += B_aero_77 + B_struct_77
+		outputs['B_global'][0,0] += inputs['B_aero_11']
+		outputs['B_global'][0,1] += inputs['B_aero_15']
+		outputs['B_global'][0,2] += inputs['B_aero_17']
+		outputs['B_global'][1,0] += inputs['B_aero_15']
+		outputs['B_global'][1,1] += inputs['B_aero_55']
+		outputs['B_global'][1,2] += inputs['B_aero_57']
+		outputs['B_global'][2,0] += inputs['B_aero_17']
+		outputs['B_global'][2,1] += inputs['B_aero_57']
+		outputs['B_global'][2,2] += inputs['B_aero_77'] + inputs['B_struct_77']

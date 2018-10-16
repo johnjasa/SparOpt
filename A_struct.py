@@ -14,8 +14,6 @@ class Astruct(ExplicitComponent):
 
 		self.add_input('I_d', val=0., units='kg*m**2')
 
-		self.add_input('dthrust_dv', val=0., units='N*s/m')
-		self.add_input('dmoment_dv', val=0., units='N*s')
 		self.add_input('dtorque_dv', val=0., units='N*s')
 		self.add_input('dthrust_drotspeed', 0., units='N*s/rad')
 		self.add_input('dtorque_drotspeed', 0., units='N*m*s/rad')
@@ -28,15 +26,13 @@ class Astruct(ExplicitComponent):
 		B_global = inputs['B_global']
 		K_global = inputs['K_global']
 
-		CoG_rotor = inputs['CoG_rotor']
+		CoG_rotor = inputs['CoG_rotor'][0]
 
 		I_d = inputs['I_d']
 
-		dthrust_dv = inputs['dthrust_dv']
-		dmoment_dv = inputs['dmoment_dv']
-		dtorque_dv = inputs['dtorque_dv']
-		dthrust_drotspeed = inputs['dthrust_drotspeed']
-		dmoment_drotspeed = inputs['dtorque_drotspeed']
+		dtorque_dv = inputs['dtorque_dv'][0]
+		dthrust_drotspeed = inputs['dthrust_drotspeed'][0]
+		dtorque_drotspeed = inputs['dtorque_drotspeed'][0]
 
 
 		A1 = np.concatenate((np.zeros((3,3)),np.identity(3),np.zeros((3,1))),1)
