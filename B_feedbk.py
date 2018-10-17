@@ -28,9 +28,9 @@ class Bfeedbk(ExplicitComponent):
 		M_global = inputs['M_global']
 		A_global = inputs['A_global']
 
-		CoG_rotor = inputs['CoG_rotor'][0]
+		CoG_rotor = inputs['CoG_rotor']
 
-		I_d = inputs['I_d'][0]
+		I_d = inputs['I_d']
 
 		dthrust_dv = inputs['dthrust_dv'][0]
 		dmoment_dv = inputs['dmoment_dv'][0]

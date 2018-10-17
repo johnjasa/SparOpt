@@ -25,7 +25,7 @@ class StateSpace(Group):
 
 		self.add_subsystem('B_contrl', Bcontrl(), promotes_inputs=['omega_lowpass'], promotes_outputs=['B_contrl'])
 
-		self.add_subsystem('C_contrl', Ccontrl(), promotes_inputs=['k_i', 'k_p'], promotes_outputs=['C_contrl'])
+		self.add_subsystem('C_contrl', Ccontrl(), promotes_inputs=['k_i', 'k_p', 'gain_corr_factor'], promotes_outputs=['C_contrl'])
 
 		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'B_struct', 'B_contrl', 'C_struct', 'C_contrl'], promotes_outputs=['A_feedbk'])
 

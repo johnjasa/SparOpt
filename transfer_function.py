@@ -19,7 +19,6 @@ class TransferFunction(ImplicitComponent):
 			residuals['Re_H_feedbk'][i] = np.real((1j*omega[i] * np.identity(9) - inputs['A_feedbk']).dot(outputs['Re_H_feedbk'][i] + 1j * outputs['Im_H_feedbk'][i])) - inputs['B_feedbk']
 			residuals['Im_H_feedbk'][i] = np.imag((1j*omega[i] * np.identity(9) - inputs['A_feedbk']).dot(outputs['Re_H_feedbk'][i] + 1j * outputs['Im_H_feedbk'][i])) - inputs['B_feedbk']
 
-
 	def solve_nonlinear(self, inputs, outputs):
 		omega = inputs['omega']
 		N_omega = len(omega)

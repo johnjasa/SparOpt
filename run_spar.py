@@ -1,8 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.special as ss
 
 from openmdao.api import Problem, IndepVarComp
 
+from steady_bldpitch import SteadyBladePitch
+from steady_rotspeed import SteadyRotSpeed
+from gain_schedule import GainSchedule
 from substructure_group import Substructure
 from aero_group import Aero
 from statespace_group import StateSpace
@@ -42,14 +46,21 @@ ivc.add_output('omega', val=np.linspace(0.014361566416410483,6.283185307179586,3
 ivc.add_output('water_depth', val=320., units='m')
 ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
-ivc.add_output('windspeed_0', val=21., units='m/s')
-ivc.add_output('bldpitch_0', val=19.08*np.pi/180., units='rad')
-ivc.add_output('rotspeed_0', val=9.6*2.*np.pi/60., units='rad/s')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
+ivc.add_output('windspeed_0', val=21., units='m/s')
 ivc.add_output('Hs', val=3., units='m')
 ivc.add_output('Tp', val=10., units='s')
+ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
+ivc.add_output('k_i', val=0.0165, units='rad/rad')
+ivc.add_output('omega_lowpass', val=2.*np.pi/0.8, units='rad/s')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
+
+prob.model.add_subsystem('steady_rotspeed', SteadyRotSpeed(), promotes_inputs=['windspeed_0'], promotes_outputs=['rotspeed_0'])
+
+prob.model.add_subsystem('steady_bldpitch', SteadyBladePitch(), promotes_inputs=['windspeed_0'], promotes_outputs=['bldpitch_0'])
+
+prob.model.add_subsystem('gain_schedule', GainSchedule(), promotes_inputs=['bldpitch_0'], promotes_outputs=['gain_corr_factor'])
 
 aero_group = Aero(blades=blades)
 
@@ -67,8 +78,8 @@ prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D
 statespace_group = StateSpace()
 
 prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'B_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', 'dmoment_dv', \
-	'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', 'omega', 'x_towermode', 'z_towermode', 'Z_tower'], \
-	promotes_outputs=['A_struct', 'Re_H_feedbk', 'Im_H_feedbk'])
+	'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', 'gain_corr_factor', 'omega', 'x_towermode', 'z_towermode', 'Z_tower'], \
+	promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
 
 prob.model.add_subsystem('wave_spectrum', WaveSpectrum(), promotes_inputs=['Hs', 'Tp', 'omega'], promotes_outputs=['S_wave'])
 
@@ -77,11 +88,9 @@ prob.model.add_subsystem('wind_spectrum', WindSpectrum(), promotes_inputs=['wind
 prob.setup()
 
 prob.run_model()
-#print 2*np.pi / np.sqrt(np.linalg.eig(np.dot(np.linalg.inv(prob['M_global']+prob['A_global']),(prob['K_global'])))[0])
-#print prob['M_global'] + prob['A_global'], prob['K_global']
-#print prob['A_struct']
 
 omega = prob['omega']
+N_omega = len(omega)
 mag = np.abs(prob['Re_H_feedbk'] + 1j * prob['Im_H_feedbk'])
 phase = np.angle(prob['Re_H_feedbk'] + 1j * prob['Im_H_feedbk'])
 
@@ -94,28 +103,90 @@ Xcal7_FD = np.interp(omega, prob['omega_wave'], Xcal[:,2,0])
 RAO_wave_surge = mag[:,0,3] * np.exp(1j * phase[:,0,3]) * Xcal1_FD + mag[:,0,4] * np.exp(1j * phase[:,0,4]) * Xcal5_FD + mag[:,0,5] * np.exp(1j * phase[:,0,5]) * Xcal7_FD
 RAO_wave_pitch = mag[:,1,3] * np.exp(1j * phase[:,1,3]) * Xcal1_FD + mag[:,1,4] * np.exp(1j * phase[:,1,4]) * Xcal5_FD + mag[:,1,5] * np.exp(1j * phase[:,1,5]) * Xcal7_FD
 RAO_wave_bend = mag[:,2,3] * np.exp(1j * phase[:,2,3]) * Xcal1_FD + mag[:,2,4] * np.exp(1j * phase[:,2,4]) * Xcal5_FD + mag[:,2,5] * np.exp(1j * phase[:,2,5]) * Xcal7_FD
-RAO_wave_rotspeed = mag[:,3,3] * np.exp(1j * phase[:,3,3]) * Xcal1_FD + mag[:,3,4] * np.exp(1j * phase[:,3,4]) * Xcal5_FD + mag[:,3,5] * np.exp(1j * phase[:,3,5]) * Xcal7_FD
+RAO_wave_rotspeed = mag[:,6,3] * np.exp(1j * phase[:,6,3]) * Xcal1_FD + mag[:,6,4] * np.exp(1j * phase[:,6,4]) * Xcal5_FD + mag[:,6,5] * np.exp(1j * phase[:,6,5]) * Xcal7_FD
+RAO_wave_rot_LP = mag[:,7,3] * np.exp(1j * phase[:,7,3]) * Xcal1_FD + mag[:,7,4] * np.exp(1j * phase[:,7,4]) * Xcal5_FD + mag[:,7,5] * np.exp(1j * phase[:,7,5]) * Xcal7_FD
+RAO_wave_rotspeed_LP = mag[:,8,3] * np.exp(1j * phase[:,8,3]) * Xcal1_FD + mag[:,8,4] * np.exp(1j * phase[:,8,4]) * Xcal5_FD + mag[:,8,5] * np.exp(1j * phase[:,8,5]) * Xcal7_FD
+RAO_wave_bldpitch = 0.25104*prob['k_i'] * RAO_wave_rot_LP + 0.25104*prob['k_p'] * RAO_wave_rotspeed_LP
+RAO_wave_vel_surge = (mag[:,0,3] * np.exp(1j * phase[:,0,3]) * Xcal1_FD + mag[:,0,4] * np.exp(1j * phase[:,0,4]) * Xcal5_FD + mag[:,0,5] * np.exp(1j * phase[:,0,5]) * Xcal7_FD) * omega * 1j
+RAO_wave_vel_pitch = (mag[:,1,3] * np.exp(1j * phase[:,1,3]) * Xcal1_FD + mag[:,1,4] * np.exp(1j * phase[:,1,4]) * Xcal5_FD + mag[:,1,5] * np.exp(1j * phase[:,1,5]) * Xcal7_FD) * omega * 1j
+RAO_wave_vel_bend = (mag[:,2,3] * np.exp(1j * phase[:,2,3]) * Xcal1_FD + mag[:,2,4] * np.exp(1j * phase[:,2,4]) * Xcal5_FD + mag[:,2,5] * np.exp(1j * phase[:,2,5]) * Xcal7_FD) * omega * 1j
+RAO_wave_acc_surge = (mag[:,0,3] * np.exp(1j * phase[:,0,3]) * Xcal1_FD + mag[:,0,4] * np.exp(1j * phase[:,0,4]) * Xcal5_FD + mag[:,0,5] * np.exp(1j * phase[:,0,5]) * Xcal7_FD) * omega**2. * (-1.)
+RAO_wave_acc_pitch = (mag[:,1,3] * np.exp(1j * phase[:,1,3]) * Xcal1_FD + mag[:,1,4] * np.exp(1j * phase[:,1,4]) * Xcal5_FD + mag[:,1,5] * np.exp(1j * phase[:,1,5]) * Xcal7_FD) * omega**2. * (-1.)
+RAO_wave_acc_bend = (mag[:,2,3] * np.exp(1j * phase[:,2,3]) * Xcal1_FD + mag[:,2,4] * np.exp(1j * phase[:,2,4]) * Xcal5_FD + mag[:,2,5] * np.exp(1j * phase[:,2,5]) * Xcal7_FD) * omega**2. * (-1.)
 
 RAO_wind_surge = mag[:,0,0] * np.exp(1j * phase[:,0,0]) * prob['thrust_wind'] + mag[:,0,1] * np.exp(1j * phase[:,0,1]) * prob['moment_wind'] + mag[:,0,2] * np.exp(1j * phase[:,0,2]) * prob['torque_wind']
 RAO_wind_pitch = mag[:,1,0] * np.exp(1j * phase[:,1,0]) * prob['thrust_wind'] + mag[:,1,1] * np.exp(1j * phase[:,1,1]) * prob['moment_wind'] + mag[:,1,2] * np.exp(1j * phase[:,1,2]) * prob['torque_wind']
 RAO_wind_bend = mag[:,2,0] * np.exp(1j * phase[:,2,0]) * prob['thrust_wind'] + mag[:,2,1] * np.exp(1j * phase[:,2,1]) * prob['moment_wind'] + mag[:,2,2] * np.exp(1j * phase[:,2,2]) * prob['torque_wind']
-RAO_wind_rotspeed = mag[:,3,0] * np.exp(1j * phase[:,3,0]) * prob['thrust_wind'] + mag[:,3,1] * np.exp(1j * phase[:,3,1]) * prob['moment_wind'] + mag[:,3,2] * np.exp(1j * phase[:,3,2]) * prob['torque_wind']
+RAO_wind_rotspeed = mag[:,6,0] * np.exp(1j * phase[:,6,0]) * prob['thrust_wind'] + mag[:,6,1] * np.exp(1j * phase[:,6,1]) * prob['moment_wind'] + mag[:,6,2] * np.exp(1j * phase[:,6,2]) * prob['torque_wind']
+RAO_wind_rot_LP = mag[:,7,0] * np.exp(1j * phase[:,7,0]) * prob['thrust_wind'] + mag[:,7,1] * np.exp(1j * phase[:,7,1]) * prob['moment_wind'] + mag[:,7,2] * np.exp(1j * phase[:,7,2]) * prob['torque_wind']
+RAO_wind_rotspeed_LP = mag[:,8,0] * np.exp(1j * phase[:,8,0]) * prob['thrust_wind'] + mag[:,8,1] * np.exp(1j * phase[:,8,1]) * prob['moment_wind'] + mag[:,8,2] * np.exp(1j * phase[:,8,2]) * prob['torque_wind']
+RAO_wind_bldpitch = 0.25104*prob['k_i'] * RAO_wind_rot_LP + 0.25104*prob['k_p'] * RAO_wind_rotspeed_LP
+RAO_wind_vel_surge = (mag[:,0,0] * np.exp(1j * phase[:,0,0]) * prob['thrust_wind'] + mag[:,0,1] * np.exp(1j * phase[:,0,1]) * prob['moment_wind'] + mag[:,0,2] * np.exp(1j * phase[:,0,2]) * prob['torque_wind']) * omega * 1j
+RAO_wind_vel_pitch = (mag[:,1,0] * np.exp(1j * phase[:,1,0]) * prob['thrust_wind'] + mag[:,1,1] * np.exp(1j * phase[:,1,1]) * prob['moment_wind'] + mag[:,1,2] * np.exp(1j * phase[:,1,2]) * prob['torque_wind']) * omega * 1j
+RAO_wind_vel_bend = (mag[:,2,0] * np.exp(1j * phase[:,2,0]) * prob['thrust_wind'] + mag[:,2,1] * np.exp(1j * phase[:,2,1]) * prob['moment_wind'] + mag[:,2,2] * np.exp(1j * phase[:,2,2]) * prob['torque_wind']) * omega * 1j
+RAO_wind_acc_surge = (mag[:,0,0] * np.exp(1j * phase[:,0,0]) * prob['thrust_wind'] + mag[:,0,1] * np.exp(1j * phase[:,0,1]) * prob['moment_wind'] + mag[:,0,2] * np.exp(1j * phase[:,0,2]) * prob['torque_wind']) * omega**2. * (-1.)
+RAO_wind_acc_pitch = (mag[:,1,0] * np.exp(1j * phase[:,1,0]) * prob['thrust_wind'] + mag[:,1,1] * np.exp(1j * phase[:,1,1]) * prob['moment_wind'] + mag[:,1,2] * np.exp(1j * phase[:,1,2]) * prob['torque_wind']) * omega**2. * (-1.)
+RAO_wind_acc_bend = (mag[:,2,0] * np.exp(1j * phase[:,2,0]) * prob['thrust_wind'] + mag[:,2,1] * np.exp(1j * phase[:,2,1]) * prob['moment_wind'] + mag[:,2,2] * np.exp(1j * phase[:,2,2]) * prob['torque_wind']) * omega**2. * (-1.)
 
 X1_lin_FD = np.abs(RAO_wave_surge)**2. * prob['S_wave'] + np.abs(RAO_wind_surge)**2. * prob['S_wind']
 
 X5_lin_FD = np.abs(RAO_wave_pitch)**2. * prob['S_wave'] + np.abs(RAO_wind_pitch)**2. * prob['S_wind']
 
+X7_lin_FD = np.abs(RAO_wave_bend)**2. * prob['S_wave'] + np.abs(RAO_wind_bend)**2. * prob['S_wind']
+
 phi_dot_lin_FD = np.abs(RAO_wave_rotspeed)**2. * prob['S_wave'] + np.abs(RAO_wind_rotspeed)**2. * prob['S_wind']
 
-print np.std(X1_lin_FD), np.std(X5_lin_FD), np.std(phi_dot_lin_FD)
+X1vel_lin_FD = np.abs(RAO_wave_vel_surge)**2. * prob['S_wave'] + np.abs(RAO_wind_vel_surge)**2. * prob['S_wind']
 
-"""
-#plt.plot(omega,mag[:,6,3], label='X1')
-#plt.plot(omega,mag[:,6,4], label='X5')
-#plt.plot(omega,mag[:,6,5], label='X7')
-#plt.plot(omega,mag[:,6,0], label='Vf')
-#plt.plot(omega,mag[:,6,1], label='Vm')
-plt.plot(omega,mag[:,6,2], label='Vq')
-plt.legend()
+mom_acc_surge = 98294935.72543612
+mom_acc_pitch = 10583502511.569796
+mom_acc_bend = 77898403.15720505
+mom_damp_surge = 16097428.734389322
+mom_damp_pitch = 1919768134.6718657
+mom_damp_bend = 16218043.969506808
+mom_grav_pitch = 963944031.431848
+mom_grav_bend = 10878305.867464177
+mom_rotspeed = -202745723.95380586
+mom_bldpitch = -991123196.6665341
+
+S_wave_mom_TB = np.zeros(N_omega)
+for i in xrange(N_omega):
+	S_wave_mom_TB[i] = np.abs(-mom_acc_surge * RAO_wave_acc_surge[i] - mom_acc_pitch * RAO_wave_acc_pitch[i] - mom_acc_bend * RAO_wave_acc_bend[i] - mom_damp_surge * RAO_wave_vel_surge[i] - mom_damp_pitch * RAO_wave_vel_pitch[i] - mom_damp_bend * RAO_wave_vel_bend[i] + mom_grav_pitch * RAO_wave_pitch[i] + mom_grav_bend * RAO_wave_bend[i] + mom_rotspeed * RAO_wave_rotspeed[i] + mom_bldpitch * RAO_wave_bldpitch[i])**2. * prob['S_wave'][i]
+
+S_wind_mom_TB = np.zeros(N_omega)
+for i in xrange(N_omega):
+	S_wind_mom_TB[i] = np.abs(-mom_acc_surge * RAO_wind_acc_surge[i] - mom_acc_pitch * RAO_wind_acc_pitch[i] - mom_acc_bend * RAO_wind_acc_bend[i] - mom_damp_surge * RAO_wind_vel_surge[i] - mom_damp_pitch * RAO_wind_vel_pitch[i] - mom_damp_bend * RAO_wind_vel_bend[i] + mom_grav_pitch * RAO_wind_pitch[i] + mom_grav_bend * RAO_wind_bend[i] + mom_rotspeed * RAO_wind_rotspeed[i] + mom_bldpitch * RAO_wind_bldpitch[i] + (119.- 10.) * prob['dthrust_dv'] * prob['thrust_wind'][i] + prob['dmoment_dv'] * prob['moment_wind'][i])**2. * prob['S_wind'][i]
+
+S_mom_TB = S_wave_mom_TB + S_wind_mom_TB
+
+print np.sqrt(np.trapz(X1_lin_FD, omega)), np.sqrt(np.trapz(X5_lin_FD, omega)), np.sqrt(np.trapz(S_mom_TB, omega)), np.sqrt(np.trapz(phi_dot_lin_FD, omega))
+print np.sqrt(np.trapz(X1vel_lin_FD, omega))
+
+S_stress_TB = S_mom_TB / (np.pi / 64. * (8.3**4. - (8.3 - 2. * 0.038)**4.))**2. * (8.3 / 2. * 10.**(-6.))**2.
+
+C = 10**12.164
+k = 3.0
+
+m0 = np.trapz(S_stress_TB,omega)
+m1 = np.trapz(omega * S_stress_TB,omega)
+m2 = np.trapz(omega**2. * S_stress_TB,omega)
+m4 = np.trapz(omega**4. * S_stress_TB,omega)
+
+sigma = np.sqrt(m0)
+
+x_m = m1 / m0 * np.sqrt(m2 / m4)
+alpha_2 = m2 / np.sqrt(m0 * m4)
+v_p = 1. / (2. * np.pi) * np.sqrt(m4 / m2)
+
+G1 = 2. * (x_m - alpha_2**2.) / (1. + alpha_2**2.)
+R = (alpha_2 - x_m - G1**2.) / (1. - alpha_2 - G1 + G1**2.)
+G2 = (1. - alpha_2 - G1 + G1**2.) / (1. - R)
+G3 = 1. - G1 - G2
+Q = 1.25 * (alpha_2 - G3 - G2 * R) / G1
+
+D = C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (0.038 / 0.025)**(0.2 * k)
+
+print D * 3600.
+
+plt.plot(omega,S_mom_TB)
 plt.show()
-"""
