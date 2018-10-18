@@ -11,7 +11,7 @@ class BendingAddedMass(ExplicitComponent):
 		self.add_input('z_sparmode', val=np.zeros(7), units='m')
 		self.add_input('Z_spar', val=np.zeros(4), units='m')
 		self.add_input('spar_draft', val=0., units='m')
-		self.add_input('D_secs', np.zeros(3), units='m')
+		self.add_input('D_spar', np.zeros(3), units='m')
 
 		self.add_output('A17', val=0., units='kg')
 		self.add_output('A57', val=0., units='kg*m')
@@ -20,7 +20,7 @@ class BendingAddedMass(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		Z_spar = inputs['Z_spar']
 		spar_draft = inputs['spar_draft']
-		D_secs = inputs['D_secs']
+		D_spar = inputs['D_spar']
 
 		f_psi_spar = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
 
@@ -37,7 +37,7 @@ class BendingAddedMass(ExplicitComponent):
 			dz = spar_draft / N_elem
 			for j in xrange(len(Z_spar) - 1):
 				if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
-					D = D_secs[j]
+					D = D_spar[j]
 					break
 
 			a11 = 1025. * np.pi / 4. * D**2.

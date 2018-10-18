@@ -9,6 +9,8 @@ class Acontrl(ExplicitComponent):
 
 		self.add_output('A_contrl', val=np.zeros((2,2)))
 
+		#self.declare_partials('A_contrl', 'omega_lowpass', val=np.array([[0., 0.],[0., -1.]]))
+
 	def compute(self, inputs, outputs):
 		omega_lowpass = inputs['omega_lowpass']
 

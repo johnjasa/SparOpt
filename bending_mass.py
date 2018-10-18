@@ -11,8 +11,8 @@ class BendingMass(ExplicitComponent):
 		self.add_input('x_sparmode', val=np.zeros(7), units='m')
 		self.add_input('z_towermode', val=np.zeros(11), units='m')
 		self.add_input('x_towermode', val=np.zeros(11), units='m')
-		self.add_input('M_secs', val=np.zeros(3), units='kg')
-		self.add_input('L_secs', val=np.zeros(3), units='m')
+		self.add_input('M_spar', val=np.zeros(3), units='kg')
+		self.add_input('L_spar', val=np.zeros(3), units='m')
 		self.add_input('Z_spar', val=np.zeros(4), units='m')
 		self.add_input('spar_draft', val=0., units='m')
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
@@ -30,8 +30,8 @@ class BendingMass(ExplicitComponent):
 		self.add_output('M77', val=0., units='kg')
 
 	def compute(self, inputs, outputs):
-		M_secs = inputs['M_secs']
-		L_secs = inputs['L_secs']
+		M_spar = inputs['M_spar']
+		L_spar = inputs['L_spar']
 		Z_spar = inputs['Z_spar']
 		M_tower = inputs['M_tower']
 		L_tower = inputs['L_tower']
@@ -50,7 +50,7 @@ class BendingMass(ExplicitComponent):
 		f_psi_d_tower = f_psi_tower.derivative(n=1)
 
 		m_elem_tower = M_tower / L_tower
-		m_elem_spar = M_secs / L_secs
+		m_elem_spar = M_spar / L_spar
 		m_elem_ball = M_ball / L_ball
 
 		outputs['M17'] = (M_rotor + M_nacelle) * f_psi_tower(Z_tower[-1])
@@ -62,8 +62,8 @@ class BendingMass(ExplicitComponent):
 		N_elem = 200
 		
 		for i in xrange(N_elem):
-			z = -inputs['spar_draft'] + (i + 0.5) / N_elem * np.sum(L_secs)
-			dz = np.sum(L_secs) / N_elem
+			z = -inputs['spar_draft'] + (i + 0.5) / N_elem * np.sum(L_spar)
+			dz = np.sum(L_spar) / N_elem
 			for j in xrange(len(Z_spar) - 1):
 				if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
 					m = m_elem_spar[j]

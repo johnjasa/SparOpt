@@ -5,9 +5,9 @@ from openmdao.api import ExplicitComponent
 class GlobalStiffness(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_secs', val=np.zeros(3), units='m')
-		self.add_input('M_secs', val=np.zeros(3), units='kg')
-		self.add_input('M_tower', val=np.zeros(10), units='kg')
+		self.add_input('D_spar', val=np.zeros(3), units='m')
+		self.add_input('tot_M_spar', val=0., units='kg')
+		self.add_input('tot_M_tower', val=0., units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('M_rotor', val=0., units='kg')
 		self.add_input('M_ball', val=0., units='kg')
@@ -30,12 +30,12 @@ class GlobalStiffness(ExplicitComponent):
 		self.add_output('K_global', val=np.zeros((3,3)), units='N/m')
 
 	def compute(self, inputs, outputs):
-		D_secs = inputs['D_secs']
-		M_spar = np.sum(inputs['M_secs'])
-		M_turb = np.sum(inputs['M_tower']) + inputs['M_nacelle'] + inputs['M_rotor']
+		D_spar = inputs['D_spar']
+		tot_M_spar = inputs['tot_M_spar']
+		M_turb = inputs['tot_M_tower'] + inputs['M_nacelle'] + inputs['M_rotor']
 		M_ball = inputs['M_ball'] 
 		CoG_spar = inputs['CoG_spar']
-		CoG_turb = (np.sum(inputs['M_tower']) * inputs['CoG_tower'] + inputs['M_nacelle'] * inputs['CoG_nacelle'] + inputs['M_rotor'] * inputs['CoG_rotor']) / M_turb
+		CoG_turb = (inputs['tot_M_tower'] * inputs['CoG_tower'] + inputs['M_nacelle'] * inputs['CoG_nacelle'] + inputs['M_rotor'] * inputs['CoG_rotor']) / M_turb
 		CoG_ball = inputs['CoG_ball']
 		M_moor = inputs['M_moor']
 		K_moor = inputs['K_moor']
@@ -45,8 +45,8 @@ class GlobalStiffness(ExplicitComponent):
 		buoy_spar = inputs['buoy_spar']
 		CoB = inputs['CoB']
 
-		CoG_tot = (M_turb * CoG_turb + M_spar * CoG_spar + M_ball * CoG_ball) / (M_spar + M_turb + M_ball)
-		hydrostatic_pitch = buoy_spar * CoB - M_spar * 9.80665 * CoG_spar - M_ball * 9.80665 * CoG_ball - M_turb * 9.80665 * CoG_turb + 1025. * 9.80665 * np.pi / 64. * D_secs[-1]**4.
+		CoG_tot = (M_turb * CoG_turb + tot_M_spar * CoG_spar + M_ball * CoG_ball) / (tot_M_spar + M_turb + M_ball)
+		hydrostatic_pitch = buoy_spar * CoB - tot_M_spar * 9.80665 * CoG_spar - M_ball * 9.80665 * CoG_ball - M_turb * 9.80665 * CoG_turb + 1025. * 9.80665 * np.pi / 64. * D_spar[-1]**4.
 
 		outputs['K_global'] = np.zeros((3,3))
 

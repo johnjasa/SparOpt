@@ -11,7 +11,7 @@ class BendingStiffness(ExplicitComponent):
 		self.add_input('x_sparmode', val=np.zeros(7), units='m')
 		self.add_input('z_towermode', val=np.zeros(11), units='m')
 		self.add_input('x_towermode', val=np.zeros(11), units='m')
-		self.add_input('D_secs', val=np.zeros(3), units='m')
+		self.add_input('D_spar', val=np.zeros(3), units='m')
 		self.add_input('D_tower', val=np.zeros(10), units='m')
 		self.add_input('wt_tower', val=np.zeros(10), units='m')
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
@@ -22,7 +22,7 @@ class BendingStiffness(ExplicitComponent):
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('buoy_spar', val=0., units='N')
 		self.add_input('CoB', val=0., units='m')
-		self.add_input('M_secs', val=np.zeros(3), units='kg')
+		self.add_input('M_spar', val=np.zeros(3), units='kg')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('M_ball', val=0., units='kg')
 		self.add_input('CoG_ball', val=0., units='m')
@@ -34,7 +34,7 @@ class BendingStiffness(ExplicitComponent):
 		self.add_output('K77', val=0., units='N/m')
 
 	def compute(self, inputs, outputs):
-		D_secs = inputs['D_secs']
+		D_spar = inputs['D_spar']
 		D_tower = inputs['D_tower']
 		wt_tower = inputs['wt_tower']
 		M_tower = inputs['M_tower']
@@ -45,7 +45,7 @@ class BendingStiffness(ExplicitComponent):
 		z_moor = inputs['z_moor']
 		buoy_spar = inputs['buoy_spar']
 		CoB = inputs['CoB']
-		M_secs = inputs['M_secs']
+		M_spar = inputs['M_spar']
 		CoG_spar = inputs['CoG_spar']
 		M_ball = inputs['M_ball']
 		CoG_ball = inputs['CoG_ball']
@@ -62,8 +62,8 @@ class BendingStiffness(ExplicitComponent):
 		EI_tower = np.pi / 64. * (D_tower**4. - (D_tower - 2. * wt_tower)**4.) * 2.1e11
 
 		outputs['K17'] = K_moor * f_psi_spar(z_moor)**2.
-		outputs['K57'] = K_moor * z_moor * f_psi_spar(z_moor) + (buoy_spar * CoB - np.sum(M_secs) * 9.80665 * CoG_spar - M_ball * 9.80665 * CoG_ball - M_moor * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_secs[-1]**4.) * f_psi_d_spar(0.)
-		outputs['K77'] = (buoy_spar * CoB - np.sum(M_secs) * 9.80665 * CoG_spar - M_ball * 9.80665 * CoG_ball - M_moor * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_secs[-1]**4.) * f_psi_d_spar(0.)**2. + K_moor * f_psi_spar(z_moor)**2.
+		outputs['K57'] = K_moor * z_moor * f_psi_spar(z_moor) + (buoy_spar * CoB - np.sum(M_spar) * 9.80665 * CoG_spar - M_ball * 9.80665 * CoG_ball - M_moor * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_spar[-1]**4.) * f_psi_d_spar(0.)
+		outputs['K77'] = (buoy_spar * CoB - np.sum(M_spar) * 9.80665 * CoG_spar - M_ball * 9.80665 * CoG_ball - M_moor * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_spar[-1]**4.) * f_psi_d_spar(0.)**2. + K_moor * f_psi_spar(z_moor)**2.
 		
 		#TODO: Bending stiffness and damping in spar currently neglected as it is assumed to be rigid
 

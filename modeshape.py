@@ -5,10 +5,10 @@ from openmdao.api import ExplicitComponent
 class Modeshape(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_secs', val=np.zeros(3), units='m')
-		self.add_input('L_secs', val=np.zeros(3), units='m')
-		self.add_input('wt_secs', val=np.zeros(3), units='m')
-		self.add_input('M_secs', val=np.zeros(3), units='kg')
+		self.add_input('D_spar', val=np.zeros(3), units='m')
+		self.add_input('L_spar', val=np.zeros(3), units='m')
+		self.add_input('wt_spar', val=np.zeros(3), units='m')
+		self.add_input('M_spar', val=np.zeros(3), units='kg')
 		self.add_input('Z_spar', val=np.zeros(4), units='m')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('D_tower', val=np.zeros(10), units='m')
@@ -36,10 +36,10 @@ class Modeshape(ExplicitComponent):
 		self.add_output('z_towermode', val=np.zeros(11), units='m')
 
 	def compute(self, inputs, outputs):
-		D_secs = inputs['D_secs']
-		L_secs = inputs['L_secs']
-		wt_secs = inputs['wt_secs']
-		M_secs = inputs['M_secs']
+		D_spar = inputs['D_spar']
+		L_spar = inputs['L_spar']
+		wt_spar = inputs['wt_spar']
+		M_spar = inputs['M_spar']
 		Z_spar = inputs['Z_spar']
 		D_tower = inputs['D_tower']
 		L_tower = inputs['L_tower']
@@ -56,7 +56,7 @@ class Modeshape(ExplicitComponent):
 		M_rotor = inputs['M_rotor']
 		I_rotor = inputs['I_rotor']
 		K_moor = inputs['K_moor']
-		K_hydrostatic = inputs['buoy_spar'] * inputs['CoB'] - np.sum(M_secs) * 9.80665 * inputs['CoG_spar'] - inputs['M_ball'] * 9.80665 * inputs['CoG_ball'] - inputs['M_moor'] * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_secs[-1]**4.
+		K_hydrostatic = inputs['buoy_spar'] * inputs['CoB'] - np.sum(M_spar) * 9.80665 * inputs['CoG_spar'] - inputs['M_ball'] * 9.80665 * inputs['CoG_ball'] - inputs['M_moor'] * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_spar[-1]**4.
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
@@ -80,12 +80,12 @@ class Modeshape(ExplicitComponent):
 				if z_sparmode[i+1] <= Z_spar[j+1]:
 					sparidx = j
 					break
-			EI[i] = 1e15 #np.pi / 64. * (D_secs[j]**4. - (D_secs[j] - 2. * wt_secs[j])**4.) * 2.1e11
-			steelmass = M_secs[sparidx] / L_secs[sparidx]
+			EI[i] = 1e15 #np.pi / 64. * (D_spar[j]**4. - (D_spar[j] - 2. * wt_spar[j])**4.) * 2.1e11
+			steelmass = M_spar[sparidx] / L_spar[sparidx]
 			addedmass = 0.
 			ballmass = 0.
 			if z_sparmode[i+1] <= z_SWL:
-				addedmass = 1025. * np.pi / 4. * D_secs[sparidx]**2.
+				addedmass = 1025. * np.pi / 4. * D_spar[sparidx]**2.
 			if z_sparmode[i+1] <= z_ball:
 				ballmass = M_ball / L_ball
 			m[i] = steelmass + addedmass + ballmass
@@ -153,7 +153,7 @@ class Modeshape(ExplicitComponent):
 
 		M[-2,-2] += (M_nacelle + M_rotor)
 		M[-1,-1] += I_rotor
-
+		print K_moor
 		eig_vector = np.linalg.eig(np.dot(np.linalg.inv(M), K))[1][:,-3]
 
 		x_sparmode = eig_vector[0:(N_sparelem+1)*2:2]

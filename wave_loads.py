@@ -10,8 +10,8 @@ class WaveLoads(ExplicitComponent):
 	def setup(self):
 		self.add_input('z_sparmode', val=np.zeros(7), units='m')
 		self.add_input('x_sparmode', val=np.zeros(7), units='m')
-		self.add_input('D_secs', val=np.zeros(3), units='m')
-		self.add_input('L_secs', val=np.zeros(3), units='m')
+		self.add_input('D_spar', val=np.zeros(3), units='m')
+		self.add_input('L_spar', val=np.zeros(3), units='m')
 		self.add_input('omega_wave', val=np.zeros(80), units='rad/s')
 		self.add_input('water_depth', val=0., units='m')
 
@@ -19,8 +19,8 @@ class WaveLoads(ExplicitComponent):
 		self.add_output('Im_wave_forces', val=np.zeros((80,3,1)))
 
 	def compute(self, inputs, outputs):
-		D_secs = inputs['D_secs']
-		L_secs = inputs['L_secs']
+		D_spar = inputs['D_spar']
+		L_spar = inputs['L_spar']
 		omega_wave = inputs['omega_wave']
 		h = inputs['water_depth'][0]
 
@@ -48,17 +48,17 @@ class WaveLoads(ExplicitComponent):
 					Nelem = 20
 
 				if j == 2:
-					L_elem = L_secs[j] - 10.
+					L_elem = L_spar[j] - 10.
 				else:
-					L_elem = L_secs[j] / Nelem
+					L_elem = L_spar[j] / Nelem
 				
-				a = D_secs[j] / 2.
+				a = D_spar[j] / 2.
 
 				for k in xrange(Nelem):
 					if j == 2:
 						z = -2.
 					else:
-						z = -120. + np.sum(L_secs[0:j]) + L_elem * (k + 0.5)
+						z = -120. + np.sum(L_spar[0:j]) + L_elem * (k + 0.5)
 					J = ss.jvp(1,wavenum*a,1)
 					Y = ss.yvp(1,wavenum*a,1)
 					G = 1. / np.sqrt(J**2. + Y**2.)

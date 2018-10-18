@@ -2,11 +2,15 @@ import numpy as np
 
 from openmdao.api import ImplicitComponent
 
-class MooringZero(ImplicitComponent):
+class MoorTenZero(ImplicitComponent):
 
 	def setup(self):
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('water_depth', val=0., units='m')
+		self.add_input('EA_moor', val=0., units='N')
+		self.add_input('mass_dens_moor', val=0., units='kg/m')
+		self.add_input('len_hor_moor', val=0., units='m')
+		self.add_input('len_tot_moor', val=0., units='m')
 
 		self.add_output('moor_tension_zero', val=0., units='N')
 		self.add_output('eff_length_zero', val=0., units='m')
@@ -15,10 +19,10 @@ class MooringZero(ImplicitComponent):
 		#Horizontal tension and effective mooring line length at zero offset
 
 		h = inputs['water_depth'] + inputs['z_moor']
-		EA = 384243000.
-		mu = 155.41
-		l_tot_hor = 848.67
-		l_tot = 902.2
+		EA = inputs['EA_moor']
+		mu = inputs['mass_dens_moor']
+		l_tot_hor = inputs['len_hor_moor']
+		l_tot = inputs['len_tot_moor']
 
 		l_eff = outputs['eff_length_zero']
 		t_star = outputs['moor_tension_zero'] / (mu * 9.80665)
