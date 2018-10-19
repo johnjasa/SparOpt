@@ -42,7 +42,7 @@ class BendingMass(ExplicitComponent):
 		M_rotor = inputs['M_rotor']
 		M_nacelle = inputs['M_nacelle']
 		I_rotor = inputs['I_rotor']
-		z_ball = -inputs['spar_draft'] + inputs['wt_ball'] + inputs['L_ball'] #top of ballast
+		z_ball = -inputs['spar_draft'] + inputs['L_ball'] #top of ballast
 
 		f_psi_spar = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
 		f_psi_d_spar = f_psi_spar.derivative(n=1)

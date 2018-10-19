@@ -10,6 +10,7 @@ class GlobalStiffness(ExplicitComponent):
 		self.add_input('tot_M_tower', val=0., units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('M_rotor', val=0., units='kg')
+		self.add_input('M_turb', val=0., units='kg')
 		self.add_input('M_ball', val=0., units='kg')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('CoG_tower', val=0., units='m')
@@ -32,7 +33,7 @@ class GlobalStiffness(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		D_spar = inputs['D_spar']
 		tot_M_spar = inputs['tot_M_spar']
-		M_turb = inputs['tot_M_tower'] + inputs['M_nacelle'] + inputs['M_rotor']
+		M_turb = inputs['M_turb']
 		M_ball = inputs['M_ball'] 
 		CoG_spar = inputs['CoG_spar']
 		CoG_turb = (inputs['tot_M_tower'] * inputs['CoG_tower'] + inputs['M_nacelle'] * inputs['CoG_nacelle'] + inputs['M_rotor'] * inputs['CoG_rotor']) / M_turb

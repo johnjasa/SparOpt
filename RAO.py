@@ -18,7 +18,6 @@ class RAO(ImplicitComponent):
 		self.add_output('Im_RAO', val=np.zeros((100,3,1)))
 
 	def apply_nonlinear(self, inputs, outputs, residuals):
-		#R = Ax - b.
 
 		for i in xrange(100):
 			residuals['Re_RAO'][i] = np.real((-inputs['omega_wave'][i]**2. * (inputs['M_global'] + inputs['A_global']) + 1j * inputs['omega_wave'][i] * inputs['B_global'] + inputs['K_global']).dot(outputs['Re_RAO'][i] + 1j * outputs['Im_RAO'][i])) - inputs['Re_wave_forces']

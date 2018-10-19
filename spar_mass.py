@@ -11,7 +11,7 @@ class SparMass(ExplicitComponent):
 
 		self.add_output('M_spar', val=np.zeros(3), units='kg')
 
-		#self.declare_partials('*', '*')
+		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		D_spar  = inputs['D_spar']

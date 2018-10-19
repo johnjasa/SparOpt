@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.special as ss
 
-from openmdao.api import Problem, IndepVarComp
+from openmdao.api import Problem, IndepVarComp, DirectSolver, NonlinearBlockGS
 
 from steady_bldpitch import SteadyBladePitch
 from steady_rotspeed import SteadyRotSpeed
@@ -58,8 +58,8 @@ ivc.add_output('Tp', val=10., units='s')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
 ivc.add_output('k_i', val=0.0165, units='rad/rad')
 ivc.add_output('omega_lowpass', val=2.*np.pi/0.8, units='rad/s')
-#ivc.add_output('K_moor', val=71000., units='N/m')
-#ivc.add_output('M_moor', val=330000., units='kg')
+ivc.add_output('K_moor', val=71000., units='N/m')
+ivc.add_output('M_moor', val=330000., units='kg')
 ivc.add_output('gain_corr_factor', val=0.25104)
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
@@ -78,7 +78,7 @@ prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'winds
 
 mooring_group = Mooring()
 
-prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'thrust_0'], promotes_outputs=['K_moor', 'M_moor', 'moor_offset'])
+#prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'thrust_0'], promotes_outputs=['K_moor', 'M_moor', 'moor_offset'])
 
 substructure_group = Substructure()
 
@@ -97,10 +97,13 @@ prob.model.add_subsystem('wave_spectrum', WaveSpectrum(), promotes_inputs=['Hs',
 
 prob.model.add_subsystem('wind_spectrum', WindSpectrum(), promotes_inputs=['windspeed_0', 'omega'], promotes_outputs=['S_wind'])
 
-#prob.model.nonlinear_solver = NewtonSolver()
+#prob.model.linear_solver = DirectSolver()
+#prob.model.nonlinear_solver = NonlinearBlockGS()
 
 prob.setup()
-
+#2.186881192042197 0.019869731460508695 59472924.08390023 0.09202897052966401
+#0.2800992917893006
+#0.0004290488287155436
 prob.run_model()
 
 omega = prob['omega']

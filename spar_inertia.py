@@ -11,7 +11,7 @@ class SparInertia(ExplicitComponent):
 
 		self.add_output('I_spar', val=0., units='kg*m**2')
 
-		#self.declare_partials('*', '*')
+		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		L_spar  = inputs['L_spar']
@@ -29,6 +29,6 @@ class SparInertia(ExplicitComponent):
 		M_spar  = inputs['M_spar']
 		spar_draft = inputs['spar_draft']
 
-		partials['I_spar', 'L_spar'] = np.zeros(3)
+		partials['I_spar', 'L_spar'] = np.zeros(3) #TODO
 		partials['I_spar', 'M_spar'] = np.ones(3)
 		partials['I_spar', 'spar_draft'] = 0.

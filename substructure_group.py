@@ -9,6 +9,7 @@ from spar_addedmass import SparAddedMass
 from spar_cog import SparCoG
 from tower_mass import TowerMass
 from tower_total_mass import TowerTotalMass
+from turb_mass import TurbMass
 from tower_inertia import TowerInertia
 from tower_cog import TowerCoG
 from ballast import Ballast
@@ -16,6 +17,7 @@ from ball_inertia import BallInertia
 from buoyancy import Buoyancy
 from aero_damping import AeroDamping
 from modeshape import Modeshape
+from modeshape_coords import ModeshapeCoords
 from bending_mass import BendingMass
 from bending_addedmass import BendingAddedMass
 from bending_damping import BendingDamping
@@ -44,19 +46,23 @@ class Substructure(Group):
 
 	 	self.add_subsystem('tower_total_mass', TowerTotalMass(), promotes_inputs=['M_tower'], promotes_outputs=['tot_M_tower'])
 
+	 	self.add_subsystem('turb_mass', TurbMass(), promotes_inputs=['tot_M_tower', 'M_nacelle', 'M_rotor'], promotes_outputs=['M_turb'])
+
 	 	self.add_subsystem('tower_inertia', TowerInertia(), promotes_inputs=['L_tower', 'M_tower'], promotes_outputs=['I_tower'])
 
 	 	self.add_subsystem('tower_cog', TowerCoG(), promotes_inputs=['L_tower', 'M_tower'], promotes_outputs=['CoG_tower'])
 
-	 	self.add_subsystem('buoyancy', Buoyancy(), promotes_inputs=['D_spar', 'L_spar'], promotes_outputs=['buoy_spar', 'CoB'])
+	 	self.add_subsystem('buoyancy', Buoyancy(), promotes_inputs=['D_spar', 'L_spar', 'spar_draft'], promotes_outputs=['buoy_spar', 'CoB'])
 
-	 	self.add_subsystem('ballast', Ballast(), promotes_inputs=['spar_draft', 'buoy_spar', 'tot_M_spar', 'L_spar', 'D_spar', 'tot_M_tower', 'M_nacelle', 'M_rotor', 'M_moor', 'rho_ball', 'wt_ball'], promotes_outputs=['M_ball', 'CoG_ball', 'L_ball'])
+	 	self.add_subsystem('ballast', Ballast(), promotes_inputs=['spar_draft', 'buoy_spar', 'tot_M_spar', 'D_spar', 'M_turb', 'M_moor', 'rho_ball', 'wt_ball'], promotes_outputs=['M_ball', 'CoG_ball', 'L_ball'])
 
 	 	self.add_subsystem('ball_inertia', BallInertia(), promotes_inputs=['M_ball', 'CoG_ball'], promotes_outputs=['I_ball'])
 
-	 	self.add_subsystem('modeshape', Modeshape(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'M_spar', 'Z_spar', 'CoG_spar', 'D_tower', 'L_tower', 'wt_tower', 'M_tower', 'Z_tower', 'spar_draft', 'M_ball', 'CoG_ball', 'wt_ball', 'L_ball', 'M_nacelle', 'M_rotor', 'I_rotor', 'K_moor', 'M_moor', 'z_moor', 'buoy_spar', 'CoB'], promotes_outputs=['x_sparmode', 'x_towermode', 'z_sparmode', 'z_towermode'])
+	 	self.add_subsystem('modeshape', Modeshape(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'M_spar', 'Z_spar', 'CoG_spar', 'D_tower', 'L_tower', 'wt_tower', 'M_tower', 'Z_tower', 'spar_draft', 'M_ball', 'CoG_ball', 'L_ball', 'M_nacelle', 'M_rotor', 'I_rotor', 'K_moor', 'M_moor', 'z_moor', 'buoy_spar', 'CoB'], promotes_outputs=['x_sparmode', 'x_towermode', 'z_sparmode', 'z_towermode'])
+	 	#self.add_subsystem('modeshape', Modeshape(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'M_spar', 'Z_spar', 'CoG_spar', 'D_tower', 'L_tower', 'wt_tower', 'M_tower', 'Z_tower', 'spar_draft', 'M_ball', 'CoG_ball', 'L_ball', 'M_nacelle', 'M_rotor', 'I_rotor', 'K_moor', 'M_moor', 'z_moor', 'buoy_spar', 'CoB'], promotes_outputs=['omega_eig', 'eig_vector'])
+	 	#self.add_subsystem('modeshape_coords', ModeshapeCoords(), promotes_inputs=['Z_spar', 'Z_tower', 'z_moor', 'spar_draft', 'wt_ball', 'L_ball', 'eig_vector'], promotes_outputs=['x_sparmode', 'x_towermode', 'z_sparmode', 'z_towermode'])
 
-	 	self.add_subsystem('bending_mass', BendingMass(), promotes_inputs=['z_sparmode', 'x_sparmode', 'z_towermode', 'x_towermode', 'M_spar', 'L_spar', 'Z_spar', 'M_tower', 'L_tower', 'Z_tower', 'M_ball', 'L_ball', 'wt_ball', 'M_rotor', 'M_nacelle', 'I_rotor', 'spar_draft', 'wt_ball', 'L_ball', 'spar_draft'], promotes_outputs=['M17', 'M57', 'M77'])
+	 	self.add_subsystem('bending_mass', BendingMass(), promotes_inputs=['z_sparmode', 'x_sparmode', 'z_towermode', 'x_towermode', 'M_spar', 'L_spar', 'Z_spar', 'M_tower', 'L_tower', 'Z_tower', 'M_ball', 'L_ball', 'M_rotor', 'M_nacelle', 'I_rotor', 'spar_draft', 'wt_ball', 'L_ball', 'spar_draft'], promotes_outputs=['M17', 'M57', 'M77'])
 	
 		self.add_subsystem('bending_addedmass', BendingAddedMass(), promotes_inputs=['x_sparmode', 'z_sparmode', 'Z_spar', 'spar_draft', 'D_spar'], promotes_outputs=['A17', 'A57', 'A77'])
 		
@@ -66,13 +72,13 @@ class Substructure(Group):
 
 		self.add_subsystem('aero_damping', AeroDamping(), promotes_inputs=['Z_tower', 'CoG_rotor', 'dthrust_dv', 'dmoment_dv', 'x_towermode', 'z_towermode'], promotes_outputs=['B_aero_11', 'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77'])
 
-	 	self.add_subsystem('global_mass', GlobalMass(), promotes_inputs=['tot_M_spar', 'M_ball', 'tot_M_tower', 'M_nacelle', 'M_rotor', 'CoG_spar', 'CoG_ball', 'CoG_tower', 'CoG_nacelle', 'CoG_rotor', 'I_spar', 'I_ball', 'I_tower', 'I_rotor', 'M17', 'M57', 'M77'], promotes_outputs=['M_global'])
+	 	self.add_subsystem('global_mass', GlobalMass(), promotes_inputs=['tot_M_spar', 'M_ball', 'tot_M_tower', 'M_nacelle', 'M_rotor', 'M_turb', 'CoG_spar', 'CoG_ball', 'CoG_tower', 'CoG_nacelle', 'CoG_rotor', 'I_spar', 'I_ball', 'I_tower', 'I_rotor', 'M17', 'M57', 'M77'], promotes_outputs=['M_global'])
 
 	 	self.add_subsystem('global_addedmass', GlobalAddedMass(), promotes_inputs=['A11', 'A15', 'A17', 'A55', 'A57', 'A77'], promotes_outputs=['A_global'])
 
 	 	self.add_subsystem('global_damping', GlobalDamping(), promotes_inputs=['B_aero_11', 'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77'], promotes_outputs=['B_global'])
 
-	 	self.add_subsystem('global_stiffness', GlobalStiffness(), promotes_inputs=['D_spar', 'tot_M_spar', 'tot_M_tower', 'M_nacelle', 'M_rotor', 'M_ball', 'CoG_spar', 'CoG_tower', 'CoG_nacelle', 'CoG_rotor', 'CoG_ball', 'M_moor', 'K_moor', 'K17', 'K57', 'K77', 'buoy_spar', 'CoB'], promotes_outputs=['K_global'])
+	 	self.add_subsystem('global_stiffness', GlobalStiffness(), promotes_inputs=['D_spar', 'tot_M_spar', 'tot_M_tower', 'M_nacelle', 'M_rotor', 'M_turb', 'M_ball', 'CoG_spar', 'CoG_tower', 'CoG_nacelle', 'CoG_rotor', 'CoG_ball', 'M_moor', 'K_moor', 'K17', 'K57', 'K77', 'buoy_spar', 'CoB'], promotes_outputs=['K_global'])
 
 	 	self.add_subsystem('wave_loads', WaveLoads(), promotes_inputs=['D_spar', 'L_spar', 'omega_wave', 'water_depth', 'z_sparmode', 'x_sparmode'], promotes_outputs=['Re_wave_forces', 'Im_wave_forces'])
 

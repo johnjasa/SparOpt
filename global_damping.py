@@ -15,6 +15,8 @@ class GlobalDamping(ExplicitComponent):
 
 		self.add_output('B_global', val=np.zeros((3,3)), units='N*s/m')
 
+		self.declare_partials('*', '*')
+
 	def compute(self, inputs, outputs):
 
 		outputs['B_global'] = np.zeros((3,3))
@@ -28,3 +30,12 @@ class GlobalDamping(ExplicitComponent):
 		outputs['B_global'][2,0] += inputs['B_aero_17']
 		outputs['B_global'][2,1] += inputs['B_aero_57']
 		outputs['B_global'][2,2] += inputs['B_aero_77'] + inputs['B_struct_77']
+
+	def compute_partials(self, inputs, partials):
+		partials['B_global', 'B_aero_11'] = np.concatenate((np.array([1., 0., 0.]),np.zeros((2,3))),0)
+		partials['B_global', 'B_aero_15'] = np.concatenate((np.array([0., 1., 0.]),np.array([1., 0., 0.]),np.zeros((1,3))),0)
+		partials['B_global', 'B_aero_17'] = np.concatenate((np.array([0., 0., 1.]),np.zeros((1,3)),np.array([1., 0., 0.])),0)
+		partials['B_global', 'B_aero_55'] = np.concatenate((np.zeros((1,3)),np.array([0., 1., 0.]),np.zeros((1,3))),0)
+		partials['B_global', 'B_aero_57'] = np.concatenate((np.zeros((1,3)),np.array([0., 0., 1.]),np.array([0., 1., 0.])),0)
+		partials['B_global', 'B_aero_77'] = np.concatenate((np.zeros((2,3)),np.array([0., 0., 1.])),0)
+		partials['B_global', 'B_struct_77'] = np.concatenate((np.zeros((2,3)),np.array([0., 0., 1.])),0)

@@ -11,7 +11,7 @@ class MooringMass(ExplicitComponent):
 
 		self.add_output('M_moor', val=0., units='kg')
 
-		#self.declare_partials('*', '*')
+		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		outputs['M_moor'] = (inputs['eff_length_offset_ww'] + 2. * inputs['eff_length_offset_lw']) * inputs['mass_dens_moor']

@@ -10,6 +10,7 @@ class GlobalMass(ExplicitComponent):
 		self.add_input('tot_M_tower', val=0., units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('M_rotor', val=0., units='kg')
+		self.add_input('M_turb', val=0., units='kg')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('CoG_ball', val=0., units='m')
 		self.add_input('CoG_tower', val=0., units='m')
@@ -29,7 +30,7 @@ class GlobalMass(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		tot_M_spar = inputs['tot_M_spar']
 		M_ball = inputs['M_ball']
-		M_turb = inputs['tot_M_tower'] + inputs['M_nacelle'] + inputs['M_rotor']
+		M_turb = inputs['M_turb']
 		CoG_spar = inputs['CoG_spar']
 		CoG_ball = inputs['CoG_ball']
 		CoG_turb = (inputs['tot_M_tower'] * inputs['CoG_tower'] + inputs['M_nacelle'] * inputs['CoG_nacelle'] + inputs['M_rotor'] * inputs['CoG_rotor']) / M_turb
