@@ -32,10 +32,10 @@ class Modeshape(ExplicitComponent):
 		self.add_input('buoy_spar', val=0., units='N')
 		self.add_input('CoB', val=0., units='m')
 
-		self.add_output('x_sparmode', val=np.zeros(7), units='m')
-		self.add_output('x_towermode', val=np.zeros(11), units='m')
-		self.add_output('z_sparmode', val=np.zeros(7), units='m')
-		self.add_output('z_towermode', val=np.zeros(11), units='m')
+		self.add_output('x_sparnode', val=np.zeros(7), units='m')
+		self.add_output('x_towernode', val=np.zeros(11), units='m')
+		self.add_output('z_sparnode', val=np.zeros(7), units='m')
+		self.add_output('z_towernode', val=np.zeros(11), units='m')
 
 	def compute(self, inputs, outputs):
 		D_spar = inputs['D_spar']
@@ -62,12 +62,12 @@ class Modeshape(ExplicitComponent):
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
-		z_sparmode = np.concatenate((Z_spar, z_aux),0)
-		z_sparmode = np.unique(z_sparmode)
-		z_sparmode = np.sort(z_sparmode)
+		z_sparnode = np.concatenate((Z_spar, z_aux),0)
+		z_sparnode = np.unique(z_sparnode)
+		z_sparnode = np.sort(z_sparnode)
 
-		outputs['x_sparmode'] = [0.1671773, 0.01717872, -0.02452651, -0.31540944, -0.35093444, -0.36868245, -0.41301261]
-		outputs['x_towermode'] = [-0.41301261, -0.44246513, -0.43706879, -0.39464275, -0.31330533, -0.19168688, -0.02922765, 0.1733981, 0.41366632, 0.6862874, 1.]
+		outputs['x_sparnode'] = [0.1671773, 0.01717872, -0.02452651, -0.31540944, -0.35093444, -0.36868245, -0.41301261]
+		outputs['x_towernode'] = [-0.41301261, -0.44246513, -0.43706879, -0.39464275, -0.31330533, -0.19168688, -0.02922765, 0.1733981, 0.41366632, 0.6862874, 1.]
 
-		outputs['z_sparmode'] = z_sparmode
-		outputs['z_towermode'] = Z_tower
+		outputs['z_sparnode'] = z_sparnode
+		outputs['z_towernode'] = Z_tower

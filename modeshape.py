@@ -7,11 +7,11 @@ from openmdao.api import ExplicitComponent
 class Modeshape(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_spar', val=np.zeros(3), units='m')
-		self.add_input('L_spar', val=np.zeros(3), units='m')
-		self.add_input('wt_spar', val=np.zeros(3), units='m')
-		self.add_input('M_spar', val=np.zeros(3), units='kg')
-		self.add_input('Z_spar', val=np.zeros(4), units='m')
+		self.add_input('D_spar', val=np.zeros(10), units='m')
+		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('wt_spar', val=np.zeros(10), units='m')
+		self.add_input('M_spar', val=np.zeros(10), units='kg')
+		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('D_tower', val=np.zeros(10), units='m')
 		self.add_input('L_tower', val=np.zeros(10), units='m')
@@ -32,10 +32,10 @@ class Modeshape(ExplicitComponent):
 		self.add_input('buoy_spar', val=0., units='N')
 		self.add_input('CoB', val=0., units='m')
 
-		self.add_output('x_sparmode', val=np.zeros(7), units='m')
-		self.add_output('x_towermode', val=np.zeros(11), units='m')
-		self.add_output('z_sparmode', val=np.zeros(7), units='m')
-		self.add_output('z_towermode', val=np.zeros(11), units='m')
+		self.add_output('x_sparnode', val=np.zeros(14), units='m')
+		self.add_output('x_towernode', val=np.zeros(11), units='m')
+		self.add_output('z_sparnode', val=np.zeros(14), units='m')
+		self.add_output('z_towernode', val=np.zeros(11), units='m')
 
 	def compute(self, inputs, outputs):
 		D_spar = inputs['D_spar']
@@ -53,7 +53,7 @@ class Modeshape(ExplicitComponent):
 		L_ball = inputs['L_ball']
 		z_ball = -inputs['spar_draft'][0] + L_ball[0] #top of ballast
 		z_moor = inputs['z_moor'][0]
-		z_SWL = 0. #SWL
+		z_SWL = 0.
 		M_nacelle = inputs['M_nacelle']
 		M_rotor = inputs['M_rotor']
 		I_rotor = inputs['I_rotor']
@@ -62,14 +62,14 @@ class Modeshape(ExplicitComponent):
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
-		z_sparmode = np.concatenate((Z_spar, z_aux),0)
-		z_sparmode = np.unique(z_sparmode)
-		z_sparmode = np.sort(z_sparmode)
+		z_sparnode = np.concatenate((Z_spar, z_aux),0)
+		z_sparnode = np.unique(z_sparnode)
+		z_sparnode = np.sort(z_sparnode)
 
 		N_spar = len(Z_spar) - 1
 		N_tower = len(Z_tower) - 1
 
-		N_sparelem = len(z_sparmode) - 1
+		N_sparelem = len(z_sparnode) - 1
 		N_elem = N_sparelem + N_tower
 
 		EI = np.zeros(N_elem)
@@ -77,18 +77,18 @@ class Modeshape(ExplicitComponent):
 		m = np.zeros(N_elem) #kg/m
 
 		for i in xrange(N_sparelem):
-			L[i] = z_sparmode[i+1] - z_sparmode[i]
+			L[i] = z_sparnode[i+1] - z_sparnode[i]
 			for j in xrange(N_spar):
-				if z_sparmode[i+1] <= Z_spar[j+1]:
+				if z_sparnode[i+1] <= Z_spar[j+1]:
 					sparidx = j
 					break
 			EI[i] = 1e15 #np.pi / 64. * (D_spar[j]**4. - (D_spar[j] - 2. * wt_spar[j])**4.) * 2.1e11
 			steelmass = M_spar[sparidx] / L_spar[sparidx]
 			addedmass = 0.
 			ballmass = 0.
-			if z_sparmode[i+1] <= z_SWL:
+			if z_sparnode[i+1] <= z_SWL:
 				addedmass = 1025. * np.pi / 4. * D_spar[sparidx]**2.
-			if z_sparmode[i+1] <= z_ball:
+			if z_sparnode[i+1] <= z_ball:
 				ballmass = M_ball / L_ball
 			m[i] = steelmass + addedmass + ballmass
 		
@@ -147,8 +147,8 @@ class Modeshape(ExplicitComponent):
 							K[row][col] += (ke[j][p] + kg[j][p])
 							M[row][col] += me[j][p]
 
-		mooridx = np.concatenate(np.where(z_sparmode==z_moor))
-		SWLidx = np.concatenate(np.where(z_sparmode==z_SWL))
+		mooridx = np.concatenate(np.where(z_sparnode==z_moor))
+		SWLidx = np.concatenate(np.where(z_sparnode==z_SWL))
 
 		K[mooridx*2,mooridx*2] += K_moor
 		K[SWLidx*2+1,SWLidx*2+1] += K_hydrostatic
@@ -160,11 +160,11 @@ class Modeshape(ExplicitComponent):
 		eig_vector = ss.linalg.eigs(K, k=3, M=M, sigma=(2.*np.pi/500.)**2.)[1][:,-1]
 		eig_vector = np.real(eig_vector)
 
-		x_sparmode = eig_vector[0:(N_sparelem+1)*2:2]
-		x_towermode = eig_vector[(N_sparelem+1)*2-2:(N_elem+1)*2:2]
+		x_sparnode = eig_vector[0:(N_sparelem+1)*2:2]
+		x_towernode = eig_vector[(N_sparelem+1)*2-2:(N_elem+1)*2:2]
 
-		outputs['x_sparmode'] = x_sparmode / x_towermode[-1]
-		outputs['x_towermode'] = x_towermode / x_towermode[-1]
+		outputs['x_sparnode'] = x_sparnode / x_towernode[-1]
+		outputs['x_towernode'] = x_towernode / x_towernode[-1]
 
-		outputs['z_sparmode'] = z_sparmode
-		outputs['z_towermode'] = Z_tower
+		outputs['z_sparnode'] = z_sparnode
+		outputs['z_towernode'] = Z_tower

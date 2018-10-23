@@ -12,6 +12,8 @@ from C_struct import Cstruct
 from A_contrl import Acontrl
 from B_contrl import Bcontrl
 from C_contrl import Ccontrl
+from Bs_Cc import BsCc
+from Bc_Cs import BcCs
 from A_feedbk import Afeedbk
 from B_fb_ext import BfbExt
 from B_feedbk import Bfeedbk
@@ -40,9 +42,13 @@ class StateSpace(Group):
 
 		self.add_subsystem('C_contrl', Ccontrl(), promotes_inputs=['k_i', 'k_p', 'gain_corr_factor'], promotes_outputs=['C_contrl'])
 
-		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'B_struct', 'B_contrl', 'C_struct', 'C_contrl'], promotes_outputs=['A_feedbk'])
+		self.add_subsystem('Bs_Cc', BsCc(), promotes_inputs=['B_struct', 'C_contrl'], promotes_outputs=['BsCc'])
 
-		self.add_subsystem('B_fb_ext', BfbExt(), promotes_inputs=['M_global', 'A_global', 'CoG_rotor', 'dthrust_dv', 'dmoment_dv', 'Z_tower', 'x_towermode', 'z_towermode'], promotes_outputs=['Bfb_ext'])
+		self.add_subsystem('Bc_Cs', BcCs(), promotes_inputs=['B_contrl', 'C_struct'], promotes_outputs=['BcCs'])
+
+		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'BsCc', 'BcCs'], promotes_outputs=['A_feedbk'])
+
+		self.add_subsystem('B_fb_ext', BfbExt(), promotes_inputs=['M_global', 'A_global', 'CoG_rotor', 'dthrust_dv', 'dmoment_dv', 'Z_tower', 'x_towernode', 'z_towernode'], promotes_outputs=['Bfb_ext'])
 
 		self.add_subsystem('B_feedbk', Bfeedbk(), promotes_inputs=['Bfb_ext', 'I_d', 'dtorque_dv'], promotes_outputs=['B_feedbk'])
 

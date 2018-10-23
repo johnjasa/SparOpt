@@ -5,8 +5,8 @@ from openmdao.api import ExplicitComponent
 class SparCoG(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('L_spar', val=np.zeros(3), units='m')
-		self.add_input('M_spar', val=np.zeros(3), units='kg')
+		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('M_spar', val=np.zeros(10), units='kg')
 		self.add_input('tot_M_spar', val=0., units='kg')
 		self.add_input('spar_draft', val=0., units='m')
 
@@ -22,7 +22,7 @@ class SparCoG(ExplicitComponent):
 
 		CoG_t_mass = 0.
 
-		for i in xrange(3):
+		for i in xrange(10):
 			CoG_sec = -spar_draft + np.sum(L_spar[0:i]) + L_spar[i] / 2.
 			CoG_t_mass += M_spar[i] * CoG_sec
 		
@@ -41,7 +41,7 @@ class SparCoG(ExplicitComponent):
 
 		CoG_t_mass = 0.
 
-		for i in xrange(3):
+		for i in xrange(10):
 			CoG_sec = -spar_draft + np.sum(L_spar[0:i]) + L_spar[i] / 2.
 			
 			CoG_t_mass += M_spar[i] * CoG_sec

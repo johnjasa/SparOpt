@@ -60,14 +60,14 @@ class Modeshape(ImplicitComponent):
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
-		z_sparmode = np.concatenate((Z_spar, z_aux),0)
-		z_sparmode = np.unique(z_sparmode)
-		z_sparmode = np.sort(z_sparmode)
+		z_sparnode = np.concatenate((Z_spar, z_aux),0)
+		z_sparnode = np.unique(z_sparnode)
+		z_sparnode = np.sort(z_sparnode)
 
 		N_spar = len(Z_spar) - 1
 		N_tower = len(Z_tower) - 1
 
-		N_sparelem = len(z_sparmode) - 1
+		N_sparelem = len(z_sparnode) - 1
 		N_elem = N_sparelem + N_tower
 
 		EI = np.zeros(N_elem)
@@ -75,18 +75,18 @@ class Modeshape(ImplicitComponent):
 		m = np.zeros(N_elem) #kg/m
 
 		for i in xrange(N_sparelem):
-			L[i] = z_sparmode[i+1] - z_sparmode[i]
+			L[i] = z_sparnode[i+1] - z_sparnode[i]
 			for j in xrange(N_spar):
-				if z_sparmode[i+1] <= Z_spar[j+1]:
+				if z_sparnode[i+1] <= Z_spar[j+1]:
 					sparidx = j
 					break
 			EI[i] = 1e15 #np.pi / 64. * (D_spar[j]**4. - (D_spar[j] - 2. * wt_spar[j])**4.) * 2.1e11
 			steelmass = M_spar[sparidx] / L_spar[sparidx]
 			addedmass = 0.
 			ballmass = 0.
-			if z_sparmode[i+1] <= z_SWL:
+			if z_sparnode[i+1] <= z_SWL:
 				addedmass = 1025. * np.pi / 4. * D_spar[sparidx]**2.
-			if z_sparmode[i+1] <= z_ball:
+			if z_sparnode[i+1] <= z_ball:
 				ballmass = M_ball / L_ball
 			m[i] = steelmass + addedmass + ballmass
 		
@@ -145,8 +145,8 @@ class Modeshape(ImplicitComponent):
 							K[row][col] += (ke[j][p] + kg[j][p])
 							M[row][col] += me[j][p]
 
-		mooridx = np.concatenate(np.where(z_sparmode==z_moor))
-		SWLidx = np.concatenate(np.where(z_sparmode==z_SWL))
+		mooridx = np.concatenate(np.where(z_sparnode==z_moor))
+		SWLidx = np.concatenate(np.where(z_sparnode==z_SWL))
 
 		K[mooridx*2,mooridx*2] += K_moor
 		K[SWLidx*2+1,SWLidx*2+1] += K_hydrostatic
@@ -181,14 +181,14 @@ class Modeshape(ImplicitComponent):
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
-		z_sparmode = np.concatenate((Z_spar, z_aux),0)
-		z_sparmode = np.unique(z_sparmode)
-		z_sparmode = np.sort(z_sparmode)
+		z_sparnode = np.concatenate((Z_spar, z_aux),0)
+		z_sparnode = np.unique(z_sparnode)
+		z_sparnode = np.sort(z_sparnode)
 
 		N_spar = len(Z_spar) - 1
 		N_tower = len(Z_tower) - 1
 
-		N_sparelem = len(z_sparmode) - 1
+		N_sparelem = len(z_sparnode) - 1
 		N_elem = N_sparelem + N_tower
 
 		EI = np.zeros(N_elem)
@@ -196,18 +196,18 @@ class Modeshape(ImplicitComponent):
 		m = np.zeros(N_elem) #kg/m
 
 		for i in xrange(N_sparelem):
-			L[i] = z_sparmode[i+1] - z_sparmode[i]
+			L[i] = z_sparnode[i+1] - z_sparnode[i]
 			for j in xrange(N_spar):
-				if z_sparmode[i+1] <= Z_spar[j+1]:
+				if z_sparnode[i+1] <= Z_spar[j+1]:
 					sparidx = j
 					break
 			EI[i] = 1e15 #np.pi / 64. * (D_spar[j]**4. - (D_spar[j] - 2. * wt_spar[j])**4.) * 2.1e11
 			steelmass = M_spar[sparidx] / L_spar[sparidx]
 			addedmass = 0.
 			ballmass = 0.
-			if z_sparmode[i+1] <= z_SWL:
+			if z_sparnode[i+1] <= z_SWL:
 				addedmass = 1025. * np.pi / 4. * D_spar[sparidx]**2.
-			if z_sparmode[i+1] <= z_ball:
+			if z_sparnode[i+1] <= z_ball:
 				ballmass = M_ball / L_ball
 			m[i] = steelmass + addedmass + ballmass
 		
@@ -266,8 +266,8 @@ class Modeshape(ImplicitComponent):
 							K[row][col] += (ke[j][p] + kg[j][p])
 							M[row][col] += me[j][p]
 
-		mooridx = np.concatenate(np.where(z_sparmode==z_moor))
-		SWLidx = np.concatenate(np.where(z_sparmode==z_SWL))
+		mooridx = np.concatenate(np.where(z_sparnode==z_moor))
+		SWLidx = np.concatenate(np.where(z_sparnode==z_SWL))
 
 		K[mooridx*2,mooridx*2] += K_moor
 		K[SWLidx*2+1,SWLidx*2+1] += K_hydrostatic

@@ -26,10 +26,10 @@ blades = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('D_spar', val=np.array([12., np.sqrt(1./3. * (12.**2. + 8.3**2. + 12. * 8.3)), 8.3]), units='m')
-ivc.add_output('L_spar', val=np.array([108., 8., 14.]), units='m')
-ivc.add_output('Z_spar', val=np.array([-120., -12., -4., 10.]), units='m')
-ivc.add_output('wt_spar', val=np.array([0.06, 0.06, 0.06]), units='m')
+ivc.add_output('D_spar', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., np.sqrt(1./3. * (12.**2. + 8.3**2. + 12. * 8.3)), 8.3]), units='m')
+ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
+ivc.add_output('Z_spar', val=np.array([-120., -106.5, -93., -79.5, -66., -52.5, -39., -25.5, -12., -4., 10.]), units='m')
+ivc.add_output('wt_spar', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
 ivc.add_output('spar_draft', val=120., units='m')
 ivc.add_output('D_tower', val=np.array([8.16083499,7.88250497, 7.60417495, 7.32584493, 7.04751491, 6.76918489, 6.49085487, 6.21252485, 5.93419483, 5.64751491]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
@@ -78,20 +78,20 @@ prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'winds
 
 mooring_group = Mooring()
 
-#prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'thrust_0'], promotes_outputs=['K_moor', 'M_moor', 'moor_offset'])
+#prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
+#'thrust_0'], promotes_outputs=['K_moor', 'M_moor', 'moor_offset'])
 
 substructure_group = Substructure()
 
-prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'Z_spar', 'D_tower', 'L_tower', 'wt_tower', 'Z_tower', 'rho_ball', 'wt_ball', \
-	'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', \
-	'omega_wave', 'water_depth', 'z_moor', 'K_moor', 'M_moor', 'spar_draft', 'dthrust_dv', 'dmoment_dv'], promotes_outputs=['M_global', 'A_global', 'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', \
-	'x_towermode', 'z_towermode'])
+prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'Z_spar', 'D_tower', 'L_tower', 'wt_tower', 'Z_tower', \
+	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'omega_wave', 'water_depth', 'z_moor', 'K_moor', 'M_moor', 'spar_draft', \
+	'dthrust_dv', 'dmoment_dv'], promotes_outputs=['M_global', 'A_global', 'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_towernode', 'z_towernode'])
 
 statespace_group = StateSpace()
 
-prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'B_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', 'dmoment_dv', \
-	'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', 'gain_corr_factor', 'omega', 'x_towermode', 'z_towermode', 'Z_tower'], \
-	promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
+prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'B_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
+	'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', \
+	'gain_corr_factor', 'omega', 'x_towernode', 'z_towernode', 'Z_tower'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
 
 prob.model.add_subsystem('wave_spectrum', WaveSpectrum(), promotes_inputs=['Hs', 'Tp', 'omega'], promotes_outputs=['S_wave'])
 
@@ -101,9 +101,9 @@ prob.model.add_subsystem('wind_spectrum', WindSpectrum(), promotes_inputs=['wind
 #prob.model.nonlinear_solver = NonlinearBlockGS()
 
 prob.setup()
-#2.186881192042197 0.019869731460508695 59472924.08390023 0.09202897052966401
-#0.2800992917893006
-#0.0004290488287155436
+#2.1802423049011495 0.01975400499592083 60336420.83922411 0.09189930130734385
+#0.2772598716377589
+#0.00048149694021145837
 prob.run_model()
 
 omega = prob['omega']

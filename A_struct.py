@@ -50,10 +50,22 @@ class Astruct(ExplicitComponent):
 		dtorque_dv = inputs['dtorque_dv'][0]
 		dtorque_drotspeed = inputs['dtorque_drotspeed'][0]
 
-		partials['A_struct', 'Astr_stiff'] = np.concatenate((np.zeros((3,7)),np.concatenate((-np.ones((3,3)),np.zeros((3,3)),np.zeros((3,1))),1),np.zeros((1,7))),0)
-		partials['A_struct', 'Astr_damp'] = np.concatenate((np.zeros((3,7)),np.concatenate((np.zeros((3,3)),-np.ones((3,3)),np.zeros((3,1))),1),np.zeros((1,7))),0)
-		partials['A_struct', 'Astr_ext'] = np.concatenate((np.zeros((3,7)),np.concatenate((np.zeros((3,3)),np.zeros((3,3)),np.ones((3,1))),1),np.zeros((1,7))),0)
-		partials['A_struct', 'CoG_rotor'] = np.concatenate((np.zeros((6,7)),np.array([[0., 0., 0., 0., -dtorque_dv / I_d, 0., 0.]])),0)
-		partials['A_struct', 'I_d'] = np.concatenate((np.zeros((6,7)),np.array([[0., 0., 0., dtorque_dv / I_d**2., CoG_rotor * dtorque_dv / I_d**2., dtorque_dv / I_d**2., -dtorque_drotspeed / I_d**2.]])),0)
-		partials['A_struct', 'dtorque_dv'] = np.concatenate((np.zeros((6,7)),np.array([[0., 0., 0., -1. / I_d, -CoG_rotor / I_d, -1. / I_d, 0.]])),0)
-		partials['A_struct', 'dtorque_drotspeed'] = np.concatenate((np.zeros((6,7)),np.array([[0., 0., 0., 0., 0., 0., 1. / I_d]])),0)
+		Astiff_arr1 = np.concatenate((np.zeros((21,3)),-np.identity(3),np.zeros((25,3))),0)
+		Astiff_arr2 = np.concatenate((np.zeros((28,3)),-np.identity(3),np.zeros((18,3))),0)
+		Astiff_arr3 = np.concatenate((np.zeros((35,3)),-np.identity(3),np.zeros((11,3))),0)
+
+		Adamp_arr1 = np.concatenate((np.zeros((24,3)),-np.identity(3),np.zeros((22,3))),0)
+		Adamp_arr2 = np.concatenate((np.zeros((31,3)),-np.identity(3),np.zeros((15,3))),0)
+		Adamp_arr3 = np.concatenate((np.zeros((38,3)),-np.identity(3),np.zeros((8,3))),0)
+
+		Aext_arr1 = np.concatenate((np.zeros((27,1)),np.identity(1),np.zeros((21,1))),0)
+		Aext_arr2 = np.concatenate((np.zeros((34,1)),np.identity(1),np.zeros((14,1))),0)
+		Aext_arr3 = np.concatenate((np.zeros((41,1)),np.identity(1),np.zeros((7,1))),0)
+
+		partials['A_struct', 'Astr_stiff'] = np.concatenate((Astiff_arr1,Astiff_arr2,Astiff_arr3),1)
+		partials['A_struct', 'Astr_damp'] = np.concatenate((Adamp_arr1,Adamp_arr2,Adamp_arr3),1)
+		partials['A_struct', 'Astr_ext'] = np.concatenate((Aext_arr1,Aext_arr2,Aext_arr3),1)
+		partials['A_struct', 'CoG_rotor'] = np.concatenate((np.zeros((46,1)),np.array([-dtorque_dv / I_d]),np.zeros((2,1))),0)
+		partials['A_struct', 'I_d'] = np.concatenate((np.zeros((45,1)),np.array([dtorque_dv / I_d**2., CoG_rotor * dtorque_dv / I_d**2., dtorque_dv / I_d**2., -dtorque_drotspeed / I_d**2.])),0)
+		partials['A_struct', 'dtorque_dv'] = np.concatenate((np.zeros((45,1)),np.array([-1. / I_d, -CoG_rotor / I_d, -1. / I_d, [0.]])),0)
+		partials['A_struct', 'dtorque_drotspeed'] = np.concatenate((np.zeros((48,1)),np.array([1. / I_d])),0)

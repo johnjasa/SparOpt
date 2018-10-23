@@ -1,19 +1,19 @@
 from __future__ import division
 import numpy as np
-import scipy.interpolate as si
 
 from openmdao.api import ExplicitComponent
 
 class BendingMass(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparmode', val=np.zeros(7), units='m')
-		self.add_input('x_sparmode', val=np.zeros(7), units='m')
-		self.add_input('z_towermode', val=np.zeros(11), units='m')
-		self.add_input('x_towermode', val=np.zeros(11), units='m')
-		self.add_input('M_spar', val=np.zeros(3), units='kg')
-		self.add_input('L_spar', val=np.zeros(3), units='m')
-		self.add_input('Z_spar', val=np.zeros(4), units='m')
+		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('x_sparelem', val=np.zeros(13), units='m')
+		self.add_input('z_towernode', val=np.zeros(11), units='m')
+		self.add_input('x_towerelem', val=np.zeros(10), units='m')
+		self.add_input('x_d_towertop', val=0., units='m/m')
+		self.add_input('M_spar', val=np.zeros(10), units='kg')
+		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('spar_draft', val=0., units='m')
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
 		self.add_input('L_tower', val=np.zeros(10), units='m')
@@ -43,44 +43,45 @@ class BendingMass(ExplicitComponent):
 		M_nacelle = inputs['M_nacelle']
 		I_rotor = inputs['I_rotor']
 		z_ball = -inputs['spar_draft'] + inputs['L_ball'] #top of ballast
-
-		f_psi_spar = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
-		f_psi_d_spar = f_psi_spar.derivative(n=1)
-		f_psi_tower = si.UnivariateSpline(inputs['z_towermode'], inputs['x_towermode'], s=0)
-		f_psi_d_tower = f_psi_tower.derivative(n=1)
+		z_sparnode = inputs['z_sparnode']
+		x_sparelem = inputs['x_sparelem']
+		z_towernode = inputs['z_towernode']
+		x_towerelem = inputs['x_towerelem']
+		x_d_towertop = inputs['x_d_towertop']
 
 		m_elem_tower = M_tower / L_tower
 		m_elem_spar = M_spar / L_spar
 		m_elem_ball = M_ball / L_ball
 
-		outputs['M17'] = (M_rotor + M_nacelle) * f_psi_tower(Z_tower[-1])
-		outputs['M57'] = (M_rotor + M_nacelle) * Z_tower[-1] * f_psi_tower(Z_tower[-1]) + I_rotor * f_psi_d_tower(Z_tower[-1])
-		outputs['M77'] = (M_rotor + M_nacelle) * f_psi_tower(Z_tower[-1])**2. + I_rotor * f_psi_d_tower(Z_tower[-1])**2.
+		outputs['M17'] = (M_rotor + M_nacelle)
+		outputs['M57'] = (M_rotor + M_nacelle) * Z_tower[-1] + I_rotor * x_d_towertop
+		outputs['M77'] = (M_rotor + M_nacelle) + I_rotor * x_d_towertop**2.
 
 		m = 0.
 
-		N_elem = 200
+		N_elem_spar = len(x_sparelem)
+		N_elem_tower = len(x_towerelem)
 		
-		for i in xrange(N_elem):
-			z = -inputs['spar_draft'] + (i + 0.5) / N_elem * np.sum(L_spar)
-			dz = np.sum(L_spar) / N_elem
+		for i in xrange(N_elem_spar):
+			z = (z_sparnode[i] + z_sparnode[i+1]) / 2
+			dz = z_sparnode[i+1] - z_sparnode[i]
 			for j in xrange(len(Z_spar) - 1):
 				if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
 					m = m_elem_spar[j]
-			if z < z_ball:
+			if z <= z_ball:
 				m += m_elem_ball
-			outputs['M17'] += dz * m * f_psi_spar(z)
-			outputs['M57'] += dz * m * z * f_psi_spar(z)
-			outputs['M77'] += dz * m * f_psi_spar(z)**2.
+			outputs['M17'] += dz * m * x_sparelem[i]
+			outputs['M57'] += dz * m * z * x_sparelem[i]
+			outputs['M77'] += dz * m * x_sparelem[i]**2.
 
-		for i in xrange(N_elem):
-			z = 10. + (i + 0.5) / N_elem * np.sum(L_tower)
-			dz = np.sum(L_tower) / N_elem
+		for i in xrange(N_elem_tower):
+			z = (z_towernode[i] + z_towernode[i+1]) / 2
+			dz = z_towernode[i+1] - z_towernode[i]
 			for j in xrange(len(Z_tower) - 1):
 				if (z < Z_tower[j+1]) and (z >= Z_tower[j]):
 					m = m_elem_tower[j]
 					break
 
-			outputs['M17'] += dz * m * f_psi_tower(z)
-			outputs['M57'] += dz * m * z * f_psi_tower(z)
-			outputs['M77'] += dz * m * f_psi_tower(z)**2.
+			outputs['M17'] += dz * m * x_towerelem[i]
+			outputs['M57'] += dz * m * z * x_towerelem[i]
+			outputs['M77'] += dz * m * x_towerelem[i]**2.

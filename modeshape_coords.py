@@ -15,10 +15,10 @@ class ModeshapeCoords(ExplicitComponent):
 		self.add_input('L_ball', val=0., units='m')
 		self.add_input('eig_vector', val=np.zeros(34), units='m')
 
-		self.add_output('x_sparmode', val=np.zeros(7), units='m')
-		self.add_output('z_sparmode', val=np.zeros(7), units='m')
-		self.add_output('x_towermode', val=np.zeros(11), units='m')
-		self.add_output('z_towermode', val=np.zeros(11), units='m')
+		self.add_output('x_sparnode', val=np.zeros(7), units='m')
+		self.add_output('z_sparnode', val=np.zeros(7), units='m')
+		self.add_output('x_towernode', val=np.zeros(11), units='m')
+		self.add_output('z_towernode', val=np.zeros(11), units='m')
 
 	def compute(self, inputs, outputs):
 		Z_spar = inputs['Z_spar']
@@ -30,21 +30,21 @@ class ModeshapeCoords(ExplicitComponent):
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
-		z_sparmode = np.concatenate((Z_spar, z_aux),0)
-		z_sparmode = np.unique(z_sparmode)
-		z_sparmode = np.sort(z_sparmode)
+		z_sparnode = np.concatenate((Z_spar, z_aux),0)
+		z_sparnode = np.unique(z_sparnode)
+		z_sparnode = np.sort(z_sparnode)
 
 		N_spar = len(Z_spar) - 1
 		N_tower = len(Z_tower) - 1
 
-		N_sparelem = len(z_sparmode) - 1
+		N_sparelem = len(z_sparnode) - 1
 		N_elem = N_sparelem + N_tower
 
-		x_sparmode = inputs['eig_vector'][0:(N_sparelem+1)*2:2]
-		x_towermode = inputs['eig_vector'][(N_sparelem+1)*2-2:(N_elem+1)*2:2]
+		x_sparnode = inputs['eig_vector'][0:(N_sparelem+1)*2:2]
+		x_towernode = inputs['eig_vector'][(N_sparelem+1)*2-2:(N_elem+1)*2:2]
 
-		outputs['x_sparmode'] = x_sparmode / x_towermode[-1]
-		outputs['x_towermode'] = x_towermode / x_towermode[-1]
+		outputs['x_sparnode'] = x_sparnode / x_towernode[-1]
+		outputs['x_towernode'] = x_towernode / x_towernode[-1]
 
-		outputs['z_sparmode'] = z_sparmode
-		outputs['z_towermode'] = inputs['Z_tower']
+		outputs['z_sparnode'] = z_sparnode
+		outputs['z_towernode'] = inputs['Z_tower']

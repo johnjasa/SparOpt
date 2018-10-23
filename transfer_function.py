@@ -12,7 +12,7 @@ class TransferFunction(ImplicitComponent):
 		self.add_output('Re_H_feedbk', val=np.zeros((3493,9,6)))
 		self.add_output('Im_H_feedbk', val=np.zeros((3493,9,6)))
 
-		self.declare_partials('*', '*')
+		#self.declare_partials('*', '*')
 
 	def apply_nonlinear(self, inputs, outputs, residuals):
 		omega = inputs['omega']
@@ -38,11 +38,11 @@ class TransferFunction(ImplicitComponent):
 
 		for i in xrange(N_omega):
 			partials['Re_H_feedbk', 'A_feedbk'][i] = outputs['Re_H_feedbk'][i]
-			partials['Re_H_feedbk', 'B_feedbk'][i] = 
-			partials['Re_H_feedbk', 'Re_H_feedbk'][i] = 
-			partials['Re_H_feedbk', 'Im_H_feedbk'][i] = 
+			partials['Re_H_feedbk', 'B_feedbk'][i] = 0.#
+			partials['Re_H_feedbk', 'Re_H_feedbk'][i] = 0.#
+			partials['Re_H_feedbk', 'Im_H_feedbk'][i] = 0.#
 
 			partials['Im_H_feedbk', 'A_feedbk'][i] = outputs['Im_H_feedbk'][i]
-			partials['Im_H_feedbk', 'B_feedbk'][i] = 
-			partials['Im_H_feedbk', 'Re_H_feedbk'][i] = 
-			partials['Im_H_feedbk', 'Im_H_feedbk'][i] = 
+			partials['Im_H_feedbk', 'B_feedbk'][i] = 0.#
+			partials['Im_H_feedbk', 'Re_H_feedbk'][i] = 0.#
+			partials['Im_H_feedbk', 'Im_H_feedbk'][i] = 0.#

@@ -8,10 +8,10 @@ from openmdao.api import ExplicitComponent
 class WaveLoads(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparmode', val=np.zeros(7), units='m')
-		self.add_input('x_sparmode', val=np.zeros(7), units='m')
-		self.add_input('D_spar', val=np.zeros(3), units='m')
-		self.add_input('L_spar', val=np.zeros(3), units='m')
+		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('x_sparnode', val=np.zeros(14), units='m')
+		self.add_input('D_spar', val=np.zeros(10), units='m')
+		self.add_input('L_spar', val=np.zeros(10), units='m')
 		self.add_input('omega_wave', val=np.zeros(80), units='rad/s')
 		self.add_input('water_depth', val=0., units='m')
 
@@ -24,7 +24,7 @@ class WaveLoads(ExplicitComponent):
 		omega_wave = inputs['omega_wave']
 		h = inputs['water_depth'][0]
 
-		f_psi_spar = si.UnivariateSpline(inputs['z_sparmode'], inputs['x_sparmode'], s=0)
+		f_psi_spar = si.UnivariateSpline(inputs['z_sparnode'], inputs['x_sparnode'], s=0)
 
 		outputs['Re_wave_forces'] = np.zeros((80,3,1))
 		outputs['Im_wave_forces'] = np.zeros((80,3,1))
@@ -41,22 +41,18 @@ class WaveLoads(ExplicitComponent):
 			if (wavenum * h) > 710: #upper limit for numpy cosh function (returns inf for larger numbers)
 				continue
 
-			for j in xrange(3):
-				if j > 0:
-					Nelem = 1
-				else:
-					Nelem = 20
-
-				if j == 2:
-					L_elem = L_spar[j] - 10.
-				else:
-					L_elem = L_spar[j] / Nelem
-				
+			for j in xrange(len(D_spar)):
+				Nelem = 2
 				a = D_spar[j] / 2.
 
+				if j == len(D_spar) - 1:
+					L_elem = (L_spar[j] - 10.) / Nelem
+				else:
+					L_elem = L_spar[j] / Nelem
+
 				for k in xrange(Nelem):
-					if j == 2:
-						z = -2.
+					if j == len(D_spar) - 1:
+						z = -3. + 2 * k
 					else:
 						z = -120. + np.sum(L_spar[0:j]) + L_elem * (k + 0.5)
 					J = ss.jvp(1,wavenum*a,1)

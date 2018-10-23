@@ -5,13 +5,13 @@ from openmdao.api import ExplicitComponent
 class SparInertia(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('L_spar', val=np.zeros(3), units='m')
-		self.add_input('M_spar', val=np.zeros(3), units='kg')
+		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('M_spar', val=np.zeros(10), units='kg')
 		self.add_input('spar_draft', val=0., units='m')
 
 		self.add_output('I_spar', val=0., units='kg*m**2')
 
-		self.declare_partials('*', '*')
+		#self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		L_spar  = inputs['L_spar']
@@ -20,7 +20,7 @@ class SparInertia(ExplicitComponent):
 
 		outputs['I_spar'] = 0.
 
-		for i in xrange(3):	
+		for i in xrange(10):	
 			CoG_sec = -spar_draft + np.sum(L_spar[0:i]) + L_spar[i] / 2.
 			outputs['I_spar'] += M_spar[i] * CoG_sec**2.
 

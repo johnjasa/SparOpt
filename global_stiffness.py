@@ -5,7 +5,7 @@ from openmdao.api import ExplicitComponent
 class GlobalStiffness(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_spar', val=np.zeros(3), units='m')
+		self.add_input('D_spar', val=np.zeros(10), units='m')
 		self.add_input('tot_M_spar', val=0., units='kg')
 		self.add_input('tot_M_tower', val=0., units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')

@@ -45,17 +45,17 @@ class MoorTenZero(ImplicitComponent):
 		partials['moor_tension_zero', 'z_moor'] = 0.
 		partials['moor_tension_zero', 'water_depth'] = 0.
 		partials['moor_tension_zero', 'EA_moor'] = -outputs['moor_tension_zero'] * l_eff / EA**2.
-		partials['moor_tension_zero', 'mass_dens_moor'] = 
+		partials['moor_tension_zero', 'mass_dens_moor'] = 0.#
 		partials['moor_tension_zero', 'len_hor_moor'] = -1.
 		partials['moor_tension_zero', 'len_tot_moor'] = 1.
-		partials['moor_tension_zero', 'moor_tension_zero'] = 
-		partials['moor_tension_zero', 'eff_length_zero'] = 
+		partials['moor_tension_zero', 'moor_tension_zero'] = 0.#
+		partials['moor_tension_zero', 'eff_length_zero'] = 0.#
 
 		partials['eff_length_zero', 'z_moor'] = 1.
 		partials['eff_length_zero', 'water_depth'] = 1.
 		partials['eff_length_zero', 'EA_moor'] = mu * 9.80665 * l_eff**2. / (2. * EA**2.)
-		partials['eff_length_zero', 'mass_dens_moor'] = 
+		partials['eff_length_zero', 'mass_dens_moor'] = 0.#
 		partials['eff_length_zero', 'len_hor_moor'] = 0.
 		partials['eff_length_zero', 'len_tot_moor'] = 0.
-		partials['eff_length_zero', 'moor_tension_zero'] = 
-		partials['eff_length_zero', 'eff_length_zero'] = 
+		partials['eff_length_zero', 'moor_tension_zero'] = 0.#
+		partials['eff_length_zero', 'eff_length_zero'] = 0.#
