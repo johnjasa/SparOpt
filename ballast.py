@@ -47,7 +47,7 @@ class Ballast(ExplicitComponent):
 
 		partials['L_ball', 'buoy_spar'] = (1. / 9.80665) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball)
 		partials['L_ball', 'tot_M_spar'] = -1. / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball)
-		partials['L_ball', 'D_spar'] = np.array([-2. * (buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**3. * rho_ball), 0., 0.])
+		partials['L_ball', 'D_spar'] = np.array([-2. * (buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**3. * rho_ball), 0., 0., 0., 0., 0., 0., 0., 0., 0.])
 		partials['L_ball', 'M_turb'] = -1. / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball)
 		partials['L_ball', 'M_moor'] = -1. / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball)
 		partials['L_ball', 'rho_ball'] = -(buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball**2.)
@@ -56,7 +56,7 @@ class Ballast(ExplicitComponent):
 
 		partials['M_ball', 'buoy_spar'] = 1. / 9.80665
 		partials['M_ball', 'tot_M_spar'] = -1.
-		partials['M_ball', 'D_spar'] = np.zeros(3)
+		partials['M_ball', 'D_spar'] = np.zeros(10)
 		partials['M_ball', 'M_turb'] = -1.
 		partials['M_ball', 'M_moor'] = -1.
 		partials['M_ball', 'rho_ball'] = 0.
@@ -65,7 +65,7 @@ class Ballast(ExplicitComponent):
 
 		partials['CoG_ball', 'buoy_spar'] = (1. / 9.80665) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball) * 0.5
 		partials['CoG_ball', 'tot_M_spar'] = -1. / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball) * 0.5
-		partials['CoG_ball', 'D_spar'] = np.array([-(buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**3. * rho_ball), 0., 0.])
+		partials['CoG_ball', 'D_spar'] = np.array([-(buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**3. * rho_ball), 0., 0., 0., 0., 0., 0., 0., 0., 0.])
 		partials['CoG_ball', 'M_turb'] = -1. / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball) * 0.5
 		partials['CoG_ball', 'M_moor'] = -1. / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball) * 0.5
 		partials['CoG_ball', 'rho_ball'] = -(buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor)) / (np.pi / 4. * (D_spar[0] - 2. * wt_ball)**2. * rho_ball**2.) * 0.5

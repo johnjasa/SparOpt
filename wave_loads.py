@@ -1,17 +1,16 @@
 import numpy as np
 import scipy.special as ss
 import scipy.optimize as so
-import scipy.interpolate as si
 
 from openmdao.api import ExplicitComponent
 
 class WaveLoads(ExplicitComponent):
 
 	def setup(self):
+		self.add_input('x_sparelem', val=np.zeros(13), units='m')
 		self.add_input('z_sparnode', val=np.zeros(14), units='m')
-		self.add_input('x_sparnode', val=np.zeros(14), units='m')
 		self.add_input('D_spar', val=np.zeros(10), units='m')
-		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('omega_wave', val=np.zeros(80), units='rad/s')
 		self.add_input('water_depth', val=0., units='m')
 
@@ -20,14 +19,18 @@ class WaveLoads(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		D_spar = inputs['D_spar']
-		L_spar = inputs['L_spar']
+		Z_spar = inputs['Z_spar']
+		z_sparnode = inputs['z_sparnode']
+		x_sparelem = inputs['x_sparelem']
 		omega_wave = inputs['omega_wave']
 		h = inputs['water_depth'][0]
 
-		f_psi_spar = si.UnivariateSpline(inputs['z_sparnode'], inputs['x_sparnode'], s=0)
-
 		outputs['Re_wave_forces'] = np.zeros((80,3,1))
 		outputs['Im_wave_forces'] = np.zeros((80,3,1))
+
+		N_elem = len(x_sparelem)
+
+		a = 0.
 
 		wavenum = np.zeros(80)
 
@@ -41,28 +44,24 @@ class WaveLoads(ExplicitComponent):
 			if (wavenum * h) > 710: #upper limit for numpy cosh function (returns inf for larger numbers)
 				continue
 
-			for j in xrange(len(D_spar)):
-				Nelem = 2
-				a = D_spar[j] / 2.
+			for j in xrange(N_elem):
+				z = (z_sparnode[j] + z_sparnode[j+1]) / 2
+				dz = z_sparnode[j+1] - z_sparnode[j]
 
-				if j == len(D_spar) - 1:
-					L_elem = (L_spar[j] - 10.) / Nelem
-				else:
-					L_elem = L_spar[j] / Nelem
+				if z <= 0.:
+					for k in xrange(len(Z_spar) - 1):
+						if (z < Z_spar[k+1]) and (z >= Z_spar[k]):
+							a = D_spar[k] / 2.
+							break
 
-				for k in xrange(Nelem):
-					if j == len(D_spar) - 1:
-						z = -3. + 2 * k
-					else:
-						z = -120. + np.sum(L_spar[0:j]) + L_elem * (k + 0.5)
 					J = ss.jvp(1,wavenum*a,1)
 					Y = ss.yvp(1,wavenum*a,1)
 					G = 1. / np.sqrt(J**2. + Y**2.)
 					alpha = np.arctan2(J,Y)
-			
-					X1 = 4. * 1025. * 9.80665 / wavenum * np.cosh(wavenum * (z + h)) / np.cosh(wavenum * h) * G * L_elem * np.exp(1j * alpha + 1j * np.pi / 2.)
-					X5 = 4. * 1025. * 9.80665 / wavenum * np.cosh(wavenum * (z + h)) / np.cosh(wavenum * h) * G * L_elem * z * np.exp(1j * alpha + 1j * np.pi / 2.)
-					X7 = 4. * 1025. * 9.80665 / wavenum * np.cosh(wavenum * (z + h)) / np.cosh(wavenum * h) * G * L_elem * f_psi_spar(z) * np.exp(1j * alpha + 1j * np.pi / 2.)
+				
+					X1 = 4. * 1025. * 9.80665 / wavenum * np.cosh(wavenum * (z + h)) / np.cosh(wavenum * h) * G * dz * np.exp(1j * alpha + 1j * np.pi / 2.)
+					X5 = 4. * 1025. * 9.80665 / wavenum * np.cosh(wavenum * (z + h)) / np.cosh(wavenum * h) * G * dz * z * np.exp(1j * alpha + 1j * np.pi / 2.)
+					X7 = 4. * 1025. * 9.80665 / wavenum * np.cosh(wavenum * (z + h)) / np.cosh(wavenum * h) * G * dz * x_sparelem[j] * np.exp(1j * alpha + 1j * np.pi / 2.)
 
 					outputs['Re_wave_forces'][i,0,0] += np.real(X1)
 					outputs['Re_wave_forces'][i,1,0] += np.real(X5)

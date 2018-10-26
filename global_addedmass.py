@@ -37,9 +37,9 @@ class GlobalAddedMass(ExplicitComponent):
 		outputs['A_global'][2,2] += A77
 
 	def compute_partials(self, inputs, partials):
-		partials['A_global', 'A11'] = np.concatenate((np.array([1., 0., 0.]),np.zeros((2,3))),0)
-		partials['A_global', 'A15'] = np.concatenate((np.array([0., 1., 0.]),np.array([1., 0., 0.]),np.zeros((1,3))),0)
-		partials['A_global', 'A17'] = np.concatenate((np.array([0., 0., 1.]),np.zeros((1,3)),np.array([1., 0., 0.])),0)
-		partials['A_global', 'A55'] = np.concatenate((np.zeros((1,3)),np.array([0., 1., 0.]),np.zeros((1,3))),0)
-		partials['A_global', 'A57'] = np.concatenate((np.zeros((1,3)),np.array([0., 0., 1.]),np.array([0., 1., 0.])),0)
-		partials['A_global', 'A77'] = np.concatenate((np.zeros((2,3)),np.array([0., 0., 1.])),0)
+		partials['A_global', 'A11'] = np.array([1., 0., 0., 0., 0., 0., 0., 0., 0.])
+		partials['A_global', 'A15'] = np.array([0., 1., 0., 1., 0., 0., 0., 0., 0.])
+		partials['A_global', 'A17'] = np.array([0., 0., 1., 0., 0., 0., 1., 0., 0.])
+		partials['A_global', 'A55'] = np.array([0., 0., 0., 0., 1., 0., 0., 0., 0.])
+		partials['A_global', 'A57'] = np.array([0., 0., 0., 0., 0., 1., 0., 1., 0.])
+		partials['A_global', 'A77'] = np.array([0., 0., 0., 0., 0., 0., 0., 0., 1.])

@@ -9,7 +9,7 @@ class SparTotalMass(ExplicitComponent):
 
 		self.add_output('tot_M_spar', val=0., units='kg')
 
-		#self.declare_partials('tot_M_spar', 'M_spar', np.ones(3))
+		self.declare_partials('tot_M_spar', 'M_spar', val=np.ones((1,10)))
 
 	def compute(self, inputs, outputs):
 		outputs['tot_M_spar'] = np.sum(inputs['M_spar'])

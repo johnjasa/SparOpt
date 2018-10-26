@@ -20,7 +20,6 @@ class BendingMass(ExplicitComponent):
 		self.add_input('Z_tower', val=np.zeros(11), units='m')
 		self.add_input('M_ball', val=0., units='kg')
 		self.add_input('L_ball', val=0., units='m')
-		self.add_input('wt_ball', val=0., units='m')
 		self.add_input('M_rotor', val=0., units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('I_rotor', val=0., units='kg*m**2')
@@ -38,7 +37,6 @@ class BendingMass(ExplicitComponent):
 		Z_tower = inputs['Z_tower']
 		M_ball = inputs['M_ball']
 		L_ball = inputs['L_ball']
-		wt_ball = inputs['wt_ball']
 		M_rotor = inputs['M_rotor']
 		M_nacelle = inputs['M_nacelle']
 		I_rotor = inputs['I_rotor']

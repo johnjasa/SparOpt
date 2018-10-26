@@ -1,6 +1,5 @@
 import numpy as np
 from scipy import linalg
-import scipy.interpolate as si
 
 from openmdao.api import ImplicitComponent
 
@@ -12,11 +11,11 @@ class BfbExt(ImplicitComponent):
 		self.add_input('CoG_rotor', val=0., units='m')
 		self.add_input('dthrust_dv', val=0., units='N*s/m')
 		self.add_input('dmoment_dv', val=0., units='N*s')
-		self.add_input('Z_tower', val=np.zeros(11), units='m')
-		self.add_input('x_towernode', val=np.zeros(11), units='m')
-		self.add_input('z_towernode', val=np.zeros(11), units='m')
+		self.add_input('x_d_towertop', val=0., units='m/m')
 
-		self.add_output('Bfb_ext', val=np.zeros((3,6)))
+		self.add_output('Bfb_ext', val=np.ones((3,6)))
+
+		self.declare_partials('*', '*')
 
 	def apply_nonlinear(self, inputs, outputs, residuals):
 		M_global = inputs['M_global']
@@ -27,12 +26,10 @@ class BfbExt(ImplicitComponent):
 		dthrust_dv = inputs['dthrust_dv'][0]
 		dmoment_dv = inputs['dmoment_dv'][0]
 
-		Z_tower = inputs['Z_tower']
+		x_d_towertop = inputs['x_d_towertop']
 
-		f_psi_tower = si.UnivariateSpline(inputs['z_towernode'], inputs['x_towernode'], s=0)
-		f_psi_d_tower = f_psi_tower.derivative(n=1)
 
-		residuals['Bfb_ext'] = (inputs['M_global'] + inputs['A_global']).dot(outputs['Bfb_ext']) - np.array([[dthrust_dv, 0., 0., 1., 0., 0.],[CoG_rotor * dthrust_dv, dmoment_dv, 0., 0., 1., 0.],[dthrust_dv, f_psi_d_tower(Z_tower[-1]) * dmoment_dv, 0., 0., 0., 1.]])
+		residuals['Bfb_ext'] = (inputs['M_global'] + inputs['A_global']).dot(outputs['Bfb_ext']) - np.array([[dthrust_dv, 0., 0., 1., 0., 0.],[CoG_rotor * dthrust_dv, dmoment_dv, 0., 0., 1., 0.],[dthrust_dv, x_d_towertop * dmoment_dv, 0., 0., 0., 1.]])
 
 	def solve_nonlinear(self, inputs, outputs):
 		M_global = inputs['M_global']
@@ -43,9 +40,22 @@ class BfbExt(ImplicitComponent):
 		dthrust_dv = inputs['dthrust_dv'][0]
 		dmoment_dv = inputs['dmoment_dv'][0]
 
-		Z_tower = inputs['Z_tower']
+		x_d_towertop = inputs['x_d_towertop']
 
-		f_psi_tower = si.UnivariateSpline(inputs['z_towernode'], inputs['x_towernode'], s=0)
-		f_psi_d_tower = f_psi_tower.derivative(n=1)
+		outputs['Bfb_ext'] = np.matmul(np.linalg.inv(M_global + A_global), np.array([[dthrust_dv, 0., 0., 1., 0., 0.],[CoG_rotor * dthrust_dv, dmoment_dv, 0., 0., 1., 0.],[dthrust_dv, x_d_towertop * dmoment_dv, 0., 0., 0., 1.]]))
 
-		outputs['Bfb_ext'] = np.matmul(np.linalg.inv(M_global + A_global), np.array([[dthrust_dv, 0., 0., 1., 0., 0.],[CoG_rotor * dthrust_dv, dmoment_dv, 0., 0., 1., 0.],[dthrust_dv, f_psi_d_tower(Z_tower[-1]) * dmoment_dv, 0., 0., 0., 1.]]))
+	def linearize(self, inputs, outputs, partials):
+		CoG_rotor = inputs['CoG_rotor']
+
+		dthrust_dv = inputs['dthrust_dv'][0]
+		dmoment_dv = inputs['dmoment_dv'][0]
+
+		x_d_towertop = inputs['x_d_towertop']
+
+		partials['Bfb_ext', 'M_global'] = np.kron(np.identity(3),np.transpose(outputs['Bfb_ext']))
+		partials['Bfb_ext', 'A_global'] = np.kron(np.identity(3),np.transpose(outputs['Bfb_ext']))
+		partials['Bfb_ext', 'CoG_rotor'] = -np.array([np.zeros(6),[dthrust_dv, 0., 0., 0., 0., 0.],np.zeros(6)])
+		partials['Bfb_ext', 'dthrust_dv'] = -np.array([[1., 0., 0., 0., 0., 0.],[CoG_rotor, 0., 0., 0., 0., 0.],[1., 0., 0., 0., 0., 0.]])
+		partials['Bfb_ext', 'dmoment_dv'] = -np.array([np.zeros(6),[0., 1., 0., 0., 0., 0.],[0., x_d_towertop, 0., 0., 0., 0.]])
+		partials['Bfb_ext', 'x_d_towertop'] = -np.array([np.zeros(6),np.zeros(6),[0., dmoment_dv, 0., 0., 0., 0.]])
+		partials['Bfb_ext', 'Bfb_ext'] = np.kron(inputs['M_global'] + inputs['A_global'],np.identity(6))

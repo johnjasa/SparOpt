@@ -5,19 +5,39 @@ from openmdao.api import ExplicitComponent
 class SparAddedMass(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_spar', val=np.zeros(10), units='m')
-		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('Z_spar', val=np.zeros(11), units='m')
+		self.add_input('D_spar', np.zeros(10), units='m')
 
 		self.add_output('A11', val=0., units='kg')
 		self.add_output('A55', val=0., units='kg*m**2')
 		self.add_output('A15', val=0., units='kg*m')
 
 	def compute(self, inputs, outputs):
+		Z_spar = inputs['Z_spar']
 		D_spar = inputs['D_spar']
-		L_spar = inputs['L_spar']
+		z_sparnode = inputs['z_sparnode']
 
-		#TODO: rewrite completely
+		N_elem = len(z_sparnode) - 1
 
-		outputs['A11'] = 1025. * np.pi/4. * (D_spar[0]**2. * 108. + D_spar[-2]**2. * 8. + D_spar[-1]**2. * 4.)
-		outputs['A15'] = 1025. * np.pi/4. * (D_spar[-1]**2. * (-0.5) * 4.**2. - 0.5 * D_spar[-2]**2. * (12.**2. - (-12.+8.)**2.) - 0.5 * D_spar[0]**2. * ((12.+108.)**2. - (-(12.+108.)+108.)**2.))
-		outputs['A55'] = 1025. * np.pi/4. * (D_spar[-1]**2. * 1. / 3. * 4.**3. + D_spar[-2]**2. * 8. * (1./12. * 8.**2. + (0.5*(-2.*12.+8.))**2.) + D_spar[0]**2. * 108. * (1./12. * 108.**2. + (0.5*(-2.*(12.+108.)+108.))**2.))
+		D = 0.
+
+		outputs['A11'] = 0.
+		outputs['A15'] = 0.
+		outputs['A55'] = 0.
+
+		for i in xrange(N_elem):
+			z = (z_sparnode[i] + z_sparnode[i+1]) / 2
+			dz = z_sparnode[i+1] - z_sparnode[i]
+
+			if z <= 0.:
+				for j in xrange(len(Z_spar) - 1):
+					if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
+						D = D_spar[j]
+						break
+
+				a11 = 1025. * np.pi / 4. * D**2.
+
+				outputs['A11'] += dz * a11
+				outputs['A15'] += dz * a11 * z
+				outputs['A55'] += dz * a11 * z**2.

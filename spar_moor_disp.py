@@ -11,9 +11,15 @@ class SparMoorDisp(ExplicitComponent):
 
 		self.add_output('x_moor', val=0., units='m')
 
-		#self.declare_partials('*', '*')
+		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		mooridx = np.concatenate(np.where(inputs['z_sparnode']==inputs['z_moor'][0]))
 
 		outputs['x_moor'] = inputs['x_sparnode'][mooridx]
+
+	def compute_partials(self, inputs, partials):
+		mooridx = np.concatenate(np.where(inputs['z_sparnode']==inputs['z_moor'][0]))
+
+		partials['x_moor', 'x_sparnode'] = np.zeros(14)
+		partials['x_moor', 'x_sparnode'][mooridx] = 1.

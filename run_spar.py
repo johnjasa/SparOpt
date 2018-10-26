@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.special as ss
 
-from openmdao.api import Problem, IndepVarComp, DirectSolver, NonlinearBlockGS
+from openmdao.api import Problem, IndepVarComp, DirectSolver, NewtonSolver
 
 from steady_bldpitch import SteadyBladePitch
 from steady_rotspeed import SteadyRotSpeed
@@ -28,12 +28,9 @@ prob = Problem()
 ivc = IndepVarComp()
 ivc.add_output('D_spar', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., np.sqrt(1./3. * (12.**2. + 8.3**2. + 12. * 8.3)), 8.3]), units='m')
 ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
-ivc.add_output('Z_spar', val=np.array([-120., -106.5, -93., -79.5, -66., -52.5, -39., -25.5, -12., -4., 10.]), units='m')
 ivc.add_output('wt_spar', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
-ivc.add_output('spar_draft', val=120., units='m')
 ivc.add_output('D_tower', val=np.array([8.16083499,7.88250497, 7.60417495, 7.32584493, 7.04751491, 6.76918489, 6.49085487, 6.21252485, 5.93419483, 5.64751491]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
-ivc.add_output('Z_tower', val=np.array([10.0, 20.5, 31.0, 41.5, 52.0, 62.5, 73.0, 83.5, 94.0, 104.5, 115.63]), units='m')
 ivc.add_output('wt_tower', val=np.array([0.038, 0.036, 0.034, 0.032, 0.030, 0.028, 0.026, 0.024, 0.022, 0.020]), units='m')
 ivc.add_output('rho_ball', val=2600., units='kg/m**3')
 ivc.add_output('wt_ball', val=0.06, units='m')
@@ -83,27 +80,27 @@ mooring_group = Mooring()
 
 substructure_group = Substructure()
 
-prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'Z_spar', 'D_tower', 'L_tower', 'wt_tower', 'Z_tower', \
-	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'omega_wave', 'water_depth', 'z_moor', 'K_moor', 'M_moor', 'spar_draft', \
-	'dthrust_dv', 'dmoment_dv'], promotes_outputs=['M_global', 'A_global', 'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_towernode', 'z_towernode'])
+prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'D_tower', 'L_tower', 'wt_tower', \
+	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'omega_wave', 'water_depth', 'z_moor', 'K_moor', 'M_moor', \
+	'dthrust_dv', 'dmoment_dv'], promotes_outputs=['M_global', 'A_global', 'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop'])
 
 statespace_group = StateSpace()
 
 prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'B_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
 	'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', \
-	'gain_corr_factor', 'omega', 'x_towernode', 'z_towernode', 'Z_tower'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
+	'gain_corr_factor', 'omega', 'x_d_towertop'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
 
 prob.model.add_subsystem('wave_spectrum', WaveSpectrum(), promotes_inputs=['Hs', 'Tp', 'omega'], promotes_outputs=['S_wave'])
 
 prob.model.add_subsystem('wind_spectrum', WindSpectrum(), promotes_inputs=['windspeed_0', 'omega'], promotes_outputs=['S_wind'])
 
 #prob.model.linear_solver = DirectSolver()
-#prob.model.nonlinear_solver = NonlinearBlockGS()
+#prob.model.nonlinear_solver = NewtonSolver()
 
 prob.setup()
-#2.1802423049011495 0.01975400499592083 60336420.83922411 0.09189930130734385
-#0.2772598716377589
-#0.00048149694021145837
+#2.163156242372975 0.019384569980023882 59957532.75877256 0.09190681645820983
+#0.27507991814399674
+#0.0004767413929917563
 prob.run_model()
 
 omega = prob['omega']
