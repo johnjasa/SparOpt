@@ -5,19 +5,19 @@ from openmdao.api import ExplicitComponent
 class ModeshapeElemStiff(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('', val=np.zeros(23), units='N*m**2')
-		self.add_input('', val=np.zeros(23), units='m')
-		self.add_input('', val=np.zeros(10), units='N')
+		self.add_input('EI_mode_elem', val=np.zeros(23), units='N*m**2')
+		self.add_input('L_mode_elem', val=np.zeros(23), units='m')
+		self.add_input('normforce_mode_elem', val=np.zeros(10), units='N')
 
-		self.add_output('ke', val=0., units='N/m')
-		self.add_output('kg', val=0., units='N/m')
+		self.add_output('ke', val=np.zeros((4,4)), units='N/m')
+		self.add_output('kg', val=np.zeros((4,4)), units='N/m')
 
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
-		EI = inputs['']
-		L = inputs['']
-		norm_force = inputs['']
+		EI = inputs['EI_mode_elem']
+		L = inputs['L_mode_elem']
+		norm_force = inputs['normforce_mode_elem']
 
 		for i in xrange(N_elem):
 			ke = np.zeros((4,4))
@@ -38,7 +38,7 @@ class ModeshapeElemStiff(ExplicitComponent):
 				kg[1,2] = kg[2,1] = kg[2,3] = kg[3,2] = -1. / 10.
 				kg[1,1] = kg[3,3] = 2. * L[i] / 15.
 				kg[1,3] = kg[3,1] = -L[i] / 30.
-				kg = kg * norm_force[i] * 9.80665
+				kg = kg * norm_force[i]
 
 	def compute_partials(self, inputs, partials):
 		partials['ke', ''] = 

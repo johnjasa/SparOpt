@@ -19,21 +19,21 @@ class AeroLoads(ExplicitComponent):
 		self.foilnames = blades['foilnames']
 		self.foilfolder = blades['foilfolder']
 
-		self.add_input('rho_wind', val=0., units='kg/m**3')
-		self.add_input('windspeed_0', val=0., units='m/s')
-		self.add_input('bldpitch_0', val=0., units='rad')
-		self.add_input('rotspeed_0', val=0., units='rad/s')
+		self.add_input('rho_wind', val=1., units='kg/m**3')
+		self.add_input('windspeed_0', val=1., units='m/s')
+		self.add_input('bldpitch_0', val=1., units='rad')
+		self.add_input('rotspeed_0', val=1., units='rad/s')
 
-		self.add_output('b_elem_r', val=np.zeros(self.N_b_elem), units='m')
-		self.add_output('b_elem_dr', val=0., units='m')
-		self.add_output('Fn_0', val=np.zeros(self.N_b_elem), units='N/m')
-		self.add_output('Ft_0', val=np.zeros(self.N_b_elem), units='N/m')
-		self.add_output('dFn_dv', val=np.zeros(self.N_b_elem), units='N*s/m**2')
-		self.add_output('dFn_dbldpitch', val=np.zeros(self.N_b_elem), units='N/(m*rad)')
-		self.add_output('dFn_drotspeed', val=np.zeros(self.N_b_elem), units='N*s/(m*rad)')
-		self.add_output('dFt_dv', val=np.zeros(self.N_b_elem), units='N*s/m**2')
-		self.add_output('dFt_dbldpitch', val=np.zeros(self.N_b_elem), units='N/(m*rad)')
-		self.add_output('dFt_drotspeed', val=np.zeros(self.N_b_elem), units='N*s/(m*rad)')
+		self.add_output('b_elem_r', val=np.ones(self.N_b_elem), units='m')
+		self.add_output('b_elem_dr', val=1., units='m')
+		self.add_output('Fn_0', val=np.ones(self.N_b_elem), units='N/m')
+		self.add_output('Ft_0', val=np.ones(self.N_b_elem), units='N/m')
+		self.add_output('dFn_dv', val=np.ones(self.N_b_elem), units='N*s/m**2')
+		self.add_output('dFn_dbldpitch', val=np.ones(self.N_b_elem), units='N/(m*rad)')
+		self.add_output('dFn_drotspeed', val=np.ones(self.N_b_elem), units='N*s/(m*rad)')
+		self.add_output('dFt_dv', val=np.ones(self.N_b_elem), units='N*s/m**2')
+		self.add_output('dFt_dbldpitch', val=np.ones(self.N_b_elem), units='N/(m*rad)')
+		self.add_output('dFt_drotspeed', val=np.ones(self.N_b_elem), units='N*s/(m*rad)')
 	
 	def compute(self, inputs, outputs):
 		rho_wind = inputs['rho_wind']

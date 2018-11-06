@@ -21,7 +21,12 @@ from transfer_function import TransferFunction
 
 class StateSpace(Group):
 
+	def initialize(self):
+		self.options.declare('freqs', types=dict)
+
 	def setup(self):
+		freqs = self.options['freqs']
+
 		self.add_subsystem('A_str_stiff', AstrStiff(), promotes_inputs=['M_global', 'A_global', 'K_global'], promotes_outputs=['Astr_stiff'])
 		
 		self.add_subsystem('A_str_damp', AstrDamp(), promotes_inputs=['M_global', 'A_global', 'B_global'], promotes_outputs=['Astr_damp'])
@@ -52,4 +57,4 @@ class StateSpace(Group):
 
 		self.add_subsystem('B_feedbk', Bfeedbk(), promotes_inputs=['Bfb_ext', 'I_d', 'dtorque_dv'], promotes_outputs=['B_feedbk'])
 
-		self.add_subsystem('transfer_function', TransferFunction(), promotes_inputs=['A_feedbk', 'B_feedbk', 'omega'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
+		self.add_subsystem('transfer_function', TransferFunction(freqs=freqs), promotes_inputs=['A_feedbk', 'B_feedbk'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])

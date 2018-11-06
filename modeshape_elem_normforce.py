@@ -2,45 +2,46 @@ import numpy as np
 
 from openmdao.api import ExplicitComponent
 
-class ModeshapeElemLength(ExplicitComponent):
+class ModeshapeElemNormforce(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
-		self.add_input('z_towernode', val=np.zeros(11), units='m')
+		self.add_input('M_tower', val=np.zeros(10), units='kg')
+		self.add_input('M_nacelle', val=0., units='kg')
+		self.add_input('M_rotor', val=0., units='kg')
+		self.add_input('tot_M_tower', val=0., units='kg')
 
-		self.add_output('L_mode_elem', val=np.zeros(23), units='m')
+		self.add_output('normforce_mode_elem', val=np.zeros(10), units='N')
 
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
-		z_sparnode = inputs['z_sparnode']
-		z_towernode = inputs['z_towernode']
+		M_tower = inputs['M_tower']
+		M_nacelle = inputs['M_nacelle']
+		M_rotor = inputs['M_rotor']
+		tot_M_tower = inputs['tot_M_tower']
 
-		N_sparelem = len(z_sparnode) - 1
-		N_towerelem = len(z_towernode) - 1
-
-		outputs['L_mode_elem'] = np.zeros(N_sparelem + N_towerelem)
-
-		for i in xrange(N_sparelem):
-			outputs['L_mode_elem'][i] = z_sparnode[i+1] - z_sparnode[i]
+		N_towerelem = len(M_tower)
 		
 		for i in xrange(N_towerelem):
-			outputs['L_mode_elem'][N_sparelem+i] = z_towernode[i+1] - z_towernode[i]
+			outputs['normforce_mode_elem'][i] = (-M_nacelle - M_rotor - tot_M_tower + np.sum(M_tower[:i])) * 9.80665
 
 	def compute_partials(self, inputs, partials):
-		z_sparnode = inputs['z_sparnode']
-		z_towernode = inputs['z_towernode']
+		M_tower = inputs['M_tower']
+		M_nacelle = inputs['M_nacelle']
+		M_rotor = inputs['M_rotor']
+		tot_M_tower = inputs['tot_M_tower']
 
-		N_sparelem = len(z_sparnode) - 1
-		N_towerelem = len(z_towernode) - 1
-
-		partials['L_mode_elem', 'z_sparnode'] = np.zeros((23,14))
-		partials['L_mode_elem', 'z_towernode'] = np.zeros((23,11))
-
-		for i in xrange(N_sparelem):
-			partials['L_mode_elem', 'z_sparnode'][i,i] = -1.
-			partials['L_mode_elem', 'z_sparnode'][i,i+1] = 1.
+		N_towerelem = len(M_tower)
+		
+		partials['normforce_mode_elem', 'M_tower'] = np.zeros((10,10))
+		partials['normforce_mode_elem', 'M_nacelle'] = np.zeros(10)
+		partials['normforce_mode_elem', 'M_rotor'] = np.zeros(10)
+		partials['normforce_mode_elem', 'tot_M_tower'] = np.zeros(10)
 
 		for i in xrange(N_towerelem):
-			partials['L_mode_elem', 'z_towernode'][N_sparelem+i,i] = -1.
-			partials['L_mode_elem', 'z_towernode'][N_sparelem+i,i+1] = 1.
+			partials['normforce_mode_elem', 'M_nacelle'][i] = -9.80665
+			partials['normforce_mode_elem', 'M_rotor'][i] = -9.80665
+			partials['normforce_mode_elem', 'tot_M_tower'][i] = -9.80665
+
+			for j in xrange(i):
+				partials['normforce_mode_elem', 'M_tower'][i,j] += 9.80665

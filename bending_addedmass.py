@@ -35,7 +35,6 @@ class BendingAddedMass(ExplicitComponent):
 		for i in xrange(N_elem):
 			z = (z_sparnode[i] + z_sparnode[i+1]) / 2
 			dz = z_sparnode[i+1] - z_sparnode[i]
-
 			if z <= 0.:
 				for j in xrange(len(Z_spar) - 1):
 					if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
@@ -54,18 +53,43 @@ class BendingAddedMass(ExplicitComponent):
 		z_sparnode = inputs['z_sparnode']
 		x_sparelem = inputs['x_sparelem']
 
+		N_elem = len(x_sparelem)
 
-		#partials['A17', 'x_sparelem'] = 
-		#partials['A17', 'z_sparnode'] = 
-		partials['A17', 'Z_spar'] = np.zeros(11)
-		#partials['A17', 'D_spar'] = 
+		D = 0.
 
-		#partials['A57', 'x_sparelem'] = 
-		#partials['A57', 'z_sparnode'] = 
-		#partials['A57', 'Z_spar'] = 
-		#partials['A57', 'D_spar'] = 
+		partials['A17', 'x_sparelem'] = np.zeros((1,13))
+		partials['A17', 'z_sparnode'] = np.zeros((1,14))
+		partials['A17', 'D_spar'] = np.zeros((1,10))
 
-		#partials['A77', 'x_sparelem'] = 
-		#partials['A77', 'z_sparnode'] = 
-		#partials['A77', 'Z_spar'] = 
-		#partials['A77', 'D_spar'] = 
+		partials['A57', 'x_sparelem'] = np.zeros((1,13))
+		partials['A57', 'z_sparnode'] = np.zeros((1,14))
+		partials['A57', 'D_spar'] = np.zeros((1,10))
+
+		partials['A77', 'x_sparelem'] = np.zeros((1,13))
+		partials['A77', 'z_sparnode'] = np.zeros((1,14))
+		partials['A77', 'D_spar'] = np.zeros((1,10))
+
+		for i in xrange(N_elem):
+			z = (z_sparnode[i] + z_sparnode[i+1]) / 2
+			dz = z_sparnode[i+1] - z_sparnode[i]
+			if z <= 0.:
+				for j in xrange(len(Z_spar) - 1):
+					if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
+						D = D_spar[j]
+						partials['A17', 'D_spar'][0,j] += dz * x_sparelem[i] * 1025. * np.pi / 2. * D
+						partials['A57', 'D_spar'][0,j] += dz * z * x_sparelem[i] * 1025. * np.pi / 2. * D
+						partials['A77', 'D_spar'][0,j] += dz * x_sparelem[i]**2. * 1025. * np.pi / 2. * D
+						break
+
+				a11 = 1025. * np.pi / 4. * D**2.
+
+				partials['A17', 'z_sparnode'][0,i] += -a11 * x_sparelem[i]
+				partials['A57', 'z_sparnode'][0,i] += -a11 * z * x_sparelem[i] + dz * a11 * x_sparelem[i] * 0.5
+				partials['A77', 'z_sparnode'][0,i] += -a11 * x_sparelem[i]**2.
+				partials['A17', 'z_sparnode'][0,i+1] += a11 * x_sparelem[i]
+				partials['A57', 'z_sparnode'][0,i+1] += a11 * z * x_sparelem[i] + dz * a11 * x_sparelem[i] * 0.5
+				partials['A77', 'z_sparnode'][0,i+1] += a11 * x_sparelem[i]**2.
+
+				partials['A17', 'x_sparelem'][0,i] += dz * a11
+				partials['A57', 'x_sparelem'][0,i] += dz * a11 * z
+				partials['A77', 'x_sparelem'][0,i] += dz * a11 * 2. * x_sparelem[i]

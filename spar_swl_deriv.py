@@ -22,5 +22,5 @@ class SparSWLDeriv(ExplicitComponent):
 		z_SWL = 0.
 		SWLidx = np.concatenate(np.where(inputs['z_sparnode']==z_SWL))
 
-		partials['x_d_swl', 'x_d_sparnode'] = np.zeros(14)
-		partials['x_d_swl', 'x_d_sparnode'][SWLidx] = 1.
+		partials['x_d_swl', 'x_d_sparnode'] = np.zeros((1,14))
+		partials['x_d_swl', 'x_d_sparnode'][0,SWLidx] = 1.

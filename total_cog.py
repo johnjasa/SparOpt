@@ -28,7 +28,7 @@ class TotalCoG(ExplicitComponent):
 
 	def compute_partials(self, inputs, partials):
 		M_turb = inputs['M_turb']
-		M_spar = inputs['tot_M_spar']
+		tot_M_spar = inputs['tot_M_spar']
 		M_ball = inputs['M_ball']
 		CoG_turb = inputs['CoG_turb']
 		CoG_spar = inputs['CoG_spar']

@@ -10,9 +10,9 @@ class ViscousDamping(ExplicitComponent):
 		self.add_input('z_sparnode', val=np.zeros(14), units='m')
 		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('D_spar', np.zeros(10), units='m')
-		self.add_input('surge_vel_stddev', val=0., units='m/s')
-		self.add_input('pitch_vel_stddev', val=0., units='rad/s')
-		self.add_input('bend_vel_stddev', val=0., units='m/s')
+		self.add_input('stddev_vel_surge', val=0., units='m/s')
+		self.add_input('stddev_vel_pitch', val=0., units='rad/s')
+		self.add_input('stddev_vel_bend', val=0., units='m/s')
 
 		self.add_output('B_visc_11', val=0., units='N*s/m')
 		self.add_output('B_visc_15', val=0., units='N*s/m')
@@ -27,9 +27,10 @@ class ViscousDamping(ExplicitComponent):
 		D_spar = inputs['D_spar']
 		z_sparnode = inputs['z_sparnode']
 		x_sparelem = inputs['x_sparelem']
-		surge_vel_stddev = inputs['surge_vel_stddev']
-		pitch_vel_stddev = inputs['pitch_vel_stddev']
-		bend_vel_stddev = inputs['bend_vel_stddev']
+		vel_stddev = 0.27509931#inputs['stddev_vel_surge']
+
+
+		N_elem = len(x_sparelem)
 
 		D = 0.
 
@@ -51,8 +52,6 @@ class ViscousDamping(ExplicitComponent):
 						break
 
 			psi = x_sparelem[i]
-
-			vel_stddev = np.sqrt(surge_vel_stddev**2. + (z * pitch_vel_stddev)**2. + (psi * bend_vel_stddev)**2.)
 
 			outputs['B_visc_11'] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * vel_stddev * D * dz
 			outputs['B_visc_15'] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * vel_stddev * D * z * dz

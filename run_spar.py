@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.special as ss
 
-from openmdao.api import Problem, IndepVarComp, DirectSolver, NewtonSolver
+from openmdao.api import Problem, IndepVarComp, DirectSolver, NonlinearBlockGS, SqliteRecorder
 
 from steady_bldpitch import SteadyBladePitch
 from steady_rotspeed import SteadyRotSpeed
@@ -13,6 +13,7 @@ from substructure_group import Substructure
 from statespace_group import StateSpace
 from wave_spectrum import WaveSpectrum
 from wind_spectrum import WindSpectrum
+from postpro_group import Postpro
 
 blades = {\
 'Rtip' : 89.165, \
@@ -23,6 +24,10 @@ blades = {\
 'foilnames' : ['foil1', 'foil11', 'foil12', 'foil13', 'foil14', 'foil15', 'foil16', 'foil17', 'foil18', 'foil19'], \
 'foilfolder' : 'M:/PhD/Integrated optimization/Aerodynamics/BEM/BEMpy/Airfoils/', \
 'cohfolder' : 'M:/PhD/Integrated optimization/Aerodynamics/CoherenceCoeffs/'}
+
+freqs = {\
+'omega' : np.linspace(0.014361566416410483,6.283185307179586,3493), \
+'omega_wave': 2. * np.pi / np.linspace(40.,1.,80)}
 
 prob = Problem()
 ivc = IndepVarComp()
@@ -39,8 +44,8 @@ ivc.add_output('CoG_rotor', val=119., units='m')
 ivc.add_output('CoG_nacelle', val=118.08, units='m')
 ivc.add_output('I_rotor', val=7.808e7, units='kg*m**2')
 ivc.add_output('M_rotor', val=2.307e5, units='kg')
-ivc.add_output('omega_wave', val=2. * np.pi / np.linspace(40.,1.,80), units='rad/s')
-ivc.add_output('omega', val=np.linspace(0.014361566416410483,6.283185307179586,3493), units='rad/s')
+#ivc.add_output('omega_wave', val=2. * np.pi / np.linspace(40.,1.,80), units='rad/s')
+#ivc.add_output('omega', val=np.linspace(0.014361566416410483,6.283185307179586,3493), units='rad/s')
 ivc.add_output('water_depth', val=320., units='m')
 ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('EA_moor', val=384243000., units='N')
@@ -58,6 +63,7 @@ ivc.add_output('omega_lowpass', val=2.*np.pi/0.8, units='rad/s')
 ivc.add_output('K_moor', val=71000., units='N/m')
 ivc.add_output('M_moor', val=330000., units='kg')
 ivc.add_output('gain_corr_factor', val=0.25104)
+ivc.add_output('Cd', val=0.7)
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
@@ -67,9 +73,9 @@ prob.model.add_subsystem('steady_bldpitch', SteadyBladePitch(), promotes_inputs=
 
 #prob.model.add_subsystem('gain_schedule', GainSchedule(), promotes_inputs=['bldpitch_0'], promotes_outputs=['gain_corr_factor'])
 
-aero_group = Aero(blades=blades)
+aero_group = Aero(blades=blades, freqs=freqs)
 
-prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'windspeed_0', 'bldpitch_0', 'rotspeed_0', 'omega'], promotes_outputs=['thrust_wind', \
+prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'windspeed_0', 'bldpitch_0', 'rotspeed_0'], promotes_outputs=['thrust_wind', \
 	'moment_wind', 'torque_wind', 'thrust_0', 'torque_0', 'dthrust_dv', 'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', \
 	'dthrust_dbldpitch', 'dtorque_dbldpitch'])
 
@@ -78,41 +84,75 @@ mooring_group = Mooring()
 #prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
 #'thrust_0'], promotes_outputs=['K_moor', 'M_moor', 'moor_offset'])
 
-substructure_group = Substructure()
+substructure_group = Substructure(freqs=freqs)
 
 prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'D_tower', 'L_tower', 'wt_tower', \
-	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'omega_wave', 'water_depth', 'z_moor', 'K_moor', 'M_moor', \
-	'dthrust_dv', 'dmoment_dv'], promotes_outputs=['M_global', 'A_global', 'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop'])
+	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'water_depth', 'z_moor', 'K_moor', 'M_moor', \
+	'dthrust_dv', 'dmoment_dv', 'Cd', 'stddev_vel_surge', 'stddev_vel_pitch', 'stddev_vel_bend'], promotes_outputs=['M_global', 'A_global', \
+	'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'CoG_ball'])
 
-statespace_group = StateSpace()
+statespace_group = StateSpace(freqs=freqs)
 
 prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'B_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
 	'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', \
-	'gain_corr_factor', 'omega', 'x_d_towertop'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
+	'gain_corr_factor', 'x_d_towertop'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
 
-prob.model.add_subsystem('wave_spectrum', WaveSpectrum(), promotes_inputs=['Hs', 'Tp', 'omega'], promotes_outputs=['S_wave'])
+prob.model.add_subsystem('wave_spectrum', WaveSpectrum(freqs=freqs), promotes_inputs=['Hs', 'Tp'], promotes_outputs=['S_wave'])
 
-prob.model.add_subsystem('wind_spectrum', WindSpectrum(), promotes_inputs=['windspeed_0', 'omega'], promotes_outputs=['S_wind'])
+prob.model.add_subsystem('wind_spectrum', WindSpectrum(freqs=freqs), promotes_inputs=['windspeed_0'], promotes_outputs=['S_wind'])
+
+postpro_group = Postpro(freqs=freqs)
+
+prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_forces', 'Im_wave_forces', 'thrust_wind', 'moment_wind', 'torque_wind', 'Re_H_feedbk', 'Im_H_feedbk', 'k_i', 'k_p', 'gain_corr_factor', 'S_wave', 'S_wind'], promotes_outputs=['stddev_vel_surge', 'stddev_pitch'])
 
 #prob.model.linear_solver = DirectSolver()
-#prob.model.nonlinear_solver = NewtonSolver()
+#prob.model.nonlinear_solver = NonlinearBlockGS()
 
+#prob.setup()
+#2.1645371976332335 0.019391493697488143 59960506.58204384 0.0919052103585322
+#0.27509930917774256
+#0.0004766751806066446
+#prob.run_model()
+
+# Set the optimizer type
+from openmdao.api import ScipyOptimizeDriver
+prob.driver = ScipyOptimizeDriver()
+prob.driver.options['tol'] = 1e-7
+
+# Record data from this problem
+#recorder = SqliteRecorder("test.db")
+#prob.driver.add_recorder(recorder)
+#prob.driver.recording_options['record_derivatives'] = True
+#prob.driver.recording_options['includes'] = ['*']
+
+# Setup problem and add design variables.
+prob.model.add_design_var('rho_ball', lower=0., upper=5000.)
+
+# objective function
+prob.model.add_objective('CoG_ball')
+
+# Set up the problem
 prob.setup()
-#2.163156242372975 0.019384569980023882 59957532.75877256 0.09190681645820983
-#0.27507991814399674
-#0.0004767413929917563
+
+# Use this if you just want to run analysis and not optimization
 prob.run_model()
 
-omega = prob['omega']
+# Actually run the optimization problem
+#prob.run_driver()
+
+print prob['stddev_pitch']
+
+omega = freqs['omega']
+omega_wave = freqs['omega_wave']
 N_omega = len(omega)
 mag = np.abs(prob['Re_H_feedbk'] + 1j * prob['Im_H_feedbk'])
 phase = np.angle(prob['Re_H_feedbk'] + 1j * prob['Im_H_feedbk'])
 
 Xcal = prob['Re_wave_forces'] + 1j * prob['Im_wave_forces']
 
-Xcal1_FD = np.interp(omega, prob['omega_wave'], Xcal[:,0,0])
-Xcal5_FD = np.interp(omega, prob['omega_wave'], Xcal[:,1,0])
-Xcal7_FD = np.interp(omega, prob['omega_wave'], Xcal[:,2,0])
+Xcal1_FD = np.interp(omega, omega_wave, Xcal[:,0,0])
+Xcal5_FD = np.interp(omega, omega_wave, Xcal[:,1,0])
+Xcal7_FD = np.interp(omega, omega_wave, Xcal[:,2,0])
 
 RAO_wave_surge = mag[:,0,3] * np.exp(1j * phase[:,0,3]) * Xcal1_FD + mag[:,0,4] * np.exp(1j * phase[:,0,4]) * Xcal5_FD + mag[:,0,5] * np.exp(1j * phase[:,0,5]) * Xcal7_FD
 RAO_wave_pitch = mag[:,1,3] * np.exp(1j * phase[:,1,3]) * Xcal1_FD + mag[:,1,4] * np.exp(1j * phase[:,1,4]) * Xcal5_FD + mag[:,1,5] * np.exp(1j * phase[:,1,5]) * Xcal7_FD

@@ -33,6 +33,6 @@ class TowerMass(ExplicitComponent):
 		partials['M_tower', 'wt_tower'] = np.zeros((len(D_tower),len(D_tower)))
 
 		for i in range(10):
-			partials['M_spar', 'D_spar'][i,i] = np.pi * wt_tower[i] * L_tower[i] * 8500.
-			partials['M_spar', 'L_spar'][i,i] = np.pi / 4. * (D_tower[i]**2. - (D_tower[i] - 2. * wt_tower[i])**2.) * 8500.
-			partials['M_spar', 'wt_spar'][i,i] = np.pi * (D_tower[i] - 2. * wt_tower[i]) * L_tower[i] * 8500.
+			partials['M_tower', 'D_tower'][i,i] = np.pi * wt_tower[i] * L_tower[i] * 8500.
+			partials['M_tower', 'L_tower'][i,i] = np.pi / 4. * (D_tower[i]**2. - (D_tower[i] - 2. * wt_tower[i])**2.) * 8500.
+			partials['M_tower', 'wt_tower'][i,i] = np.pi * (D_tower[i] - 2. * wt_tower[i]) * L_tower[i] * 8500.

@@ -4,14 +4,21 @@ from openmdao.api import ExplicitComponent
 
 class WindSpectrum(ExplicitComponent):
 
-	def setup(self):
-		self.add_input('windspeed_0', val=0., units='m/s')
-		self.add_input('omega', val=np.zeros(3493), units='rad/s')
+	def initialize(self):
+		self.options.declare('freqs', types=dict)
 
-		self.add_output('S_wind', val=np.zeros(3493), units='m**2*s/rad')
+	def setup(self):
+		freqs = self.options['freqs']
+		self.omega = freqs['omega']
+		N_omega = len(self.omega)
+		
+		self.add_input('windspeed_0', val=0., units='m/s')
+		#self.add_input('omega', val=np.zeros(3493), units='rad/s')
+
+		self.add_output('S_wind', val=np.zeros(N_omega), units='m**2/(rad*s)')
 
 	def compute(self, inputs, outputs):
-		omega = inputs['omega']
+		omega = self.omega#inputs['omega']
 		Vhub = inputs['windspeed_0']
 
 		N_omega = len(omega)

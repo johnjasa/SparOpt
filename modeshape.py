@@ -7,11 +7,11 @@ from openmdao.api import ExplicitComponent
 class Modeshape(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_spar', val=np.zeros(10), units='m')
-		self.add_input('L_spar', val=np.zeros(10), units='m')
-		self.add_input('wt_spar', val=np.zeros(10), units='m')
-		self.add_input('M_spar', val=np.zeros(10), units='kg')
-		self.add_input('Z_spar', val=np.zeros(11), units='m')
+		self.add_input('D_spar', val=np.ones(10), units='m')
+		self.add_input('L_spar', val=np.ones(10), units='m')
+		self.add_input('wt_spar', val=np.ones(10), units='m')
+		self.add_input('M_spar', val=np.ones(10), units='kg')
+		self.add_input('Z_spar', val=np.ones(11), units='m')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('D_tower', val=np.zeros(10), units='m')
 		self.add_input('L_tower', val=np.zeros(10), units='m')

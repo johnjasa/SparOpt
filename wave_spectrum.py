@@ -4,15 +4,22 @@ from openmdao.api import ExplicitComponent
 
 class WaveSpectrum(ExplicitComponent):
 
+	def initialize(self):
+		self.options.declare('freqs', types=dict)
+
 	def setup(self):
+		freqs = self.options['freqs']
+		self.omega = freqs['omega']
+		N_omega = len(self.omega)
+		
 		self.add_input('Hs', val=0., units='m')
 		self.add_input('Tp', val=0., units='s')
-		self.add_input('omega', val=np.zeros(3493), units='rad/s')
+		#self.add_input('omega', val=np.zeros(3493), units='rad/s')
 
-		self.add_output('S_wave', val=np.zeros(3493), units='m**2*s/rad')
+		self.add_output('S_wave', val=np.zeros(N_omega), units='m**2*s/rad')
 
 	def compute(self, inputs, outputs):
-		omega = inputs['omega']
+		omega = self.omega#inputs['omega']
 		N_omega = len(omega)
 
 		gamma = 3.3

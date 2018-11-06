@@ -7,36 +7,33 @@ class ModeshapeElemMass(ExplicitComponent):
 	def setup(self):
 		self.add_input('D_spar', val=np.zeros(3), units='m')
 		self.add_input('L_spar', val=np.zeros(3), units='m')
-		self.add_input('wt_spar', val=np.zeros(3), units='m')
 		self.add_input('M_spar', val=np.zeros(3), units='kg')
 		self.add_input('Z_spar', val=np.zeros(4), units='m')
-		self.add_input('CoG_spar', val=0., units='m')
-		self.add_input('D_tower', val=np.zeros(10), units='m')
 		self.add_input('L_tower', val=np.zeros(10), units='m')
-		self.add_input('wt_tower', val=np.zeros(10), units='m')
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
-		self.add_input('Z_tower', val=np.zeros(11), units='m')
 		self.add_input('spar_draft', val=0., units='m')
 		self.add_input('M_ball', val=0., units='kg')
-		self.add_input('CoG_ball', val=0., units='m')
-		self.add_input('wt_ball', val=0., units='m')
 		self.add_input('L_ball', val=0., units='m')
-		self.add_input('M_nacelle', val=0., units='kg')
-		self.add_input('M_rotor', val=0., units='kg')
-		self.add_input('I_rotor', val=0., units='kg*m**2')
-		self.add_input('K_moor', val=0., units='N/m')
-		self.add_input('M_moor', val=0., units='kg')
-		self.add_input('z_moor', val=0., units='m')
-		self.add_input('buoy_spar', val=0., units='N')
-		self.add_input('CoB', val=0., units='m')
+		self.add_input('z_sparnode', val=np.zeros(14), units='m')
 
-		self.add_output('omega_eig', val=0., units='rad/s')
-		self.add_output('eig_vector', val=np.zeros(34), units='m')
+		self.add_output('M_mode', val=np.zeros(23), units='kg/m')
 
 	def compute(self, inputs, outputs):
+		D_spar = inputs['D_spar']
+		L_spar = inputs['L_spar']
+		M_spar = inputs['M_spar']
+		Z_spar = inputs['Z_spar']
+		L_tower = inputs['L_tower']
+		M_tower = inputs['M_tower']
+		M_ball = inputs['M_ball']
+		L_ball = inputs['L_ball']
+		z_ball = -inputs['spar_draft'][0] + L_ball[0]
+		z_SWL = 0.
+		z_sparnode = inputs['z_sparnode']
 
 		N_sparelem = len(z_sparnode) - 1
-		N_elem = N_sparelem + N_tower
+		N_towerelem = len(M_tower) - 1
+		N_elem = N_sparelem + N_towerelem
 
 		m = np.zeros(N_elem) #kg/m
 
@@ -54,9 +51,7 @@ class ModeshapeElemMass(ExplicitComponent):
 				ballmass = M_ball / L_ball
 			m[i] = steelmass + addedmass + ballmass
 		
-		for i in xrange(N_tower):
-			EI[N_sparelem+i] = np.pi / 64. * (D_tower[i]**4. - (D_tower[i] - 2. * wt_tower[i])**4.) * 2.1e11
-			L[N_sparelem+i] = L_tower[i]
+		for i in xrange(N_towerelem):
 			m[N_sparelem+i] = M_tower[i] / L_tower[i]
 
 		for i in xrange(N_elem):

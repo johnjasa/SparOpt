@@ -44,7 +44,7 @@ class TowerElem1Deriv(ExplicitComponent):
 		partials['x_d_towerelem', 'x_towernode'] = np.zeros((N_tower - 1, N_tower))
 		partials['x_d_towerelem', 'x_d_towernode'] = np.zeros((N_tower - 1, N_tower))
 		
-		for i in xrange(N_spar - 1):
+		for i in xrange(N_tower - 1):
 			partials['x_d_towerelem', 'z_towernode'][i,i] = 3. / (2. * h[i]**2.) * (x[i+1] - x[i])
 			partials['x_d_towerelem', 'z_towernode'][i,i+1] = -3. / (2. * h[i]**2.) * (x[i+1] - x[i])
 		

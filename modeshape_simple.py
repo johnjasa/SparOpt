@@ -7,11 +7,11 @@ from openmdao.api import ExplicitComponent
 class Modeshape(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('D_spar', val=np.zeros(3), units='m')
-		self.add_input('L_spar', val=np.zeros(3), units='m')
-		self.add_input('wt_spar', val=np.zeros(3), units='m')
-		self.add_input('M_spar', val=np.zeros(3), units='kg')
-		self.add_input('Z_spar', val=np.zeros(4), units='m')
+		self.add_input('D_spar', val=np.zeros(10), units='m')
+		self.add_input('L_spar', val=np.zeros(10), units='m')
+		self.add_input('wt_spar', val=np.zeros(10), units='m')
+		self.add_input('M_spar', val=np.zeros(10), units='kg')
+		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('D_tower', val=np.zeros(10), units='m')
 		self.add_input('L_tower', val=np.zeros(10), units='m')
@@ -32,9 +32,9 @@ class Modeshape(ExplicitComponent):
 		self.add_input('buoy_spar', val=0., units='N')
 		self.add_input('CoB', val=0., units='m')
 
-		self.add_output('x_sparnode', val=np.zeros(7), units='m')
+		self.add_output('x_sparnode', val=np.zeros(14), units='m')
 		self.add_output('x_towernode', val=np.zeros(11), units='m')
-		self.add_output('z_sparnode', val=np.zeros(7), units='m')
+		self.add_output('z_sparnode', val=np.zeros(14), units='m')
 		self.add_output('z_towernode', val=np.zeros(11), units='m')
 
 	def compute(self, inputs, outputs):
@@ -61,12 +61,13 @@ class Modeshape(ExplicitComponent):
 		K_hydrostatic = inputs['buoy_spar'] * inputs['CoB'] - np.sum(M_spar) * 9.80665 * inputs['CoG_spar'] - inputs['M_ball'] * 9.80665 * inputs['CoG_ball'] - inputs['M_moor'] * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_spar[-1]**4.
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
+		print Z_spar, z_aux
 
 		z_sparnode = np.concatenate((Z_spar, z_aux),0)
 		z_sparnode = np.unique(z_sparnode)
 		z_sparnode = np.sort(z_sparnode)
 
-		outputs['x_sparnode'] = [0.1671773, 0.01717872, -0.02452651, -0.31540944, -0.35093444, -0.36868245, -0.41301261]
+		outputs['x_sparnode'] = [0.1671773, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02, 0.01717872, -0.02452651, -0.31540944, -0.35093444, -0.36868245, -0.41301261]
 		outputs['x_towernode'] = [-0.41301261, -0.44246513, -0.43706879, -0.39464275, -0.31330533, -0.19168688, -0.02922765, 0.1733981, 0.41366632, 0.6862874, 1.]
 
 		outputs['z_sparnode'] = z_sparnode
