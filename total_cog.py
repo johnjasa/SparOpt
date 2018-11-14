@@ -12,7 +12,7 @@ class TotalCoG(ExplicitComponent):
 		self.add_input('CoG_spar', val=0., units='m')
 		self.add_input('CoG_ball', val=0., units='m')
 
-		self.add_output('CoG_total', val=0., units='m')
+		self.add_output('CoG_total', val=1., units='m')
 
 		self.declare_partials('*', '*')
 

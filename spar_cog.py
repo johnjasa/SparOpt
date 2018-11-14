@@ -10,7 +10,7 @@ class SparCoG(ExplicitComponent):
 		self.add_input('tot_M_spar', val=0., units='kg')
 		self.add_input('spar_draft', val=0., units='m')
 
-		self.add_output('CoG_spar', val=0., units='m')
+		self.add_output('CoG_spar', val=1., units='m')
 
 		self.declare_partials('*', '*')
 

@@ -2,13 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.special as ss
 
-from openmdao.api import Problem, IndepVarComp, DirectSolver, NonlinearBlockGS, SqliteRecorder
+from openmdao.api import Problem, IndepVarComp, DirectSolver, NonlinearBlockGS, NewtonSolver, SqliteRecorder
 
 from steady_bldpitch import SteadyBladePitch
 from steady_rotspeed import SteadyRotSpeed
 from gain_schedule import GainSchedule
 from aero_group import Aero
 from mooring_group import Mooring
+from viscous_group import Viscous
 from substructure_group import Substructure
 from statespace_group import StateSpace
 from wave_spectrum import WaveSpectrum
@@ -84,12 +85,16 @@ mooring_group = Mooring()
 #prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
 #'thrust_0'], promotes_outputs=['K_moor', 'M_moor', 'moor_offset'])
 
+viscous_group = Viscous(freqs=freqs)
+
+prob.model.add_subsystem('viscous', viscous_group, promotes_inputs=['Cd', 'x_sparelem', 'z_sparnode', 'Z_spar', 'D_spar', 'stddev_vel_distr', 'Re_RAO_wave_vel_surge', 'Re_RAO_wave_vel_pitch', 'Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_surge', 'Im_RAO_wave_vel_pitch', 'Im_RAO_wave_vel_bend', 'Re_RAO_wind_vel_surge', 'Re_RAO_wind_vel_pitch', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_surge', 'Im_RAO_wind_vel_pitch', 'Im_RAO_wind_vel_bend', 'Re_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_surge', 'Im_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_bend', 'S_wave', 'S_wind', 'z_sparnode', 'x_sparelem'], promotes_outputs=['B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'])
+
 substructure_group = Substructure(freqs=freqs)
 
 prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'D_tower', 'L_tower', 'wt_tower', \
 	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'water_depth', 'z_moor', 'K_moor', 'M_moor', \
-	'dthrust_dv', 'dmoment_dv', 'Cd', 'stddev_vel_surge', 'stddev_vel_pitch', 'stddev_vel_bend'], promotes_outputs=['M_global', 'A_global', \
-	'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'CoG_ball'])
+	'dthrust_dv', 'dmoment_dv', 'B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'], promotes_outputs=['M_global', 'A_global', \
+	'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'CoG_ball', 'z_sparnode', 'x_sparelem'])
 
 statespace_group = StateSpace(freqs=freqs)
 
@@ -103,10 +108,11 @@ prob.model.add_subsystem('wind_spectrum', WindSpectrum(freqs=freqs), promotes_in
 
 postpro_group = Postpro(freqs=freqs)
 
-prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_forces', 'Im_wave_forces', 'thrust_wind', 'moment_wind', 'torque_wind', 'Re_H_feedbk', 'Im_H_feedbk', 'k_i', 'k_p', 'gain_corr_factor', 'S_wave', 'S_wind'], promotes_outputs=['stddev_vel_surge', 'stddev_pitch'])
+prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_forces', 'Im_wave_forces', 'thrust_wind', 'moment_wind', 'torque_wind', 'Re_H_feedbk', 'Im_H_feedbk', 'k_i', 'k_p', 'gain_corr_factor', 'S_wave', 'S_wind'], promotes_outputs=['stddev_pitch'])
 
 #prob.model.linear_solver = DirectSolver()
-#prob.model.nonlinear_solver = NonlinearBlockGS()
+viscous_group.nonlinear_solver = NonlinearBlockGS()
+#prob.model.nonlinear_solver = NewtonSolver()
 
 #prob.setup()
 #2.1645371976332335 0.019391493697488143 59960506.58204384 0.0919052103585322
@@ -139,7 +145,7 @@ prob.run_model()
 
 # Actually run the optimization problem
 #prob.run_driver()
-
+print prob['B_visc_11']
 print prob['stddev_pitch']
 
 omega = freqs['omega']

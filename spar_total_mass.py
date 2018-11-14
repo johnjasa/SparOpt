@@ -7,7 +7,7 @@ class SparTotalMass(ExplicitComponent):
 	def setup(self):
 		self.add_input('M_spar', val=np.zeros(10), units='kg')
 
-		self.add_output('tot_M_spar', val=0., units='kg')
+		self.add_output('tot_M_spar', val=1., units='kg')
 
 		self.declare_partials('tot_M_spar', 'M_spar', val=np.ones((1,10)))
 

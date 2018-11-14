@@ -8,7 +8,7 @@ class Volume(ExplicitComponent):
 		self.add_input('D_spar', val=np.zeros(10), units='m')
 		self.add_input('L_spar', val=np.zeros(10), units='m')
 
-		self.add_output('sub_vol', val=0., units='m**3')
+		self.add_output('sub_vol', val=1., units='m**3')
 
 		self.declare_partials('*', '*')
 

@@ -36,7 +36,7 @@ class NormTBMomentWave(ExplicitComponent):
 		self.add_output('Re_RAO_wave_TB_moment', val=np.zeros(N_omega), units='N*m/m')
 		self.add_output('Im_RAO_wave_TB_moment', val=np.zeros(N_omega), units='N*m/m')
 
-		self.declare_partials('*', '*')
+		#self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		RAO_wave_acc_surge = inputs['Re_RAO_wave_acc_surge'] + 1j * inputs['Im_RAO_wave_acc_surge']

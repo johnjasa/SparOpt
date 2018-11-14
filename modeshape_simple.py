@@ -34,8 +34,8 @@ class Modeshape(ExplicitComponent):
 
 		self.add_output('x_sparnode', val=np.zeros(14), units='m')
 		self.add_output('x_towernode', val=np.zeros(11), units='m')
-		self.add_output('z_sparnode', val=np.zeros(14), units='m')
-		self.add_output('z_towernode', val=np.zeros(11), units='m')
+		self.add_output('z_sparnode', val=np.linspace(-120,10,14), units='m')
+		self.add_output('z_towernode', val=np.linspace(10,119,11), units='m')
 
 	def compute(self, inputs, outputs):
 		D_spar = inputs['D_spar']
@@ -61,7 +61,6 @@ class Modeshape(ExplicitComponent):
 		K_hydrostatic = inputs['buoy_spar'] * inputs['CoB'] - np.sum(M_spar) * 9.80665 * inputs['CoG_spar'] - inputs['M_ball'] * 9.80665 * inputs['CoG_ball'] - inputs['M_moor'] * 9.80665 * z_moor + 1025. * 9.80665 * np.pi/64. * D_spar[-1]**4.
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
-		print Z_spar, z_aux
 
 		z_sparnode = np.concatenate((Z_spar, z_aux),0)
 		z_sparnode = np.unique(z_sparnode)

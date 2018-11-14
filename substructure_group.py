@@ -23,7 +23,7 @@ from total_cog import TotalCoG
 from volume import Volume
 from buoyancy import Buoyancy
 from aero_damping import AeroDamping
-from viscous_damping import ViscousDamping
+#from viscous_damping import ViscousDamping
 from modeshape import Modeshape
 from modeshape_coords import ModeshapeCoords
 from tower_node_1_lhs import TowerNode1LHS
@@ -143,13 +143,13 @@ class Substructure(Group):
 
 		self.add_subsystem('aero_damping', AeroDamping(), promotes_inputs=['CoG_rotor', 'dthrust_dv', 'dmoment_dv', 'x_d_towertop'], promotes_outputs=['B_aero_11', 'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77'])
 
-		self.add_subsystem('viscous_damping', ViscousDamping(), promotes_inputs=['Cd', 'x_sparelem', 'z_sparnode', 'Z_spar', 'D_spar', 'stddev_vel_surge', 'stddev_vel_pitch', 'stddev_vel_bend'], promotes_outputs=['B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'])
+		#self.add_subsystem('viscous_damping', ViscousDamping(), promotes_inputs=['Cd', 'x_sparelem', 'z_sparnode', 'Z_spar', 'D_spar', 'stddev_vel_distr'], promotes_outputs=['B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'])
 
 	 	self.add_subsystem('global_mass', GlobalMass(), promotes_inputs=['tot_M_spar', 'M_ball', 'M_turb', 'CoG_turb', 'CoG_spar', 'CoG_ball', 'I_spar', 'I_ball', 'I_turb', 'M17', 'M57', 'M77'], promotes_outputs=['M_global'])
 
 	 	self.add_subsystem('global_addedmass', GlobalAddedMass(), promotes_inputs=['A11', 'A15', 'A17', 'A55', 'A57', 'A77'], promotes_outputs=['A_global'])
 
-	 	self.add_subsystem('global_damping', GlobalDamping(), promotes_inputs=['B_aero_11', 'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77'], promotes_outputs=['B_global'])
+	 	self.add_subsystem('global_damping', GlobalDamping(), promotes_inputs=['B_aero_11', 'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'], promotes_outputs=['B_global'])
 
 	 	self.add_subsystem('global_stiffness', GlobalStiffness(), promotes_inputs=['D_spar', 'tot_M_spar', 'M_turb', 'M_ball', 'CoG_total', 'M_moor', 'K_moor', 'K17', 'K57', 'K77', 'buoy_spar', 'CoB'], promotes_outputs=['K_global'])
 

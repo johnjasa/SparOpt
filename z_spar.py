@@ -8,7 +8,7 @@ class ZSpar(ExplicitComponent):
 		self.add_input('L_spar', val=np.zeros(10), units='m')
 		self.add_input('spar_draft', val=0., units='m')
 
-		self.add_output('Z_spar', val=np.zeros(11), units='m')
+		self.add_output('Z_spar', val=np.linspace(-120,10,11), units='m')
 
 		self.declare_partials('*', '*')
 

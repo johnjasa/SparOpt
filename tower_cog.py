@@ -9,7 +9,7 @@ class TowerCoG(ExplicitComponent):
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
 		self.add_input('tot_M_tower', val=0., units='kg')
 
-		self.add_output('CoG_tower', val=0., units='m')
+		self.add_output('CoG_tower', val=1., units='m')
 
 		self.declare_partials('*', '*')
 

@@ -11,6 +11,12 @@ class GlobalDamping(ExplicitComponent):
 		self.add_input('B_aero_55', val=0., units='N*m*s')
 		self.add_input('B_aero_57', val=0., units='N*s')
 		self.add_input('B_aero_77', val=0., units='N*s/m')
+		self.add_input('B_visc_11', val=0., units='N*s/m') #TODO: calculate these
+		self.add_input('B_visc_15', val=0., units='N*s')
+		self.add_input('B_visc_17', val=0., units='N*s/m')
+		self.add_input('B_visc_55', val=0., units='N*m*s')
+		self.add_input('B_visc_57', val=0., units='N*s')
+		self.add_input('B_visc_77', val=0., units='N*s/m')
 		self.add_input('B_struct_77', val=0., units='N*s/m')
 
 		self.add_output('B_global', val=np.zeros((3,3)), units='N*s/m')

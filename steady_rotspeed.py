@@ -7,7 +7,7 @@ class SteadyRotSpeed(ExplicitComponent):
 	def setup(self):
 		self.add_input('windspeed_0', val=0., units='m/s')
 
-		self.add_output('rotspeed_0', val=0., units='rad/s')
+		self.add_output('rotspeed_0', val=1., units='rad/s')
 
 	def compute(self, inputs, outputs):
 		windspeed_0 = inputs['windspeed_0']

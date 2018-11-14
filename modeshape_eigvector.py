@@ -1,52 +1,50 @@
 import numpy as np
-from scipy.sparse.linalg import eigs
-from scipy.linalg import det, inv
+from scipy.linalg import det, eig, solve
 
-from openmdao.api import ImplicitComponent
+from openmdao.api import ExplicitComponent
 
-class ModeshapeEigvector(ImplicitComponent):
+class ModeshapeEigvector(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('K_mode', val=np.zeros((34,34)), units='N/m')
-		self.add_input('M_mode', val=np.zeros((34,34)), units='kg')
+		self.add_input('A_eig', val=np.zeros((34,34)))
 
-		self.add_output('omega_eig', val=2., units='rad/s')
 		self.add_output('eig_vector', val=np.ones(34), units='m')
 
 		self.declare_partials('*', '*')
 
-	def apply_nonlinear(self, inputs, outputs, residuals):
-		K = inputs['K_mode']
-		M = inputs['M_mode']
+	def compute(self, inputs, outputs):
+		A = inputs['A_eig']
 
-		residuals['omega_eig'] = det(K - outputs['omega_eig']**2. * M)
-		residuals['eig_vector'] = (K - outputs['omega_eig']**2. * M).dot(outputs['eig_vector'])
-
-	def solve_nonlinear(self, inputs, outputs):
-		K = inputs['K_mode']
-		M = inputs['M_mode']
-
-		eig_vals, eig_vecs = eigs(K, k=3, M=M, sigma=(2.*np.pi/500.)**2.)
-
-		outputs['omega_eig'] = np.real(np.sqrt(eig_vals[-1]))
+		eig_vals, eig_vecs = eig(A)
+		eig_vecs = np.real(eig_vecs)
 		
-		outputs['eig_vector'] = np.real(eig_vecs[:,-1])
+		outputs['eig_vector'] = eig_vecs[:,-3]
 
-	def linearize(self, inputs, outputs, partials):
-		K = inputs['K_mode']
-		M = inputs['M_mode']
+	def compute_partials(self, inputs, partials):
+		A = inputs['A_eig']
 
-		eig_matrix = K - outputs['omega_eig']**2. * M
+		partials['eig_vector', 'A_eig'] = np.zeros((len(A),A.size))
 
-		#residuals['omega_eig'] = det(K - outputs['omega_eig']**2. * M)
-		#residuals['eig_vector'] = (K - outputs['omega_eig']**2. * M).dot(outputs['eig_vector'])
+		eig_vals, eig_vecs = eig(A)
+		eig_vals = np.real(eig_vals)
+		eig_vecs = np.real(eig_vecs)
 
-		partials['omega_eig', 'K_mode'] = det(eig_matrix) * (2. * inv(eig_matrix) - np.multiply(inv(eig_matrix),np.identity(34))).flatten()
-		partials['omega_eig', 'M_mode'] = -outputs['omega_eig']**2. * det(eig_matrix) * (2. * inv(eig_matrix) - np.multiply(inv(eig_matrix),np.identity(34))).flatten()
-		partials['omega_eig', 'omega_eig'] = np.sum(det(eig_matrix) * (2. * inv(eig_matrix) - np.multiply(inv(eig_matrix),np.identity(34))).flatten() * -2. * outputs['omega_eig'] * M.flatten())
-		#partials['omega_eig', 'eig_vector'] = 
+		E = np.zeros_like(A)
+		F = np.zeros_like(A)
 
-		#partials['eig_vector', 'K_mode'] = 
-		#partials['eig_vector', 'M_mode'] = 
-		#partials['eig_vector', 'omega_eig'] = 
-		#partials['eig_vector', 'eig_vector'] = 
+		for i in xrange(len(A)):
+			for j in xrange(len(A)):
+				E[i,j] = eig_vals[j] - eig_vals[i]
+				if i != j:
+					F[i,j] = 1. / (eig_vals[j] - eig_vals[i])
+
+		for i in xrange(len(A)):
+			for j in xrange(len(A)):
+				dA = np.zeros_like(A)
+				dA[i,j] = 1.0
+
+				P = solve(eig_vecs, np.dot(dA, eig_vecs))
+
+				dU = np.dot(eig_vecs, (F * P))
+
+				partials['eig_vector', 'A_eig'][:,len(A)*i+j] = dU[:,-3]

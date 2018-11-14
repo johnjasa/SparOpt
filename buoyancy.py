@@ -10,8 +10,8 @@ class Buoyancy(ExplicitComponent):
 		self.add_input('spar_draft', val=0., units='m')
 		self.add_input('sub_vol', val=0., units='m**3')
 
-		self.add_output('buoy_spar', val=0., units='N')
-		self.add_output('CoB', val=0., units='m')
+		self.add_output('buoy_spar', val=1., units='N')
+		self.add_output('CoB', val=1., units='m')
 
 		self.declare_partials('*', '*')
 

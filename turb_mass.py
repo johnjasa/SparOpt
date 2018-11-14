@@ -9,7 +9,7 @@ class TurbMass(ExplicitComponent):
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('M_rotor', val=0., units='kg')
 
-		self.add_output('M_turb', val=0., units='kg')
+		self.add_output('M_turb', val=1., units='kg')
 
 		self.declare_partials('M_turb', 'tot_M_tower', val=1.)
 		self.declare_partials('M_turb', 'M_nacelle', val=1.)
