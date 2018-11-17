@@ -42,7 +42,7 @@ class WaveNumber(ImplicitComponent):
 			return x * 9.80665 * np.tanh(x * h) - omega_wave[i]**2.
 
 		for i in xrange(N_omega_wave):
-			wavenum = so.broyden1(F, 1.01 * omega_wave[i]**2. / 9.80665)
+			wavenum = so.broyden1(F, 1.1 * omega_wave[i]**2. / 9.80665)
 			if wavenum < 0.0:
 				wavenum = -wavenum
 

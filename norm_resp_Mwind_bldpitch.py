@@ -22,7 +22,22 @@ class NormRespMWindBldpitch(ExplicitComponent):
 		self.add_output('Re_RAO_Mwind_bldpitch', val=np.zeros(N_omega), units='rad/(m/s)')
 		self.add_output('Im_RAO_Mwind_bldpitch', val=np.zeros(N_omega), units='rad/(m/s)')
 
-		#self.declare_partials('*', '*')
+		Hcols = Hcols1 = np.array([43,49])
+		for i in xrange(1,N_omega):
+			Hcols = np.concatenate((Hcols,i*9*6+Hcols1),0)
+
+		self.declare_partials('Re_RAO_Mwind_bldpitch', 'moment_wind', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_Mwind_bldpitch', 'Re_H_feedbk', rows=np.repeat(np.arange(N_omega),2), cols=Hcols)
+		self.declare_partials('Re_RAO_Mwind_bldpitch', 'Im_H_feedbk', rows=np.repeat(np.arange(N_omega),2), cols=Hcols)
+		self.declare_partials('Im_RAO_Mwind_bldpitch', 'moment_wind', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_Mwind_bldpitch', 'Re_H_feedbk', rows=np.repeat(np.arange(N_omega),2), cols=Hcols)
+		self.declare_partials('Im_RAO_Mwind_bldpitch', 'Im_H_feedbk', rows=np.repeat(np.arange(N_omega),2), cols=Hcols)
+		self.declare_partials('Re_RAO_Mwind_bldpitch', 'k_i')
+		self.declare_partials('Re_RAO_Mwind_bldpitch', 'k_p')
+		self.declare_partials('Re_RAO_Mwind_bldpitch', 'gain_corr_factor')
+		self.declare_partials('Im_RAO_Mwind_bldpitch', 'k_i')
+		self.declare_partials('Im_RAO_Mwind_bldpitch', 'k_p')
+		self.declare_partials('Im_RAO_Mwind_bldpitch', 'gain_corr_factor')
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
@@ -39,4 +54,24 @@ class NormRespMWindBldpitch(ExplicitComponent):
 		outputs['Im_RAO_Mwind_bldpitch'] = np.imag(RAO_Mwind_bldpitch)
 
 	def compute_partials(self, inputs, partials):
-		pass
+		omega = self.omega
+		N_omega = len(omega)
+
+		partials['Re_RAO_Mwind_bldpitch', 'moment_wind'] = inputs['gain_corr_factor'] * inputs['k_i'] * inputs['Re_H_feedbk'][:,7,1] + inputs['gain_corr_factor'] * inputs['k_p'] * inputs['Re_H_feedbk'][:,8,1]
+		partials['Im_RAO_Mwind_bldpitch', 'moment_wind'] = inputs['gain_corr_factor'] * inputs['k_i'] * inputs['Im_H_feedbk'][:,7,1] + inputs['gain_corr_factor'] * inputs['k_p'] * inputs['Im_H_feedbk'][:,8,1]
+	
+		partials['Re_RAO_Mwind_bldpitch', 'k_i'] = inputs['gain_corr_factor'] * inputs['Re_H_feedbk'][:,7,1] * inputs['moment_wind']
+		partials['Im_RAO_Mwind_bldpitch', 'k_i'] = inputs['gain_corr_factor'] * inputs['Im_H_feedbk'][:,7,1] * inputs['moment_wind']
+		partials['Re_RAO_Mwind_bldpitch', 'k_p'] = inputs['gain_corr_factor'] * inputs['Re_H_feedbk'][:,8,1] * inputs['moment_wind']
+		partials['Im_RAO_Mwind_bldpitch', 'k_p'] = inputs['gain_corr_factor'] * inputs['Im_H_feedbk'][:,8,1] * inputs['moment_wind']
+		partials['Re_RAO_Mwind_bldpitch', 'gain_corr_factor'] = inputs['k_i'] * inputs['Re_H_feedbk'][:,7,1] * inputs['moment_wind'] + inputs['k_p'] * inputs['Re_H_feedbk'][:,8,1] * inputs['moment_wind']
+		partials['Im_RAO_Mwind_bldpitch', 'gain_corr_factor'] = inputs['k_i'] * inputs['Im_H_feedbk'][:,7,1] * inputs['moment_wind'] + inputs['k_p'] * inputs['Im_H_feedbk'][:,8,1] * inputs['moment_wind']
+
+		partials['Re_RAO_Mwind_bldpitch', 'Im_H_feedbk'] = np.zeros(2*N_omega)
+		partials['Im_RAO_Mwind_bldpitch', 'Re_H_feedbk'] = np.zeros(2*N_omega)
+
+		for i in xrange(N_omega):
+			partials['Re_RAO_Mwind_bldpitch', 'Re_H_feedbk'][2*i] = inputs['gain_corr_factor'] * inputs['k_i'] * inputs['moment_wind'][i]
+			partials['Re_RAO_Mwind_bldpitch', 'Re_H_feedbk'][2*i+1] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['moment_wind'][i]
+			partials['Im_RAO_Mwind_bldpitch', 'Im_H_feedbk'][2*i] = inputs['gain_corr_factor'] * inputs['k_i'] * inputs['moment_wind'][i]
+			partials['Im_RAO_Mwind_bldpitch', 'Im_H_feedbk'][2*i+1] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['moment_wind'][i]

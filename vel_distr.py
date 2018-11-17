@@ -51,3 +51,5 @@ class VelDistr(ExplicitComponent):
 			resp_vel_disp = np.abs((inputs['Re_RAO_wave_vel_surge'] + 1j * inputs['Im_RAO_wave_vel_surge']) + z * (inputs['Re_RAO_wave_vel_pitch'] + 1j * inputs['Im_RAO_wave_vel_pitch']) + x_sparelem[i] * (inputs['Re_RAO_wave_vel_bend'] + 1j * inputs['Im_RAO_wave_vel_bend']))**2. * inputs['S_wave'] + np.abs((inputs['Re_RAO_wind_vel_surge'] + 1j * inputs['Im_RAO_wind_vel_surge']) + z * (inputs['Re_RAO_wind_vel_pitch'] + 1j * inputs['Im_RAO_wind_vel_pitch']) + x_sparelem[i] * (inputs['Re_RAO_wind_vel_bend'] + 1j * inputs['Im_RAO_wind_vel_bend']))**2. * inputs['S_wind'] + np.abs((inputs['Re_RAO_Mwind_vel_surge'] + 1j * inputs['Im_RAO_Mwind_vel_surge']) + z * (inputs['Re_RAO_Mwind_vel_pitch'] + 1j * inputs['Im_RAO_Mwind_vel_pitch']) + x_sparelem[i] * (inputs['Re_RAO_Mwind_vel_bend'] + 1j * inputs['Im_RAO_Mwind_vel_bend']))**2. * inputs['S_wind']
 
 			outputs['stddev_vel_distr'][i] = np.sqrt(np.trapz(resp_vel_disp, omega))
+
+	#TODO

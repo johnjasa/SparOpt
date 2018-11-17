@@ -19,7 +19,12 @@ class NormRespMWindBend(ExplicitComponent):
 		self.add_output('Re_RAO_Mwind_bend', val=np.zeros(N_omega), units='m/(m/s)')
 		self.add_output('Im_RAO_Mwind_bend', val=np.zeros(N_omega), units='m/(m/s)')
 
-		#self.declare_partials('*', '*')
+		self.declare_partials('Re_RAO_Mwind_bend', 'moment_wind', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_Mwind_bend', 'Re_H_feedbk', rows=np.arange(N_omega), cols=np.arange(13,N_omega*9*6,9*6))
+		self.declare_partials('Re_RAO_Mwind_bend', 'Im_H_feedbk', rows=np.arange(N_omega), cols=np.arange(13,N_omega*9*6,9*6))
+		self.declare_partials('Im_RAO_Mwind_bend', 'moment_wind', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_Mwind_bend', 'Re_H_feedbk', rows=np.arange(N_omega), cols=np.arange(13,N_omega*9*6,9*6))
+		self.declare_partials('Im_RAO_Mwind_bend', 'Im_H_feedbk', rows=np.arange(N_omega), cols=np.arange(13,N_omega*9*6,9*6))
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
@@ -34,4 +39,14 @@ class NormRespMWindBend(ExplicitComponent):
 		outputs['Im_RAO_Mwind_bend'] = np.imag(RAO_Mwind_bend)
 
 	def compute_partials(self, inputs, partials):
-		pass
+		omega = self.omega
+		N_omega = len(omega)
+
+		partials['Re_RAO_Mwind_bend', 'moment_wind'] = inputs['Re_H_feedbk'][:,2,1]
+		partials['Im_RAO_Mwind_bend', 'moment_wind'] = inputs['Im_H_feedbk'][:,2,1]
+
+		partials['Re_RAO_Mwind_bend', 'Im_H_feedbk'] = np.zeros(N_omega)
+		partials['Im_RAO_Mwind_bend', 'Re_H_feedbk'] = np.zeros(N_omega)
+
+		partials['Re_RAO_Mwind_bend', 'Re_H_feedbk'] = inputs['moment_wind']
+		partials['Im_RAO_Mwind_bend', 'Im_H_feedbk'] = inputs['moment_wind']

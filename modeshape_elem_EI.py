@@ -16,7 +16,7 @@ class ModeshapeElemEI(ExplicitComponent):
 		D_tower = inputs['D_tower']
 		wt_tower = inputs['wt_tower']
 
-		N_sparelem = 14
+		N_sparelem = 13
 		N_towerelem = 10
 
 		outputs['EI_mode_elem'] = np.zeros(N_sparelem + N_towerelem)
@@ -31,7 +31,7 @@ class ModeshapeElemEI(ExplicitComponent):
 		D_tower = inputs['D_tower']
 		wt_tower = inputs['wt_tower']
 
-		N_sparelem = 14
+		N_sparelem = 13
 		N_towerelem = 10
 
 		partials['EI_mode_elem', 'D_tower'] = np.zeros((23,10))

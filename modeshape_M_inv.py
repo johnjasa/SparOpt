@@ -5,9 +5,9 @@ from openmdao.api import ExplicitComponent
 class ModeshapeMInv(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('M_mode', val=np.zeros((34,34)), units='kg')
+		self.add_input('M_mode', val=np.zeros((48,48)), units='kg')
 
-		self.add_output('M_mode_inv', val=np.zeros((34,34)), units='1/kg')
+		self.add_output('M_mode_inv', val=np.zeros((48,48)), units='1/kg')
 
 		self.declare_partials('*', '*')
 

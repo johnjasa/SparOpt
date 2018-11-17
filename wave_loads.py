@@ -43,7 +43,7 @@ class WaveLoads(ExplicitComponent):
 		a = 0.
 
 		for i in xrange(N_omega_wave):
-			if (wave_number[i] * h) > 710: #upper limit for numpy cosh function (returns inf for larger numbers)
+			if (wave_number[i] * h) >= 700: #upper limit for numpy cosh function (returns inf for larger numbers)
 				continue
 
 			for j in xrange(N_elem):
@@ -95,7 +95,7 @@ class WaveLoads(ExplicitComponent):
 		a = 0.
 
 		for i in xrange(N_omega_wave):
-			if (wave_number[i] * h) > 710: #upper limit for numpy cosh function (returns inf for larger numbers)
+			if (wave_number[i] * h) >= 700: #upper limit for numpy cosh function (returns inf for larger numbers)
 				continue
 			for j in xrange(N_elem):
 				z = (z_sparnode[j] + z_sparnode[j+1]) / 2

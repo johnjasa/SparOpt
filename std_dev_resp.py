@@ -64,18 +64,6 @@ class StdDevResp(ExplicitComponent):
 		partials['stddev_rotspeed', 'resp_rotspeed'] = np.ones((1,N_omega)) * 0.5 / np.sqrt(np.trapz(inputs['resp_rotspeed'], omega)) * domega
 		partials['stddev_rotspeed', 'resp_bldpitch'] = np.zeros((1,N_omega))
 
-		partials['stddev_rot_lp', 'resp_surge'] = np.zeros((1,N_omega))
-		partials['stddev_rot_lp', 'resp_pitch'] = np.zeros((1,N_omega))
-		partials['stddev_rot_lp', 'resp_bend'] = np.zeros((1,N_omega))
-		partials['stddev_rot_lp', 'resp_rotspeed'] = np.zeros((1,N_omega))
-		partials['stddev_rot_lp', 'resp_bldpitch'] = np.zeros((1,N_omega))
-
-		partials['stddev_rotspeed_lp', 'resp_surge'] = np.zeros((1,N_omega))
-		partials['stddev_rotspeed_lp', 'resp_pitch'] = np.zeros((1,N_omega))
-		partials['stddev_rotspeed_lp', 'resp_bend'] = np.zeros((1,N_omega))
-		partials['stddev_rotspeed_lp', 'resp_rotspeed'] = np.zeros((1,N_omega))
-		partials['stddev_rotspeed_lp', 'resp_bldpitch'] = np.zeros((1,N_omega))
-
 		partials['stddev_bldpitch', 'resp_surge'] = np.zeros((1,N_omega))
 		partials['stddev_bldpitch', 'resp_pitch'] = np.zeros((1,N_omega))
 		partials['stddev_bldpitch', 'resp_bend'] = np.zeros((1,N_omega))

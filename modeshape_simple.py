@@ -34,7 +34,7 @@ class Modeshape(ExplicitComponent):
 
 		self.add_output('x_sparnode', val=np.zeros(14), units='m')
 		self.add_output('x_towernode', val=np.zeros(11), units='m')
-		self.add_output('z_sparnode', val=np.linspace(-120,10,14), units='m')
+		self.add_output('z_sparnode', val=np.array([-120.,-110.,-100.,-90.,-80.,-77.2,-60.,-50.,-40.,-30.,-20.,-10.,0.,10.]), units='m')
 		self.add_output('z_towernode', val=np.linspace(10,119,11), units='m')
 
 	def compute(self, inputs, outputs):

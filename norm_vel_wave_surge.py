@@ -18,10 +18,22 @@ class NormVelWaveSurge(ExplicitComponent):
 		self.add_output('Re_RAO_wave_vel_surge', val=np.zeros(N_omega), units='(m/s)/m')
 		self.add_output('Im_RAO_wave_vel_surge', val=np.zeros(N_omega), units='(m/s)/m')
 
-		#self.declare_partials('*', '*')
+		self.declare_partials('Re_RAO_wave_vel_surge', 'Re_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_vel_surge', 'Im_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_vel_surge', 'Re_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_vel_surge', 'Im_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
 
 		outputs['Re_RAO_wave_vel_surge'] = -inputs['Im_RAO_wave_surge'] * omega
 		outputs['Im_RAO_wave_vel_surge'] = inputs['Re_RAO_wave_surge'] * omega
+
+	def compute_partials(self, inputs, partials): #TODO check
+		omega = self.omega
+		N_omega = len(omega)
+
+		partials['Re_RAO_wave_vel_surge', 'Re_RAO_wave_surge'] = np.zeros(N_omega)
+		partials['Re_RAO_wave_vel_surge', 'Im_RAO_wave_surge'] = -omega
+		partials['Im_RAO_wave_vel_surge', 'Re_RAO_wave_surge'] = omega
+		partials['Im_RAO_wave_vel_surge', 'Im_RAO_wave_surge'] = np.zeros(N_omega)

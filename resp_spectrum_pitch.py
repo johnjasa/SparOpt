@@ -23,7 +23,24 @@ class RespSpectrumPitch(ExplicitComponent):
 
 		self.add_output('resp_pitch', val=np.zeros(N_omega), units='rad**2*s/rad')
 
-		#self.declare_partials('resp_surge', 'Re_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'Re_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'Im_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'Re_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'Im_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'Re_RAO_Mwind_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'Im_RAO_Mwind_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'S_wave', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('resp_pitch', 'S_wind', rows=np.arange(N_omega), cols=np.arange(N_omega))
 
 	def compute(self, inputs, outputs):
 		outputs['resp_pitch'] = np.abs(inputs['Re_RAO_wave_pitch'] + 1j * inputs['Im_RAO_wave_pitch'])**2. * inputs['S_wave'] + np.abs(inputs['Re_RAO_wind_pitch'] + 1j * inputs['Im_RAO_wind_pitch'])**2. * inputs['S_wind'] + np.abs(inputs['Re_RAO_Mwind_pitch'] + 1j * inputs['Im_RAO_Mwind_pitch'])**2. * inputs['S_wind']
+
+	def compute_partials(self, inputs, partials): #TODO check
+		partials['resp_pitch', 'Re_RAO_wave_pitch'] = 2. * inputs['Re_RAO_wave_pitch'] * inputs['S_wave']
+		partials['resp_pitch', 'Im_RAO_wave_pitch'] = 2. * inputs['Im_RAO_wave_pitch'] * inputs['S_wave']
+		partials['resp_pitch', 'Re_RAO_wind_pitch'] = 2. * inputs['Re_RAO_wind_pitch'] * inputs['S_wind']
+		partials['resp_pitch', 'Im_RAO_wind_pitch'] = 2. * inputs['Im_RAO_wind_pitch'] * inputs['S_wind']
+		partials['resp_pitch', 'Re_RAO_Mwind_pitch'] = 2. * inputs['Re_RAO_Mwind_pitch'] * inputs['S_wind']
+		partials['resp_pitch', 'Im_RAO_Mwind_pitch'] = 2. * inputs['Im_RAO_Mwind_pitch'] * inputs['S_wind']
+		partials['resp_pitch', 'S_wave'] = np.abs(inputs['Re_RAO_wave_pitch'] + 1j * inputs['Im_RAO_wave_pitch'])**2.
+		partials['resp_pitch', 'S_wind'] = np.abs(inputs['Re_RAO_wind_pitch'] + 1j * inputs['Im_RAO_wind_pitch'])**2. + np.abs(inputs['Re_RAO_Mwind_pitch'] + 1j * inputs['Im_RAO_Mwind_pitch'])**2.

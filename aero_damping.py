@@ -25,12 +25,12 @@ class AeroDamping(ExplicitComponent):
 		dmoment_dv = inputs['dmoment_dv']
 		x_d_towertop = inputs['x_d_towertop']
 
-		outputs['B_aero_11'] = dthrust_dv + 169613.96114615502 #TODO
+		outputs['B_aero_11'] = dthrust_dv
 		outputs['B_aero_15'] = CoG_rotor * dthrust_dv
 		outputs['B_aero_17'] = dthrust_dv
 		outputs['B_aero_55'] = CoG_rotor**2. * dthrust_dv + dmoment_dv
 		outputs['B_aero_57'] = CoG_rotor * dthrust_dv + x_d_towertop * dmoment_dv
-		outputs['B_aero_77'] = dthrust_dv + x_d_towertop**2. * dmoment_dv + 73852.60383701134 #TODO
+		outputs['B_aero_77'] = dthrust_dv + x_d_towertop**2. * dmoment_dv
 
 	def compute_partials(self, inputs, partials):
 		CoG_rotor = inputs['CoG_rotor']

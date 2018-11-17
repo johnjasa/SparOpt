@@ -23,11 +23,11 @@ class MooringOffset(ImplicitComponent):
 		self.declare_partials('*', '*')
 
 	def apply_nonlinear(self, inputs, outputs, residuals):
-		h = inputs['water_depth'] + inputs['z_moor']
-		EA = inputs['EA_moor']
-		mu = inputs['mass_dens_moor']
-		l_tot_hor = inputs['len_hor_moor']
-		l_tot = inputs['len_tot_moor']
+		h = inputs['water_depth'][0] + inputs['z_moor'][0]
+		EA = inputs['EA_moor'][0]
+		mu = inputs['mass_dens_moor'][0]
+		l_tot_hor = inputs['len_hor_moor'][0]
+		l_tot = inputs['len_tot_moor'][0]
 
 		l_eff_ww = outputs['eff_length_offset_ww']
 		t_star_ww = outputs['moor_tension_offset_ww'] / (mu * 9.80665)

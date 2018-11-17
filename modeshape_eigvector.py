@@ -6,9 +6,9 @@ from openmdao.api import ExplicitComponent
 class ModeshapeEigvector(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('A_eig', val=np.zeros((34,34)))
+		self.add_input('A_eig', val=np.zeros((48,48)))
 
-		self.add_output('eig_vector', val=np.ones(34), units='m')
+		self.add_output('eig_vector', val=np.ones(48), units='m')
 
 		self.declare_partials('*', '*')
 

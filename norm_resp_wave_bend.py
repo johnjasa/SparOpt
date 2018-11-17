@@ -24,7 +24,26 @@ class NormRespWaveBend(ExplicitComponent):
 		self.add_output('Re_RAO_wave_bend', val=np.zeros(N_omega), units='m/m')
 		self.add_output('Im_RAO_wave_bend', val=np.zeros(N_omega), units='m/m')
 
-		#self.declare_partials('*', '*')
+		Hcols = Hcols1 = np.array([15,16,17])
+		for i in xrange(1,N_omega):
+			Hcols = np.concatenate((Hcols,i*9*6+Hcols1),0)
+
+		self.declare_partials('Re_RAO_wave_bend', 'Re_wave_force_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_bend', 'Im_wave_force_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_bend', 'Re_wave_force_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_bend', 'Im_wave_force_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_bend', 'Re_wave_force_bend', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_bend', 'Im_wave_force_bend', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_bend', 'Re_H_feedbk', rows=np.repeat(np.arange(N_omega),3), cols=Hcols)
+		self.declare_partials('Re_RAO_wave_bend', 'Im_H_feedbk', rows=np.repeat(np.arange(N_omega),3), cols=Hcols)
+		self.declare_partials('Im_RAO_wave_bend', 'Re_wave_force_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_bend', 'Im_wave_force_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_bend', 'Re_wave_force_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_bend', 'Im_wave_force_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_bend', 'Re_wave_force_bend', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_bend', 'Im_wave_force_bend', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_bend', 'Re_H_feedbk', rows=np.repeat(np.arange(N_omega),3), cols=Hcols)
+		self.declare_partials('Im_RAO_wave_bend', 'Im_H_feedbk', rows=np.repeat(np.arange(N_omega),3), cols=Hcols)
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
@@ -41,4 +60,32 @@ class NormRespWaveBend(ExplicitComponent):
 		outputs['Im_RAO_wave_bend'] = np.imag(RAO_wave_bend)
 
 	def compute_partials(self, inputs, partials):
-		pass
+		omega = self.omega
+		N_omega = len(omega)
+
+		partials['Re_RAO_wave_bend', 'Re_wave_force_surge'] = inputs['Re_H_feedbk'][:,2,3]
+		partials['Re_RAO_wave_bend', 'Im_wave_force_surge'] = -inputs['Im_H_feedbk'][:,2,3]
+		partials['Re_RAO_wave_bend', 'Re_wave_force_pitch'] = inputs['Re_H_feedbk'][:,2,4]
+		partials['Re_RAO_wave_bend', 'Im_wave_force_pitch'] = -inputs['Im_H_feedbk'][:,2,4]
+		partials['Re_RAO_wave_bend', 'Re_wave_force_bend'] = inputs['Re_H_feedbk'][:,2,5]
+		partials['Re_RAO_wave_bend', 'Im_wave_force_bend'] = -inputs['Im_H_feedbk'][:,2,5]
+		partials['Im_RAO_wave_bend', 'Re_wave_force_surge'] = inputs['Im_H_feedbk'][:,2,3]
+		partials['Im_RAO_wave_bend', 'Im_wave_force_surge'] = inputs['Re_H_feedbk'][:,2,3]
+		partials['Im_RAO_wave_bend', 'Re_wave_force_pitch'] = inputs['Im_H_feedbk'][:,2,4]
+		partials['Im_RAO_wave_bend', 'Im_wave_force_pitch'] = inputs['Re_H_feedbk'][:,2,4]
+		partials['Im_RAO_wave_bend', 'Re_wave_force_bend'] = inputs['Im_H_feedbk'][:,2,5]
+		partials['Im_RAO_wave_bend', 'Im_wave_force_bend'] = inputs['Re_H_feedbk'][:,2,5]
+
+		for i in xrange(N_omega):
+			partials['Re_RAO_wave_bend', 'Re_H_feedbk'][3*i] = inputs['Re_wave_force_surge'][i]
+			partials['Re_RAO_wave_bend', 'Re_H_feedbk'][3*i+1] = inputs['Re_wave_force_pitch'][i]
+			partials['Re_RAO_wave_bend', 'Re_H_feedbk'][3*i+2] = inputs['Re_wave_force_bend'][i]
+			partials['Re_RAO_wave_bend', 'Im_H_feedbk'][3*i] = -inputs['Im_wave_force_surge'][i]
+			partials['Re_RAO_wave_bend', 'Im_H_feedbk'][3*i+1] = -inputs['Im_wave_force_pitch'][i]
+			partials['Re_RAO_wave_bend', 'Im_H_feedbk'][3*i+2] = -inputs['Im_wave_force_bend'][i]
+			partials['Im_RAO_wave_bend', 'Re_H_feedbk'][3*i] = inputs['Im_wave_force_surge'][i]
+			partials['Im_RAO_wave_bend', 'Re_H_feedbk'][3*i+1] = inputs['Im_wave_force_pitch'][i]
+			partials['Im_RAO_wave_bend', 'Re_H_feedbk'][3*i+2] = inputs['Im_wave_force_bend'][i]
+			partials['Im_RAO_wave_bend', 'Im_H_feedbk'][3*i] = inputs['Re_wave_force_surge'][i]
+			partials['Im_RAO_wave_bend', 'Im_H_feedbk'][3*i+1] = inputs['Re_wave_force_pitch'][i]
+			partials['Im_RAO_wave_bend', 'Im_H_feedbk'][3*i+2] = inputs['Re_wave_force_bend'][i]
