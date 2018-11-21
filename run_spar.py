@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.special as ss
 
-from openmdao.api import Problem, IndepVarComp, LinearRunOnce, ScipyKrylov, NonlinearBlockGS, NewtonSolver, SqliteRecorder
+from openmdao.api import Problem, IndepVarComp, LinearRunOnce, DirectSolver, ScipyKrylov, NonlinearBlockGS, NewtonSolver, SqliteRecorder
 
 from steady_bldpitch import SteadyBladePitch
 from steady_rotspeed import SteadyRotSpeed
@@ -26,7 +26,7 @@ blades = {\
 'cohfolder' : 'M:/PhD/Integrated optimization/Aerodynamics/CoherenceCoeffs/'}
 
 freqs = {\
-'omega' : np.linspace(0.014361566416410483,6.283185307179586,3493), \
+'omega' : np.linspace(0.014361566416410483,6.283185307179586,1000), \
 'omega_wave': np.linspace(0.12,6.28,100)}
 
 prob = Problem()
@@ -91,14 +91,14 @@ substructure_group = Substructure(freqs=freqs)
 prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'D_tower', 'L_tower', 'wt_tower', \
 	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'water_depth', 'z_moor', 'K_moor', 'M_moor', \
 	'dthrust_dv', 'dmoment_dv', 'B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'], promotes_outputs=['M_global', 'A_global', \
-	'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'CoG_ball', 'z_sparnode', 'x_sparelem'])
+	'B_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'z_sparnode', 'x_sparelem'])
 
 statespace_group = StateSpace(freqs=freqs)
 
 prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'B_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
 	'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'k_i', 'k_p', \
 	'gain_corr_factor', 'x_d_towertop'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
-
+"""
 prob.model.add_subsystem('wave_spectrum', WaveSpectrum(freqs=freqs), promotes_inputs=['Hs', 'Tp'], promotes_outputs=['S_wave'])
 
 prob.model.add_subsystem('wind_spectrum', WindSpectrum(freqs=freqs), promotes_inputs=['windspeed_0'], promotes_outputs=['S_wind'])
@@ -106,44 +106,48 @@ prob.model.add_subsystem('wind_spectrum', WindSpectrum(freqs=freqs), promotes_in
 postpro_group = Postpro(freqs=freqs)
 
 prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_forces', 'Im_wave_forces', 'thrust_wind', 'moment_wind', 'torque_wind', 'Re_H_feedbk', 'Im_H_feedbk', 'k_i', 'k_p', 'gain_corr_factor', 'S_wave', 'S_wind'], promotes_outputs=['stddev_pitch'])
-
-prob.model.linear_solver = ScipyKrylov()
+"""
+#prob.model.linear_solver = DirectSolver()
+aero_group.linear_solver = LinearRunOnce()
+mooring_group.linear_solver = DirectSolver()
+substructure_group.linear_solver = DirectSolver()
+statespace_group.linear_solver = ScipyKrylov()
+#postpro_group.linear_solver = ScipyKrylov()
+prob.model.linear_solver = LinearRunOnce()
 #prob.model.nonlinear_solver = NonlinearBlockGS()
 #prob.model.nonlinear_solver = NewtonSolver()
 
-#prob.setup()
 #4.4861975693051654 0.021429660856483266 57064445.71670596 0.09599438491319576
 #0.35261195732821116
 #0.0003190558555719168
-#prob.run_model()
 
-# Set the optimizer type
-from openmdao.api import ScipyOptimizeDriver
-prob.driver = ScipyOptimizeDriver(optimizer='SLSQP')
-prob.driver.options['tol'] = 1e-7
+from openmdao.api import ScipyOptimizeDriver#, pyOptSparseDriver
+#prob.driver = ScipyOptimizeDriver()
+#prob.driver = pyOptSparseDriver()
+#prob.driver.options['optimizer'] = 'SNOPT'
 
-# Record data from this problem
-prob.add_recorder(SqliteRecorder("cases.sql"))
+#prob.add_recorder(SqliteRecorder("cases.sql"))
 
-prob.recording_options['includes'] = []
-prob.recording_options['record_objectives'] = True
-prob.recording_options['record_constraints'] = True
-prob.recording_options['record_desvars'] = True
+#prob.recording_options['includes'] = []
+#prob.recording_options['record_objectives'] = True
+#prob.recording_options['record_constraints'] = True
+#prob.recording_options['record_desvars'] = True
 
-# Setup problem and add design variables.
-prob.model.add_design_var('z_moor', lower=-120., upper=0.)
+#prob.model.add_design_var('z_moor', lower=-120., upper=0.)
 
-# objective function
-prob.model.add_objective('M_moor')
+#prob.model.add_objective('stddev_pitch')
 
-# Set up the problem
 prob.setup()
 
-# Use this if you just want to run analysis and not optimization
-#prob.run_model()
+prob.run_model()
 
-# Actually run the optimization problem
-prob.run_driver()
+prob.check_totals(['Re_H_feedbk', 'Im_H_feedbk'],['z_moor'])
+
+#prob.run_driver()
+
+#prob.record_iteration('final')
+#prob.cleanup()
+
 #print prob['B_visc_11']
 #print prob['stddev_pitch']
 """

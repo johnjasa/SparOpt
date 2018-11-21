@@ -16,7 +16,7 @@ class Ballast(ExplicitComponent):
 
 		self.add_output('M_ball', val=0., units='kg')
 		self.add_output('CoG_ball', val=0., units='m')
-		self.add_output('L_ball', val=35., units='m')
+		self.add_output('L_ball', val=0., units='m')
 
 		self.declare_partials('*', '*')
 

@@ -15,8 +15,7 @@ class ModeshapeEigvector(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		A = inputs['A_eig']
 
-		eig_vals, eig_vecs = eig(A)
-		eig_vecs = np.real(eig_vecs)
+		eig_vals, eig_vecs = np.linalg.eig(A)
 		
 		outputs['eig_vector'] = eig_vecs[:,-3]
 
@@ -25,9 +24,9 @@ class ModeshapeEigvector(ExplicitComponent):
 
 		partials['eig_vector', 'A_eig'] = np.zeros((len(A),A.size))
 
-		eig_vals, eig_vecs = eig(A)
-		eig_vals = np.real(eig_vals)
-		eig_vecs = np.real(eig_vecs)
+		eig_vals, eig_vecs = np.linalg.eig(A)
+		eig_val = eig_vals[-3]
+		eig_vec = eig_vecs[:,-3]
 
 		E = np.zeros_like(A)
 		F = np.zeros_like(A)
@@ -41,7 +40,7 @@ class ModeshapeEigvector(ExplicitComponent):
 		for i in xrange(len(A)):
 			for j in xrange(len(A)):
 				dA = np.zeros_like(A)
-				dA[i,j] = 1.0
+				dA[i,j] = 1.
 
 				P = solve(eig_vecs, np.dot(dA, eig_vecs))
 

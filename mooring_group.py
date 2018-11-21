@@ -2,7 +2,7 @@ import numpy as np
 
 from openmdao.api import Group
 
-from moor_ten_zero import MoorTenZero
+#from moor_ten_zero import MoorTenZero
 from mooring_offset import MooringOffset
 from diff_moor_ten import DiffMoorTen
 from mooring_mass import MooringMass
@@ -11,7 +11,7 @@ from mooring_stiffness import MooringStiffness
 class Mooring(Group):
 
 	 def setup(self):
-	 	self.add_subsystem('moor_ten_zero', MoorTenZero(), promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor'], promotes_outputs=['moor_tension_zero', 'eff_length_zero'])
+	 	#self.add_subsystem('moor_ten_zero', MoorTenZero(), promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor'], promotes_outputs=['moor_tension_zero', 'eff_length_zero'])
 
 	 	self.add_subsystem('mooring_offset', MooringOffset(), promotes_inputs=['thrust_0', 'z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor'], promotes_outputs=['moor_tension_offset_ww', 'eff_length_offset_ww', 'moor_tension_offset_lw', 'eff_length_offset_lw', 'moor_offset'])
 

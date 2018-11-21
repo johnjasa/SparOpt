@@ -23,7 +23,7 @@ from total_cog import TotalCoG
 from volume import Volume
 from buoyancy import Buoyancy
 from aero_damping import AeroDamping
-from viscous_damping import ViscousDamping
+#from viscous_damping import ViscousDamping
 from modeshape_spar_nodes import ModeshapeSparNodes
 from modeshape_tower_nodes import ModeshapeTowerNodes
 from modeshape_hydrostiff import ModeshapeHydrostiff
@@ -112,7 +112,7 @@ class Substructure(Group):
 	 	self.add_subsystem('modeshape_spar_nodes', ModeshapeSparNodes(), promotes_inputs=['Z_spar', 'spar_draft', 'L_ball', 'z_moor'], promotes_outputs=['z_sparnode'])
 
 	 	self.add_subsystem('modeshape_tower_nodes', ModeshapeTowerNodes(), promotes_inputs=['Z_tower'], promotes_outputs=['z_towernode'])
-
+	 	"""
 	 	self.add_subsystem('modeshape_hydrostiff', ModeshapeHydrostiff(), promotes_inputs=['D_spar', 'tot_M_spar', 'CoG_spar', 'M_ball', 'CoG_ball', 'M_moor', 'z_moor', 'buoy_spar', 'CoB'], promotes_outputs=['K_hydrostatic'])
 
 	 	self.add_subsystem('modeshape_elem_length', ModeshapeElemLength(), promotes_inputs=['z_sparnode', 'z_towernode'], promotes_outputs=['L_mode_elem'])
@@ -134,25 +134,25 @@ class Substructure(Group):
 		self.add_subsystem('modeshape_eigmatrix', ModeshapeEigmatrix(), promotes_inputs=['K_mode', 'M_mode_inv'], promotes_outputs=['A_eig'])
 
 		self.add_subsystem('modeshape_eigvector', ModeshapeEigvector(), promotes_inputs=['A_eig'], promotes_outputs=['eig_vector'])
-
+		
 		self.add_subsystem('modeshape_disp', ModeshapeDisp(), promotes_inputs=['eig_vector'], promotes_outputs=['x_sparnode', 'x_towernode'])
-
+		"""
 	 	#self.add_subsystem('modeshape', Modeshape(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'M_spar', 'Z_spar', 'CoG_spar', 'D_tower', 'L_tower', 'wt_tower', 'M_tower', 'Z_tower', 'spar_draft', 'M_ball', 'CoG_ball', 'L_ball', 'M_nacelle', 'M_rotor', 'I_rotor', 'K_moor', 'M_moor', 'z_moor', 'buoy_spar', 'CoB'], promotes_outputs=['x_sparnode', 'x_towernode', 'z_sparnode', 'z_towernode'])
-
+	 	"""
 	 	self.add_subsystem('tower_node_1_lhs', TowerNode1LHS(), promotes_inputs=['z_towernode'], promotes_outputs=['tower_spline_lhs'])
 
 	 	self.add_subsystem('tower_node_1_rhs', TowerNode1RHS(), promotes_inputs=['z_towernode', 'x_towernode'], promotes_outputs=['tower_spline_rhs'])
 
 	 	self.add_subsystem('tower_node_1_deriv', TowerNode1Deriv(), promotes_inputs=['tower_spline_lhs', 'tower_spline_rhs'], promotes_outputs=['x_d_towernode'])
-
+	 	"""
 	 	self.add_subsystem('tower_top_deriv', TowerTopDeriv(), promotes_inputs=['x_d_towernode'], promotes_outputs=['x_d_towertop'])
-
+	 	"""
 	 	self.add_subsystem('tower_elem_disp', TowerElemDisp(), promotes_inputs=['z_towernode', 'x_towernode', 'x_d_towernode'], promotes_outputs=['x_towerelem'])
 
 	 	self.add_subsystem('tower_elem_1_deriv', TowerElem1Deriv(), promotes_inputs=['z_towernode', 'x_towernode', 'x_d_towernode'], promotes_outputs=['x_d_towerelem'])
 
 	 	self.add_subsystem('tower_elem_2_deriv', TowerElem2Deriv(), promotes_inputs=['z_towernode', 'x_d_towernode'], promotes_outputs=['x_dd_towerelem'])
-
+		
 	 	self.add_subsystem('spar_node_1_lhs', SparNode1LHS(), promotes_inputs=['z_sparnode'], promotes_outputs=['spar_spline_lhs'])
 
 	 	self.add_subsystem('spar_node_1_rhs', SparNode1RHS(), promotes_inputs=['z_sparnode', 'x_sparnode'], promotes_outputs=['spar_spline_rhs'])
@@ -160,15 +160,15 @@ class Substructure(Group):
 	 	self.add_subsystem('spar_node_1_deriv', SparNode1Deriv(), promotes_inputs=['spar_spline_lhs', 'spar_spline_rhs'], promotes_outputs=['x_d_sparnode'])
 
 	 	self.add_subsystem('spar_swl_deriv', SparSWLDeriv(), promotes_inputs=['z_sparnode', 'x_d_sparnode'], promotes_outputs=['x_d_swl'])
-
+		"""
 	 	self.add_subsystem('spar_elem_disp', SparElemDisp(), promotes_inputs=['z_sparnode', 'x_sparnode', 'x_d_sparnode'], promotes_outputs=['x_sparelem'])
-
+		"""
 	 	self.add_subsystem('spar_moor_disp', SparMoorDisp(), promotes_inputs=['z_sparnode', 'x_sparnode', 'z_moor'], promotes_outputs=['x_moor'])
 
 	 	self.add_subsystem('spar_elem_1_deriv', SparElem1Deriv(), promotes_inputs=['z_sparnode', 'x_sparnode', 'x_d_sparnode'], promotes_outputs=['x_d_sparelem'])
 
 	 	self.add_subsystem('spar_elem_2_deriv', SparElem2Deriv(), promotes_inputs=['z_sparnode', 'x_d_sparnode'], promotes_outputs=['x_dd_sparelem'])
-
+		"""
 	 	self.add_subsystem('spar_addedmass', SparAddedMass(), promotes_inputs=['z_sparnode', 'Z_spar', 'D_spar'], promotes_outputs=['A11', 'A15', 'A55'])
 
 	 	self.add_subsystem('bending_mass', BendingMass(), promotes_inputs=['z_sparnode', 'x_sparelem', 'z_towernode', 'x_towerelem', 'x_d_towertop', 'M_spar', 'L_spar', 'Z_spar', 'M_tower', 'L_tower', 'Z_tower', 'M_ball', 'L_ball', 'M_rotor', 'M_nacelle', 'I_rotor', 'spar_draft', 'L_ball', 'spar_draft'], promotes_outputs=['M17', 'M57', 'M77'])

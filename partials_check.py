@@ -1,35 +1,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.spatial.kdtree import KDTree
 
 from openmdao.api import Problem, IndepVarComp, DirectSolver, NewtonSolver
 from openmdao.utils.visualization import partial_deriv_plot
 
-from modeshape_hydrostiff import ModeshapeHydrostiff
+from modeshape_eigvector import ModeshapeEigvector
 
 freqs = {\
 'omega' : np.linspace(0.014361566416410483,6.283185307179586,100), \
 'omega_wave': np.linspace(0.12,6.28,50)}
+"""
+N = 48
+M = np.diag(range(1,N+1))
+np.random.seed(3)
+K = np.random.rand(N,N)
+K = (K + K.T)/2
+
+A = np.linalg.solve(M,K)
 
 prob = Problem()
-#np.random.seed(0)
 ivc = IndepVarComp()
-ivc.add_output('D_spar', val=np.random.rand(10))
-ivc.add_output('tot_M_spar', val=np.random.rand())
-ivc.add_output('CoG_spar', val=np.random.rand())
-ivc.add_output('M_ball', val=np.random.rand())
-ivc.add_output('CoG_ball', val=np.random.rand())
-ivc.add_output('M_moor', val=np.random.rand())
-ivc.add_output('z_moor', val=np.random.rand())
-ivc.add_output('buoy_spar', val=np.random.rand())
-ivc.add_output('CoB', val=np.random.rand())
+ivc.add_output('A_eig', val=A)
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-prob.model.add_subsystem('check', ModeshapeHydrostiff(), promotes_inputs=['D_spar', 'tot_M_spar', 'CoG_spar', 'M_ball', 'CoG_ball', 'M_moor', 'z_moor', 'buoy_spar', 'CoB'], promotes_outputs=['K_hydrostatic'])
+comp = prob.model.add_subsystem('check', ModeshapeEigvector(), promotes_inputs=['A_eig'], promotes_outputs=['eig_vector'])
 
-prob.setup()
-
+prob.setup(force_alloc_complex=True)
+comp.set_check_partial_options(wrt='*', step=1e-8, method='cs')
 check_partials_data = prob.check_partials(show_only_incorrect=True)
-
-#partial_deriv_plot('kel','L_mode_elem', check_partials_data, binary=False)
+"""
+#partial_deriv_plot('eig_vector','A_eig', check_partials_data, binary=True)

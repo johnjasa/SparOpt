@@ -16,9 +16,9 @@ class ModeshapeSparNodes(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		Z_spar = inputs['Z_spar']
-		L_ball = inputs['L_ball']
-		z_ball = -inputs['spar_draft'][0] + L_ball[0] #top of ballast
-		z_moor = inputs['z_moor'][0]
+		L_ball = inputs['L_ball'][0]
+		z_ball = -inputs['spar_draft'][0] + L_ball #top of ballast
+		z_moor = inputs['z_moor']
 		z_SWL = 0.
 
 		if len(np.where(Z_spar==z_ball)[0]) != 0:
@@ -39,10 +39,21 @@ class ModeshapeSparNodes(ExplicitComponent):
 
 	def compute_partials(self, inputs, partials):
 		Z_spar = inputs['Z_spar']
-		L_ball = inputs['L_ball']
-		z_ball = -inputs['spar_draft'][0] + L_ball[0]
+		L_ball = inputs['L_ball'][0]
+		z_ball = -inputs['spar_draft'][0] + L_ball
 		z_moor = inputs['z_moor'][0]
 		z_SWL = 0.
+
+		if len(np.where(Z_spar==z_ball)[0]) != 0:
+			z_ball += 0.01
+		if len(np.where(Z_spar==z_moor)[0]) != 0:
+			z_moor += 0.01
+		if len(np.where(Z_spar==z_SWL)[0]) != 0:
+			z_SWL += 0.01
+		if z_ball == z_moor or z_ball == z_SWL:
+			z_ball += 0.01
+		if z_moor == z_SWL:
+			z_moor += 0.01
 
 		z_aux = np.array([z_ball, z_moor, z_SWL])
 
@@ -65,5 +76,5 @@ class ModeshapeSparNodes(ExplicitComponent):
 		count = 0
 		for i in xrange(14):
 			if i != ballidx and i != mooridx and i != SWLidx:
-				partials['z_sparnode', 'Z_spar'][i,count] = 1.
+				partials['z_sparnode', 'Z_spar'][i,count] += 1.
 				count += 1

@@ -92,4 +92,5 @@ class ModeshapeElemStiff(ExplicitComponent):
 				dkel_dLe[3,3] += 2. / 15. * norm_force[i-N_sparelem]
 				dkel_dLe[3,1] += -1. / 30. * norm_force[i-N_sparelem]
 				partials['kel', 'normforce_mode_elem'][16*i:16*i+16,i-N_sparelem] += kg.flatten()
-				partials['kel', 'L_mode_elem'][16*i:16*i+16,i] += dkel_dLe.flatten()
+			
+			partials['kel', 'L_mode_elem'][16*i:16*i+16,i] += dkel_dLe.flatten()
