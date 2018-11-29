@@ -16,7 +16,7 @@ class WaveSpectrum(ExplicitComponent):
 		self.add_input('Tp', val=0., units='s')
 		#self.add_input('omega', val=np.zeros(3493), units='rad/s')
 
-		self.add_output('S_wave', val=np.zeros(N_omega), units='m**2*s/rad')
+		self.add_output('S_wave', val=np.ones(N_omega), units='m**2*s/rad')
 
 	def compute(self, inputs, outputs):
 		omega = self.omega#inputs['omega']

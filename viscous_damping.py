@@ -19,14 +19,15 @@ class ViscousDamping(ExplicitComponent):
 		self.add_output('B_visc_57', val=0., units='N*s')
 		self.add_output('B_visc_77', val=0., units='N*s/m')
 
+		self.declare_partials('*', '*')
+
 	def compute(self, inputs, outputs):
 		Cd = inputs['Cd']
 		Z_spar = inputs['Z_spar']
 		D_spar = inputs['D_spar']
 		z_sparnode = inputs['z_sparnode']
 		x_sparelem = inputs['x_sparelem']
-		stddev_vel_distr = inputs['stddev_vel_distr'] #[0.21968992, 0.17205263, 0.14296216, 0.12826767, 0.12141458, 0.11747101, 0.12932541, 0.16370995, 0.20990478, 0.26172793, 0.30512369, 0.32986375, 0.35906924]
-
+		stddev_vel_distr = inputs['stddev_vel_distr'] #np.array([0.17856366, 0.14913746, 0.13331558, 0.12660471, 0.12420269, 0.12422336, 0.13459537, 0.15813834, 0.18982264, 0.22625248, 0.25732357, 0.257976, 0.2964546])
 
 		N_elem = len(x_sparelem)
 
@@ -56,13 +57,13 @@ class ViscousDamping(ExplicitComponent):
 				outputs['B_visc_57'] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * z * x_sparelem[i] * dz
 				outputs['B_visc_77'] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * x_sparelem[i]**2. * dz
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		Cd = inputs['Cd']
 		Z_spar = inputs['Z_spar']
 		D_spar = inputs['D_spar']
 		z_sparnode = inputs['z_sparnode']
 		x_sparelem = inputs['x_sparelem']
-		stddev_vel_distr = inputs['stddev_vel_distr'] #[0.21968992, 0.17205263, 0.14296216, 0.12826767, 0.12141458, 0.11747101, 0.12932541, 0.16370995, 0.20990478, 0.26172793, 0.30512369, 0.32986375, 0.35906924]
+		stddev_vel_distr = inputs['stddev_vel_distr'] #np.array([0.17856366, 0.14913746, 0.13331558, 0.12660471, 0.12420269, 0.12422336, 0.13459537, 0.15813834, 0.18982264, 0.22625248, 0.25732357, 0.257976, 0.2964546])
 
 
 		N_elem = len(x_sparelem)
@@ -73,8 +74,38 @@ class ViscousDamping(ExplicitComponent):
 		partials['B_visc_11', 'x_sparelem'] = np.zeros((1,13))
 		partials['B_visc_11', 'z_sparnode'] = np.zeros((1,14))
 		partials['B_visc_11', 'Z_spar'] = np.zeros((1,11))
-		partials['B_visc_11', 'D_spar'] = np.zeros((1,13))
+		partials['B_visc_11', 'D_spar'] = np.zeros((1,10))
 		partials['B_visc_11', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_15', 'Cd'] = 0.
+		partials['B_visc_15', 'x_sparelem'] = np.zeros((1,13))
+		partials['B_visc_15', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_15', 'Z_spar'] = np.zeros((1,11))
+		partials['B_visc_15', 'D_spar'] = np.zeros((1,10))
+		partials['B_visc_15', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_17', 'Cd'] = 0.
+		partials['B_visc_17', 'x_sparelem'] = np.zeros((1,13))
+		partials['B_visc_17', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_17', 'Z_spar'] = np.zeros((1,11))
+		partials['B_visc_17', 'D_spar'] = np.zeros((1,10))
+		partials['B_visc_17', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_55', 'Cd'] = 0.
+		partials['B_visc_55', 'x_sparelem'] = np.zeros((1,13))
+		partials['B_visc_55', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_55', 'Z_spar'] = np.zeros((1,11))
+		partials['B_visc_55', 'D_spar'] = np.zeros((1,10))
+		partials['B_visc_55', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_57', 'Cd'] = 0.
+		partials['B_visc_57', 'x_sparelem'] = np.zeros((1,13))
+		partials['B_visc_57', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_57', 'Z_spar'] = np.zeros((1,11))
+		partials['B_visc_57', 'D_spar'] = np.zeros((1,10))
+		partials['B_visc_57', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_77', 'Cd'] = 0.
+		partials['B_visc_77', 'x_sparelem'] = np.zeros((1,13))
+		partials['B_visc_77', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_77', 'Z_spar'] = np.zeros((1,11))
+		partials['B_visc_77', 'D_spar'] = np.zeros((1,10))
+		partials['B_visc_77', 'stddev_vel_distr'] = np.zeros((1,13))
 
 		for i in xrange(N_elem):
 			z = (z_sparnode[i] + z_sparnode[i+1]) / 2
@@ -87,14 +118,14 @@ class ViscousDamping(ExplicitComponent):
 						break
 
 				partials['B_visc_11', 'Cd'] += 0.5 * 1025. * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * dz
-				partials['B_visc_11', 'z_sparnode'][0,i] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D
-				partials['B_visc_11', 'z_sparnode'][0,i+1] += -0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D
+				partials['B_visc_11', 'z_sparnode'][0,i] += -0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D
+				partials['B_visc_11', 'z_sparnode'][0,i+1] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D
 				partials['B_visc_11', 'D_spar'][0,j] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * dz
 				partials['B_visc_11', 'stddev_vel_distr'][0,i] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * D * dz
 
 				partials['B_visc_15', 'Cd'] += 0.5 * 1025. * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * z * dz
 				partials['B_visc_15', 'z_sparnode'][0,i] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * (-z + dz * 0.5)
-				partials['B_visc_15', 'z_sparnode'][0,i+1] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * (z +dz * 0.5 )
+				partials['B_visc_15', 'z_sparnode'][0,i+1] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * D * (z + dz * 0.5 )
 				partials['B_visc_15', 'D_spar'][0,j] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * stddev_vel_distr[i] * z * dz
 				partials['B_visc_15', 'stddev_vel_distr'][0,i] += 0.5 * 1025. * Cd * np.sqrt(8./np.pi) * D * z * dz
 

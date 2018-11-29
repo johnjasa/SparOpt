@@ -15,8 +15,8 @@ class NormVelWavePitch(ExplicitComponent):
 		self.add_input('Re_RAO_wave_pitch', val=np.zeros(N_omega), units='rad/m')
 		self.add_input('Im_RAO_wave_pitch', val=np.zeros(N_omega), units='rad/m')
 
-		self.add_output('Re_RAO_wave_vel_pitch', val=np.zeros(N_omega), units='(rad/s)/m')
-		self.add_output('Im_RAO_wave_vel_pitch', val=np.zeros(N_omega), units='(rad/s)/m')
+		self.add_output('Re_RAO_wave_vel_pitch', val=np.ones(N_omega), units='(rad/s)/m')
+		self.add_output('Im_RAO_wave_vel_pitch', val=np.ones(N_omega), units='(rad/s)/m')
 
 		self.declare_partials('Re_RAO_wave_vel_pitch', 'Re_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wave_vel_pitch', 'Im_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))

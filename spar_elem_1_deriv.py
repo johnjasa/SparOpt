@@ -9,7 +9,7 @@ class SparElem1Deriv(ExplicitComponent):
 		self.add_input('z_sparnode', val=np.zeros(14), units='m')
 		self.add_input('x_d_sparnode', val=np.zeros(14), units='m/m')
 
-		self.add_output('x_d_sparelem', val=np.zeros(13), units='1/m')
+		self.add_output('x_d_sparelem', val=np.zeros(13), units='m/m')
 
 		self.declare_partials('*', '*')
 

@@ -15,7 +15,7 @@ class WindSpectrum(ExplicitComponent):
 		self.add_input('windspeed_0', val=0., units='m/s')
 		#self.add_input('omega', val=np.zeros(3493), units='rad/s')
 
-		self.add_output('S_wind', val=np.zeros(N_omega), units='m**2/(rad*s)')
+		self.add_output('S_wind', val=np.ones(N_omega), units='m**2/(rad*s)')
 
 	def compute(self, inputs, outputs):
 		omega = self.omega#inputs['omega']

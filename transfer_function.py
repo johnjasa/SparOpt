@@ -41,7 +41,7 @@ class TransferFunction(ImplicitComponent):
 		self.declare_partials('Im_H_feedbk', 'Im_H_feedbk', rows=np.repeat(np.arange(N_omega*9*6), 9), cols=Hcols)
 
 	def apply_nonlinear(self, inputs, outputs, residuals):
-		omega = self.omega#inputs['omega']
+		omega = self.omega
 		N_omega = len(omega)
 
 		for i in xrange(N_omega):
@@ -49,17 +49,17 @@ class TransferFunction(ImplicitComponent):
 			residuals['Im_H_feedbk'][i] = np.imag((1j*omega[i] * np.identity(9) - inputs['A_feedbk']).dot(outputs['Re_H_feedbk'][i] + 1j * outputs['Im_H_feedbk'][i])) - inputs['B_feedbk']
 
 	def solve_nonlinear(self, inputs, outputs):
-		omega = self.omega#inputs['omega']
+		omega = self.omega
 		N_omega = len(omega)
 
 		for i in xrange(N_omega):
-			H_feedbk = np.matmul(linalg.inv(1j*omega[i] * np.identity(9) - inputs['A_feedbk']), inputs['B_feedbk'])
+			H_feedbk = linalg.solve(1j*omega[i] * np.identity(9) - inputs['A_feedbk'], inputs['B_feedbk'])
 
 			outputs['Re_H_feedbk'][i] = np.real(H_feedbk)
 			outputs['Im_H_feedbk'][i] = np.imag(H_feedbk)
 
 	def linearize(self, inputs, outputs, partials):
-		omega = self.omega#inputs['omega']
+		omega = self.omega
 		N_omega = len(omega)
 
 		Hre_A = -np.tile(np.transpose(outputs['Re_H_feedbk'][0]).flatten(),9)

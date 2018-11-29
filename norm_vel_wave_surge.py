@@ -15,8 +15,8 @@ class NormVelWaveSurge(ExplicitComponent):
 		self.add_input('Re_RAO_wave_surge', val=np.zeros(N_omega), units='m/m')
 		self.add_input('Im_RAO_wave_surge', val=np.zeros(N_omega), units='m/m')
 
-		self.add_output('Re_RAO_wave_vel_surge', val=np.zeros(N_omega), units='(m/s)/m')
-		self.add_output('Im_RAO_wave_vel_surge', val=np.zeros(N_omega), units='(m/s)/m')
+		self.add_output('Re_RAO_wave_vel_surge', val=np.ones(N_omega), units='(m/s)/m')
+		self.add_output('Im_RAO_wave_vel_surge', val=np.ones(N_omega), units='(m/s)/m')
 
 		self.declare_partials('Re_RAO_wave_vel_surge', 'Re_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wave_vel_surge', 'Im_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))

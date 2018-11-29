@@ -30,7 +30,6 @@ class Buoyancy(ExplicitComponent):
 
 		CoB_sec = -spar_draft + np.sum(L_spar[0:-1]) + (L_spar[-1] - 10.) / 2.
 		CoB_t_vol += np.pi / 4. * D_spar[-1]**2. * (L_spar[-1] - 10.) * CoB_sec
-		#TODO: last secton from 0 to 10
 
 		outputs['CoB'] = CoB_t_vol / inputs['sub_vol']
 

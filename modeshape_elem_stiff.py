@@ -7,7 +7,7 @@ class ModeshapeElemStiff(ExplicitComponent):
 	def setup(self):
 		self.add_input('EI_mode_elem', val=np.zeros(23), units='N*m**2')
 		self.add_input('L_mode_elem', val=np.zeros(23), units='m')
-		self.add_input('normforce_mode_elem', val=np.zeros(10), units='N')
+		self.add_input('normforce_mode_elem', val=np.zeros(23), units='N')
 
 		self.add_output('kel', val=np.zeros((23,4,4)), units='N/m')
 
@@ -21,7 +21,7 @@ class ModeshapeElemStiff(ExplicitComponent):
 		N_elem = len(L)
 		N_sparelem = N_elem - len(norm_force)
 
-		outputs['kel'] = np.zeros((23,4,4))
+		outputs['kel'] = np.zeros((N_elem,4,4))
 		for i in xrange(N_elem):
 			ke = np.zeros((4,4))
 			kg = np.zeros((4,4))
@@ -34,14 +34,13 @@ class ModeshapeElemStiff(ExplicitComponent):
 			ke[1,3] = ke[3,1] = 2. / L[i]
 			ke = ke * EI[i]
 
-			if i >= N_sparelem:
-				kg[0,0] = kg[2,2] = 6. / (5. * L[i])
-				kg[0,2] = kg[2,0] = -6. / (5. * L[i])
-				kg[0,1] = kg[1,0] = kg[0,3] = kg[3,0] = 1. / 10.
-				kg[1,2] = kg[2,1] = kg[2,3] = kg[3,2] = -1. / 10.
-				kg[1,1] = kg[3,3] = 2. * L[i] / 15.
-				kg[1,3] = kg[3,1] = -L[i] / 30.
-				kg = kg * norm_force[i-N_sparelem]
+			kg[0,0] = kg[2,2] = 6. / (5. * L[i])
+			kg[0,2] = kg[2,0] = -6. / (5. * L[i])
+			kg[0,1] = kg[1,0] = kg[0,3] = kg[3,0] = 1. / 10.
+			kg[1,2] = kg[2,1] = kg[2,3] = kg[3,2] = -1. / 10.
+			kg[1,1] = kg[3,3] = 2. * L[i] / 15.
+			kg[1,3] = kg[3,1] = -L[i] / 30.
+			kg = kg * norm_force[i]
 
 			outputs['kel'][i] += ke + kg
 
@@ -52,7 +51,7 @@ class ModeshapeElemStiff(ExplicitComponent):
 
 		partials['kel', 'EI_mode_elem'] = np.zeros((368,23))
 		partials['kel', 'L_mode_elem'] = np.zeros((368,23))
-		partials['kel', 'normforce_mode_elem'] = np.zeros((368,10))
+		partials['kel', 'normforce_mode_elem'] = np.zeros((368,23))
 
 		N_elem = len(L)
 		N_sparelem = N_elem - len(norm_force)

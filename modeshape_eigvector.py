@@ -16,6 +16,8 @@ class ModeshapeEigvector(ExplicitComponent):
 		A = inputs['A_eig']
 
 		eig_vals, eig_vecs = np.linalg.eig(A)
+
+		#print 2. * np.pi / np.sqrt(eig_vals[-3:])
 		
 		outputs['eig_vector'] = eig_vecs[:,-3]
 

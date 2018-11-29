@@ -31,7 +31,6 @@ class ModeshapeElemMass(ExplicitComponent):
 		M_ball = inputs['M_ball']
 		L_ball = inputs['L_ball']
 		z_ball = -inputs['spar_draft'][0] + L_ball[0]
-		z_SWL = 0.
 		z_sparnode = inputs['z_sparnode']
 		L = inputs['L_mode_elem']
 
@@ -49,7 +48,7 @@ class ModeshapeElemMass(ExplicitComponent):
 			steelmass = M_spar[sparidx] / L_spar[sparidx]
 			addedmass = 0.
 			ballmass = 0.
-			if z_sparnode[i+1] <= z_SWL:
+			if z_sparnode[i+1] <= 0.:
 				addedmass = 1025. * np.pi / 4. * D_spar[sparidx]**2.
 			if z_sparnode[i+1] <= z_ball:
 				ballmass = M_ball / L_ball
@@ -80,7 +79,6 @@ class ModeshapeElemMass(ExplicitComponent):
 		M_ball = inputs['M_ball']
 		L_ball = inputs['L_ball']
 		z_ball = -inputs['spar_draft'][0] + L_ball[0]
-		z_SWL = 0.
 		z_sparnode = inputs['z_sparnode']
 		L = inputs['L_mode_elem']
 
@@ -119,7 +117,7 @@ class ModeshapeElemMass(ExplicitComponent):
 			dm_dMs[i,sparidx] += 1. / L_spar[sparidx]
 			addedmass = 0.
 			ballmass = 0.
-			if z_sparnode[i+1] <= z_SWL:
+			if z_sparnode[i+1] <= 0.:
 				addedmass = 1025. * np.pi / 4. * D_spar[sparidx]**2.
 				dm_dD[i,sparidx] += 1025. * np.pi / 2. * D_spar[sparidx]
 			if z_sparnode[i+1] <= z_ball:
@@ -193,16 +191,3 @@ class ModeshapeElemMass(ExplicitComponent):
 			
 		partials['mel', 'L_ball'] = np.array(dmel_dLb)
 		partials['mel', 'M_ball'] = np.array(dmel_dMb)
-
-"""
-		for i in xrange(N_elem):
-			outputs['mel'][i,0,0] = outputs['mel'][i,2,2] = 156.
-			outputs['mel'][i,1,1] = outputs['mel'][i,3,3] = 4. * L[i]**2.
-			outputs['mel'][i,0,1] = outputs['mel'][i,1,0] = 22. * L[i]
-			outputs['mel'][i,2,3] = outputs['mel'][i,3,2] = -22. * L[i]
-			outputs['mel'][i,0,2] = outputs['mel'][i,2,0] = 54.
-			outputs['mel'][i,1,2] = outputs['mel'][i,2,1] = 13. * L[i]
-			outputs['mel'][i,0,3] = outputs['mel'][i,3,0] = -13. * L[i]
-			outputs['mel'][i,1,3] = outputs['mel'][i,3,1] = -3. * L[i]**2.
-			outputs['mel'][i] = outputs['mel'][i] * m[i] * L[i] / 420.
-"""

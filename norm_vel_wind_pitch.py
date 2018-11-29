@@ -15,8 +15,8 @@ class NormVelWindPitch(ExplicitComponent):
 		self.add_input('Re_RAO_wind_pitch', val=np.zeros(N_omega), units='rad/(m/s)')
 		self.add_input('Im_RAO_wind_pitch', val=np.zeros(N_omega), units='rad/(m/s)')
 
-		self.add_output('Re_RAO_wind_vel_pitch', val=np.zeros(N_omega), units='(rad/s)/(m/s)')
-		self.add_output('Im_RAO_wind_vel_pitch', val=np.zeros(N_omega), units='(rad/s)/(m/s)')
+		self.add_output('Re_RAO_wind_vel_pitch', val=np.ones(N_omega), units='(rad/s)/(m/s)')
+		self.add_output('Im_RAO_wind_vel_pitch', val=np.ones(N_omega), units='(rad/s)/(m/s)')
 
 		self.declare_partials('Re_RAO_wind_vel_pitch', 'Re_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wind_vel_pitch', 'Im_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))

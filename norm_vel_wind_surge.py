@@ -15,8 +15,8 @@ class NormVelWindSurge(ExplicitComponent):
 		self.add_input('Re_RAO_wind_surge', val=np.zeros(N_omega), units='m/(m/s)')
 		self.add_input('Im_RAO_wind_surge', val=np.zeros(N_omega), units='m/(m/s)')
 
-		self.add_output('Re_RAO_wind_vel_surge', val=np.zeros(N_omega), units='(m/s)/(m/s)')
-		self.add_output('Im_RAO_wind_vel_surge', val=np.zeros(N_omega), units='(m/s)/(m/s)')
+		self.add_output('Re_RAO_wind_vel_surge', val=np.ones(N_omega), units='(m/s)/(m/s)')
+		self.add_output('Im_RAO_wind_vel_surge', val=np.ones(N_omega), units='(m/s)/(m/s)')
 		
 		self.declare_partials('Re_RAO_wind_vel_surge', 'Re_RAO_wind_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wind_vel_surge', 'Im_RAO_wind_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))

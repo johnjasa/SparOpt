@@ -6,7 +6,6 @@ class ModeshapeGlobStiff(ExplicitComponent):
 
 	def setup(self):
 		self.add_input('K_moor', val=0., units='N/m')
-		self.add_input('K_hydrostatic', val=0., units='N*m/rad')
 		self.add_input('z_sparnode', val=np.zeros(14), units='m')
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('kel', val=np.zeros((23,4,4)), units='N/m')
@@ -17,10 +16,8 @@ class ModeshapeGlobStiff(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		K_moor = inputs['K_moor']
-		K_hydrostatic = inputs['K_hydrostatic']
 		z_sparnode = inputs['z_sparnode']
 		z_moor = inputs['z_moor']
-		z_SWL = 0.
 		kel = inputs['kel']
 
 		N_elem = len(kel)
@@ -43,23 +40,18 @@ class ModeshapeGlobStiff(ExplicitComponent):
 							outputs['K_mode'][row][col] += kel[i][j][p]
 
 		mooridx = np.concatenate(np.where(z_sparnode==z_moor))
-		SWLidx = np.concatenate(np.where(z_sparnode==z_SWL))
 
 		outputs['K_mode'][mooridx*2,mooridx*2] += K_moor
-		outputs['K_mode'][SWLidx*2+1,SWLidx*2+1] += K_hydrostatic
 
 	def compute_partials(self, inputs, partials):
 		K_moor = inputs['K_moor']
-		K_hydrostatic = inputs['K_hydrostatic']
 		z_sparnode = inputs['z_sparnode']
 		z_moor = inputs['z_moor']
-		z_SWL = 0.
 		kel = inputs['kel']
 
 		N_elem = len(kel)
 
 		partials['K_mode', 'K_moor'] = np.zeros(2304)
-		partials['K_mode', 'K_hydrostatic'] = np.zeros(2304)
 		partials['K_mode', 'kel'] = np.zeros((2304,368))
 
 		LD = np.zeros((N_elem,4))
@@ -78,7 +70,5 @@ class ModeshapeGlobStiff(ExplicitComponent):
 							partials['K_mode', 'kel'][48*row+col][16*i+4*j+p] += 1.
 
 		mooridx = np.concatenate(np.where(z_sparnode==z_moor))
-		SWLidx = np.concatenate(np.where(z_sparnode==z_SWL))
 
 		partials['K_mode', 'K_moor'][48*mooridx*2+mooridx*2] += 1.
-		partials['K_mode', 'K_hydrostatic'][48*(SWLidx*2+1)+SWLidx*2+1] += 1.
