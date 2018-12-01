@@ -30,18 +30,18 @@ class NormTBMomentWave(ExplicitComponent):
 		self.add_input('Im_RAO_wave_bend', val=np.zeros(N_omega), units='m/m')
 		self.add_input('Im_RAO_wave_rotspeed', val=np.zeros(N_omega), units='(rad/s)/m')
 		self.add_input('Im_RAO_wave_bldpitch', val=np.zeros(N_omega), units='rad/m')
-		self.add_input('Re_RAO_wave_vel_surge', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Re_RAO_wave_vel_pitch', val=np.zeros(N_omega), units='rad/m')
-		self.add_input('Re_RAO_wave_vel_bend', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Im_RAO_wave_vel_surge', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Im_RAO_wave_vel_pitch', val=np.zeros(N_omega), units='rad/m')
-		self.add_input('Im_RAO_wave_vel_bend', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Re_RAO_wave_acc_surge', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Re_RAO_wave_acc_pitch', val=np.zeros(N_omega), units='rad/m')
-		self.add_input('Re_RAO_wave_acc_bend', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Im_RAO_wave_acc_surge', val=np.zeros(N_omega), units='m/m')
-		self.add_input('Im_RAO_wave_acc_pitch', val=np.zeros(N_omega), units='rad/m')
-		self.add_input('Im_RAO_wave_acc_bend', val=np.zeros(N_omega), units='m/m')
+		self.add_input('Re_RAO_wave_vel_surge', val=np.zeros(N_omega), units='(m/s)/m')
+		self.add_input('Re_RAO_wave_vel_pitch', val=np.zeros(N_omega), units='(rad/s)/m')
+		self.add_input('Re_RAO_wave_vel_bend', val=np.zeros(N_omega), units='(m/s)/m')
+		self.add_input('Im_RAO_wave_vel_surge', val=np.zeros(N_omega), units='(m/s)/m')
+		self.add_input('Im_RAO_wave_vel_pitch', val=np.zeros(N_omega), units='(rad/s)/m')
+		self.add_input('Im_RAO_wave_vel_bend', val=np.zeros(N_omega), units='(m/s)/m')
+		self.add_input('Re_RAO_wave_acc_surge', val=np.zeros(N_omega), units='(m/s**2)/m')
+		self.add_input('Re_RAO_wave_acc_pitch', val=np.zeros(N_omega), units='(rad/s**2)/m')
+		self.add_input('Re_RAO_wave_acc_bend', val=np.zeros(N_omega), units='(m/s**2)/m')
+		self.add_input('Im_RAO_wave_acc_surge', val=np.zeros(N_omega), units='(m/s**2)/m')
+		self.add_input('Im_RAO_wave_acc_pitch', val=np.zeros(N_omega), units='(rad/s**2)/m')
+		self.add_input('Im_RAO_wave_acc_bend', val=np.zeros(N_omega), units='(m/s**2)/m')
 
 		self.add_output('Re_RAO_wave_TB_moment', val=np.zeros(N_omega), units='N*m/m')
 		self.add_output('Im_RAO_wave_TB_moment', val=np.zeros(N_omega), units='N*m/m')
@@ -109,6 +109,17 @@ class NormTBMomentWave(ExplicitComponent):
 		self.declare_partials('Im_RAO_wave_TB_moment', 'Im_RAO_wave_acc_bend', rows=np.arange(N_omega), cols=np.arange(N_omega))
 
 	def compute(self, inputs, outputs):
+		mom_acc_surge = inputs['mom_acc_surge'][0]
+		mom_acc_pitch = inputs['mom_acc_pitch'][0]
+		mom_acc_bend = inputs['mom_acc_bend'][0]
+		mom_damp_surge = inputs['mom_damp_surge'][0]
+		mom_damp_pitch = inputs['mom_damp_pitch'][0]
+		mom_damp_bend = inputs['mom_damp_bend'][0]
+		mom_grav_pitch = inputs['mom_grav_pitch'][0]
+		mom_grav_bend = inputs['mom_grav_bend'][0]
+		mom_rotspeed = inputs['mom_rotspeed'][0]
+		mom_bldpitch = inputs['mom_bldpitch'][0]
+		
 		RAO_wave_acc_surge = inputs['Re_RAO_wave_acc_surge'] + 1j * inputs['Im_RAO_wave_acc_surge']
 		RAO_wave_acc_pitch = inputs['Re_RAO_wave_acc_pitch'] + 1j * inputs['Im_RAO_wave_acc_pitch']
 		RAO_wave_acc_bend = inputs['Re_RAO_wave_acc_bend'] + 1j * inputs['Im_RAO_wave_acc_bend']
@@ -120,8 +131,8 @@ class NormTBMomentWave(ExplicitComponent):
 		RAO_wave_rotspeed = inputs['Re_RAO_wave_rotspeed'] + 1j * inputs['Im_RAO_wave_rotspeed']
 		RAO_wave_bldpitch = inputs['Re_RAO_wave_bldpitch'] + 1j * inputs['Im_RAO_wave_bldpitch']
 
-		RAO_wave_TB_moment = -mom_acc_surge * RAO_wave_acc_surge[i] - mom_acc_pitch * RAO_wave_acc_pitch[i] - mom_acc_bend * RAO_wave_acc_bend[i] - mom_damp_surge * RAO_wave_vel_surge[i] - mom_damp_pitch * RAO_wave_vel_pitch[i] - mom_damp_bend * RAO_wave_vel_bend[i] + mom_grav_pitch * RAO_wave_pitch[i] + mom_grav_bend * RAO_wave_bend[i] + mom_rotspeed * RAO_wave_rotspeed[i] + mom_bldpitch * RAO_wave_bldpitch[i]
-
+		RAO_wave_TB_moment = -mom_acc_surge * RAO_wave_acc_surge - mom_acc_pitch * RAO_wave_acc_pitch - mom_acc_bend * RAO_wave_acc_bend - mom_damp_surge * RAO_wave_vel_surge - mom_damp_pitch * RAO_wave_vel_pitch - mom_damp_bend * RAO_wave_vel_bend + mom_grav_pitch * RAO_wave_pitch + mom_grav_bend * RAO_wave_bend + mom_rotspeed * RAO_wave_rotspeed + mom_bldpitch * RAO_wave_bldpitch
+		
 		outputs['Re_RAO_wave_TB_moment'] = np.real(RAO_wave_TB_moment)
 
 		outputs['Im_RAO_wave_TB_moment'] = np.imag(RAO_wave_TB_moment)

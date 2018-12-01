@@ -5,9 +5,9 @@ from openmdao.api import ExplicitComponent
 class HullIR(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('I_x', val=np.zeros(10), units='m')
-		self.add_input('I_xh', val=np.zeros(10), units='m')
-		self.add_input('I_h', val=np.zeros(10), units='m')
+		self.add_input('I_x', val=np.zeros(10), units='m**4')
+		self.add_input('I_xh', val=np.zeros(10), units='m**4')
+		self.add_input('I_h', val=np.zeros(10), units='m**4')
 
 		self.add_output('I_R', val=np.zeros(10), units='m**4')
 
@@ -19,6 +19,6 @@ class HullIR(ExplicitComponent):
 		outputs['I_R'] = inputs['I_x'] + inputs['I_xh'] + inputs['I_h']
 
 	def compute_partials(self, inputs, partials):
-		partials['I_C', 'I_x'] = np.ones(10)
-		partials['I_C', 'I_xh'] = np.ones(10)
-		partials['I_C', 'I_h'] = np.ones(10)
+		partials['I_R', 'I_x'] = np.ones(10)
+		partials['I_R', 'I_xh'] = np.ones(10)
+		partials['I_R', 'I_h'] = np.ones(10)

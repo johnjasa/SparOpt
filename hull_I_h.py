@@ -26,9 +26,13 @@ class HullIH(ExplicitComponent):
 		self.declare_partials('I_h', 'sigma_hR', rows=np.arange(10), cols=np.arange(10))
 
 	def compute(self, inputs, outputs):
+		E = 2.1e5 #MPa
+
 		outputs['I_h'] = abs(inputs['net_pressure']) * inputs['r_hull'] * inputs['r_0']**2. * inputs['l_stiff'] / (3. * E) * (1.5 + 3. * E * inputs['z_t'] * inputs['delta_0'] / (inputs['r_0']**2. * (inputs['f_r'] / 2. - abs(inputs['sigma_hR']))))
 
 	def compute_partials(self, inputs, partials):
+		E = 2.1e5
+		
 		partials['I_h', 'net_pressure'] = inputs['net_pressure'] / abs(inputs['net_pressure']) * inputs['r_hull'] * inputs['r_0']**2. * inputs['l_stiff'] / (3. * E) * (1.5 + 3. * E * inputs['z_t'] * inputs['delta_0'] / (inputs['r_0']**2. * (inputs['f_r'] / 2. - abs(inputs['sigma_hR']))))
 		partials['I_h', 'r_hull'] = abs(inputs['net_pressure']) * inputs['r_0']**2. * inputs['l_stiff'] / (3. * E) * (1.5 + 3. * E * inputs['z_t'] * inputs['delta_0'] / (inputs['r_0']**2. * (inputs['f_r'] / 2. - abs(inputs['sigma_hR']))))
 		partials['I_h', 'r_0'] =  abs(inputs['net_pressure']) * inputs['r_hull'] * inputs['l_stiff'] / (3. * E) * (2. * inputs['r_0'] * (1.5 + 3. * E * inputs['z_t'] * inputs['delta_0'] / (inputs['r_0']**2. * (inputs['f_r'] / 2. - abs(inputs['sigma_hR'])))) - inputs['r_0']**2. * 2. * (3. * E * inputs['z_t'] * inputs['delta_0'] / (inputs['r_0']**3. * (inputs['f_r'] / 2. - abs(inputs['sigma_hR']))))) 

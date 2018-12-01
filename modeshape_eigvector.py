@@ -7,28 +7,36 @@ class ModeshapeEigvector(ExplicitComponent):
 
 	def setup(self):
 		self.add_input('A_eig', val=np.zeros((48,48)))
+		self.add_input('struct_damp_ratio', val=0.)
 
 		self.add_output('eig_vector', val=np.ones(48), units='m')
+		self.add_output('alpha_damp', val=0., units='s')
 
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		A = inputs['A_eig']
+		struct_damp_ratio = inputs['struct_damp_ratio']
 
 		eig_vals, eig_vecs = np.linalg.eig(A)
 
 		#print 2. * np.pi / np.sqrt(eig_vals[-3:])
 		
 		outputs['eig_vector'] = eig_vecs[:,-3]
+		outputs['alpha_damp'] = 2. * struct_damp_ratio / np.sqrt(eig_vals[-3])
 
 	def compute_partials(self, inputs, partials):
 		A = inputs['A_eig']
+		struct_damp_ratio = inputs['struct_damp_ratio']
 
 		partials['eig_vector', 'A_eig'] = np.zeros((len(A),A.size))
+		partials['alpha_damp', 'A_eig'] = np.zeros((1,A.size))
 
 		eig_vals, eig_vecs = np.linalg.eig(A)
 		eig_val = eig_vals[-3]
 		eig_vec = eig_vecs[:,-3]
+
+		partials['alpha_damp', 'struct_damp_ratio'] = 2. / np.sqrt(eig_val)
 
 		E = np.zeros_like(A)
 		F = np.zeros_like(A)
@@ -46,6 +54,8 @@ class ModeshapeEigvector(ExplicitComponent):
 
 				P = solve(eig_vecs, np.dot(dA, eig_vecs))
 
+				dD = np.diag(np.identity(len(A)) * P)
 				dU = np.dot(eig_vecs, (F * P))
 
 				partials['eig_vector', 'A_eig'][:,len(A)*i+j] = dU[:,-3]
+				partials['alpha_damp', 'A_eig'][0,len(A)*i+j] = -struct_damp_ratio / (eig_vals[-3])**(3./2.) * dD

@@ -5,17 +5,17 @@ from openmdao.api import ExplicitComponent
 class RingBuckling2(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('h_stiff', val=np.zeros(10))
-		self.add_input('b_stiff', val=np.zeros(10))
-		self.add_input('r_hull', val=np.zeros(10))
-		self.add_input('f_y', val=0.)
+		self.add_input('h_stiff', val=np.zeros(10), units='m')
+		self.add_input('b_stiff', val=np.zeros(10), units='m')
+		self.add_input('r_hull', val=np.zeros(10), units='m')
+		self.add_input('f_y', val=0., units='MPa')
 
 		self.add_output('ring_buckling_2', val=np.zeros(10))
 
 		self.declare_partials('ring_buckling_2', 'h_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('ring_buckling_2', 'b_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('ring_buckling_2', 'r_hull', rows=np.arange(10), cols=np.arange(10))
-		self.declare_partials('ring_buckling_2', 'f_y', rows=np.arange(10), cols=np.arange(10))
+		self.declare_partials('ring_buckling_2', 'f_y')
 
 	def compute(self, inputs, outputs):
 		E = 2.1e5 #MPa

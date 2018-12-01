@@ -5,7 +5,7 @@ from openmdao.api import ExplicitComponent
 class HullLambdaS(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('f_y', val=np.zeros(10), units='MPa')
+		self.add_input('f_y', val=0., units='MPa')
 		self.add_input('sigma_j', val=np.zeros(10), units='MPa')
 		self.add_input('sigma_a0', val=np.zeros(10), units='MPa')
 		self.add_input('sigma_m0', val=np.zeros(10), units='MPa')
@@ -18,7 +18,7 @@ class HullLambdaS(ExplicitComponent):
 
 		self.add_output('lambda_s', val=np.zeros(10))
 
-		self.declare_partials('lambda_s', 'f_y', rows=np.arange(10), cols=np.arange(10))
+		self.declare_partials('lambda_s', 'f_y')
 		self.declare_partials('lambda_s', 'sigma_j', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('lambda_s', 'sigma_a0', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('lambda_s', 'sigma_m0', rows=np.arange(10), cols=np.arange(10))

@@ -16,14 +16,14 @@ class SparDiameter(ExplicitComponent):
 
 		outputs['D_spar'] = np.zeros(10)
 
-		for i in range(len(D_spar)):
+		for i in range(len(D_spar_p)-1):
 			outputs['D_spar'][i] = (D_spar_p[i] + D_spar_p[i+1]) / 2.
 
 	def compute_partials(self, inputs, partials): #TODO check
-		D_spar  = inputs['D_spar']
+		D_spar_p  = inputs['D_spar_p']
 
-		partials['D_spar', 'D_spar_p'] = np.zeros((len(D_spar),len(D_spar_p)))
+		partials['D_spar', 'D_spar_p'] = np.zeros((len(D_spar_p)-1,len(D_spar_p)))
 
-		for i in range(len(D_spar)):
+		for i in range(len(D_spar_p)-1):
 			partials['D_spar', 'D_spar_p'][i,i] += 0.5
 			partials['D_spar', 'D_spar_p'][i,i+1] += 0.5

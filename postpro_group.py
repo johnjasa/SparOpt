@@ -26,7 +26,13 @@ from vel_spectrum_surge import VelSpectrumSurge
 from vel_spectrum_pitch import VelSpectrumPitch
 from vel_spectrum_bend import VelSpectrumBend
 from std_dev_resp import StdDevResp
-from std_dev_resp_vel import StdDevRespVel
+from tower_moment_gains import TowerMomentGains
+from norm_TB_moment_wave import NormTBMomentWave
+from norm_TB_moment_wind import NormTBMomentWind
+from norm_TB_moment_Mwind import NormTBMomentMWind
+from TB_moment_spectrum import TBMomentSpectrum
+from TB_stress_spectrum import TBStressSpectrum
+from dirlik import Dirlik
 
 class Postpro(Group):
 
@@ -84,4 +90,16 @@ class Postpro(Group):
 
 	 	self.add_subsystem('std_dev_resp', StdDevResp(freqs=freqs), promotes_inputs=['resp_surge', 'resp_pitch', 'resp_bend', 'resp_rotspeed', 'resp_bldpitch'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', 'stddev_bldpitch'])
 
-	 	self.add_subsystem('std_dev_resp_vel', StdDevRespVel(freqs=freqs), promotes_inputs=['resp_vel_surge', 'resp_vel_pitch', 'resp_vel_bend'], promotes_outputs=['stddev_vel_surge', 'stddev_vel_pitch', 'stddev_vel_bend'])
+		self.add_subsystem('tower_moment_gains', TowerMomentGains(), promotes_inputs=['M_tower', 'M_nacelle', 'M_rotor', 'I_rotor', 'CoG_nacelle', 'CoG_rotor', 'z_towernode', 'x_towerelem', 'x_towernode', 'x_d_towertop', 'dthrust_dv', 'dmoment_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch'], promotes_outputs=['mom_acc_surge', 'mom_acc_pitch', 'mom_acc_bend', 'mom_damp_surge', 'mom_damp_pitch', 'mom_damp_bend', 'mom_grav_pitch', 'mom_grav_bend', 'mom_rotspeed', 'mom_bldpitch'])
+
+	 	self.add_subsystem('norm_TB_moment_wave', NormTBMomentWave(freqs=freqs), promotes_inputs=['mom_acc_surge', 'mom_acc_pitch', 'mom_acc_bend', 'mom_damp_surge', 'mom_damp_pitch', 'mom_damp_bend', 'mom_grav_pitch', 'mom_grav_bend', 'mom_rotspeed', 'mom_bldpitch', 'Re_RAO_wave_pitch', 'Re_RAO_wave_bend', 'Re_RAO_wave_rotspeed', 'Re_RAO_wave_bldpitch', 'Im_RAO_wave_pitch', 'Im_RAO_wave_bend', 'Im_RAO_wave_rotspeed', 'Im_RAO_wave_bldpitch', 'Re_RAO_wave_vel_surge', 'Re_RAO_wave_vel_pitch', 'Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_surge', 'Im_RAO_wave_vel_pitch', 'Im_RAO_wave_vel_bend', 'Re_RAO_wave_acc_surge', 'Re_RAO_wave_acc_pitch', 'Re_RAO_wave_acc_bend', 'Im_RAO_wave_acc_surge', 'Im_RAO_wave_acc_pitch', 'Im_RAO_wave_acc_bend'], promotes_outputs=['Re_RAO_wave_TB_moment', 'Im_RAO_wave_TB_moment'])
+
+	 	self.add_subsystem('norm_TB_moment_wind', NormTBMomentWind(freqs=freqs), promotes_inputs=['mom_acc_surge', 'mom_acc_pitch', 'mom_acc_bend', 'mom_damp_surge', 'mom_damp_pitch', 'mom_damp_bend', 'mom_grav_pitch', 'mom_grav_bend', 'mom_rotspeed', 'mom_bldpitch', 'Re_RAO_wind_pitch', 'Re_RAO_wind_bend', 'Re_RAO_wind_rotspeed', 'Re_RAO_wind_bldpitch', 'Im_RAO_wind_pitch', 'Im_RAO_wind_bend', 'Im_RAO_wind_rotspeed', 'Im_RAO_wind_bldpitch', 'Re_RAO_wind_vel_surge', 'Re_RAO_wind_vel_pitch', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_surge', 'Im_RAO_wind_vel_pitch', 'Im_RAO_wind_vel_bend', 'Re_RAO_wind_acc_surge', 'Re_RAO_wind_acc_pitch', 'Re_RAO_wind_acc_bend', 'Im_RAO_wind_acc_surge', 'Im_RAO_wind_acc_pitch', 'Im_RAO_wind_acc_bend', 'CoG_rotor', 'Z_tower', 'dthrust_dv', 'thrust_wind'], promotes_outputs=['Re_RAO_wind_TB_moment', 'Im_RAO_wind_TB_moment'])
+
+	 	self.add_subsystem('norm_TB_moment_Mwind', NormTBMomentMWind(freqs=freqs), promotes_inputs=['mom_acc_surge', 'mom_acc_pitch', 'mom_acc_bend', 'mom_damp_surge', 'mom_damp_pitch', 'mom_damp_bend', 'mom_grav_pitch', 'mom_grav_bend', 'mom_rotspeed', 'mom_bldpitch', 'Re_RAO_Mwind_pitch', 'Re_RAO_Mwind_bend', 'Re_RAO_Mwind_rotspeed', 'Re_RAO_Mwind_bldpitch', 'Im_RAO_Mwind_pitch', 'Im_RAO_Mwind_bend', 'Im_RAO_Mwind_rotspeed', 'Im_RAO_Mwind_bldpitch', 'Re_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_surge', 'Im_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_bend', 'Re_RAO_Mwind_acc_surge', 'Re_RAO_Mwind_acc_pitch', 'Re_RAO_Mwind_acc_bend', 'Im_RAO_Mwind_acc_surge', 'Im_RAO_Mwind_acc_pitch', 'Im_RAO_Mwind_acc_bend', 'dmoment_dv', 'moment_wind'], promotes_outputs=['Re_RAO_Mwind_TB_moment', 'Im_RAO_Mwind_TB_moment'])
+
+	 	self.add_subsystem('TB_moment_spectrum', TBMomentSpectrum(freqs=freqs), promotes_inputs=['Re_RAO_wave_TB_moment', 'Im_RAO_wave_TB_moment', 'Re_RAO_wind_TB_moment', 'Im_RAO_wind_TB_moment', 'Re_RAO_Mwind_TB_moment', 'Im_RAO_Mwind_TB_moment', 'S_wave', 'S_wind'], promotes_outputs=['resp_TB_moment'])
+
+	 	self.add_subsystem('TB_stress_spectrum', TBStressSpectrum(freqs=freqs), promotes_inputs=['resp_TB_moment', 'D_tower_p', 'wt_tower_p'], promotes_outputs=['resp_TB_stress'])
+
+	 	self.add_subsystem('dirlik', Dirlik(freqs=freqs), promotes_inputs=['resp_TB_stress', 'wt_tower_p'], promotes_outputs=['fatigue_damage'])

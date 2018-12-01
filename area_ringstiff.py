@@ -10,7 +10,7 @@ class AreaRingstiff(ExplicitComponent):
 		self.add_input('t_f_stiff', val=np.zeros(10), units='m')
 		self.add_input('b_stiff', val=np.zeros(10), units='m')
 
-		self.add_output('A_R', val=np.zeros(10), units='m')
+		self.add_output('A_R', val=np.zeros(10), units='m**2')
 
 		self.declare_partials('A_R', 't_w_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('A_R', 'h_stiff', rows=np.arange(10), cols=np.arange(10))

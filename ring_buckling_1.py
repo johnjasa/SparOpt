@@ -13,7 +13,7 @@ class RingBuckling1(ExplicitComponent):
 
 		self.declare_partials('ring_buckling_1', 'h_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('ring_buckling_1', 't_w_stiff', rows=np.arange(10), cols=np.arange(10))
-		self.declare_partials('ring_buckling_1', 'f_y', rows=np.arange(10), cols=np.arange(10))
+		self.declare_partials('ring_buckling_1', 'f_y')
 
 	def compute(self, inputs, outputs):
 		E = 2.1e5 #MPa

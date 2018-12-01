@@ -2,6 +2,10 @@ import numpy as np
 
 from openmdao.api import Group
 
+from spar_diameter import SparDiameter
+from spar_thickness import SparThickness
+from tower_diameter import TowerDiameter
+from tower_thickness import TowerThickness
 from draft import Draft
 from z_spar import ZSpar
 from spar_mass import SparMass
@@ -67,9 +71,18 @@ class Substructure(Group):
 
 	def setup(self):
 		freqs = self.options['freqs']
+
+		self.add_subsystem('spar_diameter', SparDiameter(), promotes_inputs=['D_spar_p'], promotes_outputs=['D_spar'])
+
+		self.add_subsystem('spar_thickness', SparThickness(), promotes_inputs=['wt_spar_p'], promotes_outputs=['wt_spar'])
+
+		self.add_subsystem('tower_diameter', TowerDiameter(), promotes_inputs=['D_tower_p'], promotes_outputs=['D_tower'])
+
+		self.add_subsystem('tower_thickness', TowerThickness(), promotes_inputs=['wt_tower_p'], promotes_outputs=['wt_tower'])
+
 	 	self.add_subsystem('draft', Draft(), promotes_inputs=['L_spar'], promotes_outputs=['spar_draft'])
 
-	 	self.add_subsystem('z_spar', ZSpar(), promotes_inputs=['L_spar', 'spar_draft'], promotes_outputs=['Z_spar'])
+	 	self.add_subsystem('Z_spar', ZSpar(), promotes_inputs=['L_spar', 'spar_draft'], promotes_outputs=['Z_spar'])
 
 	 	self.add_subsystem('spar_mass', SparMass(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar'], promotes_outputs=['M_spar'])
 
@@ -79,7 +92,7 @@ class Substructure(Group):
 
 	 	self.add_subsystem('spar_cog', SparCoG(), promotes_inputs=['L_spar', 'M_spar', 'tot_M_spar', 'spar_draft'], promotes_outputs=['CoG_spar'])
 
-	 	self.add_subsystem('z_tower', ZTower(), promotes_inputs=['L_tower'], promotes_outputs=['Z_tower'])
+	 	self.add_subsystem('Z_tower', ZTower(), promotes_inputs=['L_tower'], promotes_outputs=['Z_tower'])
 
 	 	self.add_subsystem('tower_mass', TowerMass(), promotes_inputs=['D_tower', 'L_tower', 'wt_tower'], promotes_outputs=['M_tower'])
 
@@ -127,7 +140,7 @@ class Substructure(Group):
 
 		self.add_subsystem('modeshape_eigmatrix', ModeshapeEigmatrix(), promotes_inputs=['K_mode', 'M_mode_inv'], promotes_outputs=['A_eig'])
 
-		self.add_subsystem('modeshape_eigvector', ModeshapeEigvector(), promotes_inputs=['A_eig'], promotes_outputs=['eig_vector'])
+		self.add_subsystem('modeshape_eigvector', ModeshapeEigvector(), promotes_inputs=['A_eig', 'struct_damp_ratio'], promotes_outputs=['eig_vector', 'alpha_damp'])
 
 		self.add_subsystem('modeshape_disp', ModeshapeDisp(), promotes_inputs=['eig_vector'], promotes_outputs=['x_sparnode', 'x_towernode'])
 

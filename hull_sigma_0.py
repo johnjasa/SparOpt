@@ -18,40 +18,50 @@ class HullSigma0(ExplicitComponent):
 		self.declare_partials('sigma_h0', 'sigma_h', rows=np.arange(10), cols=np.arange(10))
 
 	def compute(self, inputs, outputs):
-		if inputs['sigma_a'] >= 0.:
-			sigma_a0 = 0.
-		else:
-			sigma_a0 = -inputs['sigma_a']
+		sigma_a0 = np.zeros(len(inputs['sigma_a']))
+		sigma_m0 = np.zeros(len(inputs['sigma_a']))
+		sigma_h0 = np.zeros(len(inputs['sigma_a']))
 
-		if inputs['sigma_m'] >= 0.:
-			sigma_m0 = 0.
-		else:
-			sigma_m0 = -inputs['sigma_m']
+		for i in xrange(len(inputs['sigma_a'])):
+			if inputs['sigma_a'][i] >= 0.:
+				sigma_a0[i] = 0.
+			else:
+				sigma_a0[i] = -inputs['sigma_a'][i]
 
-		if inputs['sigma_h'] >= 0.: #internal net pressure
-			sigma_h0 = 0.
-		else:
-			sigma_h0 = -inputs['sigma_h']
+			if inputs['sigma_m'][i] >= 0.:
+				sigma_m0[i] = 0.
+			else:
+				sigma_m0[i] = -inputs['sigma_m'][i]
+
+			if inputs['sigma_h'][i] >= 0.:
+				sigma_h0[i] = 0.
+			else:
+				sigma_h0[i] = -inputs['sigma_h'][i]
 		
 		outputs['sigma_a0'] = sigma_a0
 		outputs['sigma_m0'] = sigma_m0
 		outputs['sigma_h0'] = sigma_h0
 
 	def compute_partials(self, inputs, partials):
-		if inputs['sigma_a'] >= 0.:
-			dsigma_a0 = 0.
-		else:
-			dsigma_a0 = -1.
+		dsigma_a0 = np.zeros(len(inputs['sigma_a']))
+		dsigma_m0 = np.zeros(len(inputs['sigma_a']))
+		dsigma_h0 = np.zeros(len(inputs['sigma_a']))
 
-		if inputs['sigma_m'] >= 0.:
-			dsigma_m0 = 0.
-		else:
-			dsigma_m0 = -1.
+		for i in xrange(len(inputs['sigma_a'])):
+			if inputs['sigma_a'][i] >= 0.:
+				dsigma_a0[i] = 0.
+			else:
+				dsigma_a0[i] = -1.
 
-		if inputs['sigma_h'] >= 0.:
-			dsigma_h0 = 0.
-		else:
-			dsigma_h0 = -1.
+			if inputs['sigma_m'][i] >= 0.:
+				dsigma_m0[i] = 0.
+			else:
+				dsigma_m0[i] = -1.
+
+			if inputs['sigma_h'][i] >= 0.:
+				dsigma_h0[i] = 0.
+			else:
+				dsigma_h0[i] = -1.
 
 		partials['sigma_a0', 'sigma_a'] = dsigma_a0
 		partials['sigma_m0', 'sigma_m'] = dsigma_m0
