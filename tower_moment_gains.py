@@ -90,6 +90,7 @@ class TowerMomentGains(ExplicitComponent):
 		CoG_rotor = inputs['CoG_rotor']
 		z_towernode = inputs['z_towernode']
 		x_towerelem = inputs['x_towerelem']
+		x_towernode = inputs['x_towernode']
 		x_d_towertop = inputs['x_d_towertop']
 		dthrust_dv = inputs['dthrust_dv']
 		dmoment_dv = inputs['dmoment_dv']
@@ -249,7 +250,7 @@ class TowerMomentGains(ExplicitComponent):
 		partials['mom_bldpitch', 'dthrust_dbldpitch'] = np.zeros((N_tower,1))
 
 		for i in xrange(N_tower):
-			for j in xrange(i,N_tower):
+			for j in xrange(i,N_tower-1):
 				z = (z_towernode[j] + z_towernode[j+1]) / 2
 				partials['mom_acc_surge', 'M_tower'][i,j] += (z - z_towernode[i])
 				partials['mom_acc_surge', 'z_towernode'][i,i] += -M_tower[j]

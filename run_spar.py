@@ -70,7 +70,7 @@ ivc.add_output('omega_lowpass', val=2.*np.pi/0.8, units='rad/s')
 ivc.add_output('gain_corr_factor', val=0.25104)
 ivc.add_output('Cd', val=0.7)
 #ivc.add_output('alpha_damp', val=0.007, units='s')
-ivc.add_output('struct_damp_ratio', val=0.5*0.007*2.*np.pi/2.39647226)
+ivc.add_output('struct_damp_ratio', val=0.5*0.007*2.*np.pi/2.395)
 
 ivc.add_output('t_w_stiff', val=0.02*np.ones(10), units='m')
 ivc.add_output('t_f_stiff', val=0.02*np.ones(10), units='m')
@@ -148,17 +148,17 @@ prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_for
 	'Z_tower', 'dthrust_dv', 'dmoment_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch', 'M_tower', 'M_nacelle', 'M_rotor', 'I_rotor', 'CoG_nacelle', 'CoG_rotor', \
 	'z_towernode', 'x_towerelem', 'x_towernode', 'x_d_towertop'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', 'fatigue_damage'])
 
-hull_buckling_group = HullBuckling()
+#hull_buckling_group = HullBuckling()
 
-prob.model.add_subsystem('hull_buckling', hull_buckling_group, promotes_inputs=['D_spar_p', 'wt_spar_p', 'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', 'M_moor', 'z_moor',\
-'dthrust_dv', 'dmoment_dv', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'angle_hull', 'f_y', 'buck_len'], promotes_outputs=['shell_buckling', 'ring_buckling_1', 'ring_buckling_2', 'col_buckling', 'constr_area_ringstiff', 'constr_hoop_stress', 'constr_mom_inertia_ringstiff'])
+#prob.model.add_subsystem('hull_buckling', hull_buckling_group, promotes_inputs=['D_spar_p', 'wt_spar_p', 'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', 'M_moor', 'z_moor',\
+#'dthrust_dv', 'dmoment_dv', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'angle_hull', 'f_y', 'buck_len'], promotes_outputs=['shell_buckling', 'ring_buckling_1', 'ring_buckling_2', 'col_buckling', 'constr_area_ringstiff', 'constr_hoop_stress', 'constr_mom_inertia_ringstiff'])
 
 #aero_group.linear_solver = LinearRunOnce()
 #mooring_group.linear_solver = DirectSolver()
 #substructure_group.linear_solver = DirectSolver()
 #statespace_group.linear_solver = DirectSolver()
 #viscous_group.linear_solver = LinearBlockGS(maxiter=30)
-viscous_group.nonlinear_solver = NonlinearBlockGS(atol=1e-5, rtol=1e-5)
+#viscous_group.nonlinear_solver = NonlinearBlockGS(atol=1e-5, rtol=1e-5)
 #postpro_group.linear_solver = LinearRunOnce()
 #hull_buckling_group.linear_solver = LinearRunOnce()
 #prob.model.linear_solver = LinearRunOnce()
@@ -192,11 +192,11 @@ prob.run_model()
 
 #print prob['B_visc_11']
 #print prob['stddev_vel_distr']
-print prob['stddev_surge'] #[2.31503107]
-print prob['stddev_pitch'] #[0.01996003]
-print prob['stddev_bend'] #[0.095082]
-print prob['stddev_rotspeed'] #[0.09418025]
-print prob['fatigue_damage'] #[0.00030901]
+print prob['stddev_surge'] #[2.31619926] #[5.98991904]
+print prob['stddev_pitch'] #[0.02000308] #[0.01985482]
+print prob['stddev_bend'] #[0.09505861] #[0.08875727]
+print prob['stddev_rotspeed'] #[0.09418536] #[0.13249565]
+print prob['fatigue_damage'][0] #0.00030962225040664926 #0.00016584825655304263
 
 #[  2.39647226  35.29681523 115.97636051]
 """

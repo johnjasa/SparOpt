@@ -58,4 +58,4 @@ class ModeshapeEigvector(ExplicitComponent):
 				dU = np.dot(eig_vecs, (F * P))
 
 				partials['eig_vector', 'A_eig'][:,len(A)*i+j] = dU[:,-3]
-				partials['alpha_damp', 'A_eig'][0,len(A)*i+j] = -struct_damp_ratio / (eig_vals[-3])**(3./2.) * dD
+				partials['alpha_damp', 'A_eig'][0,len(A)*i+j] = -struct_damp_ratio / (eig_vals[-3])**(3./2.) * dD[-3]
