@@ -18,7 +18,8 @@ class BendingMass(ExplicitComponent):
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
 		self.add_input('L_tower', val=np.zeros(10), units='m')
 		self.add_input('Z_tower', val=np.zeros(11), units='m')
-		self.add_input('M_ball', val=0., units='kg')
+		self.add_input('L_ball_elem', val=np.zeros(10), units='m')
+		self.add_input('M_ball_elem', val=np.zeros(10), units='kg')
 		self.add_input('L_ball', val=0., units='m')
 		self.add_input('M_rotor', val=0., units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')
@@ -37,7 +38,8 @@ class BendingMass(ExplicitComponent):
 		M_tower = inputs['M_tower']
 		L_tower = inputs['L_tower']
 		Z_tower = inputs['Z_tower']
-		M_ball = inputs['M_ball']
+		L_ball_elem = inputs['L_ball_elem']
+		M_ball_elem = inputs['M_ball_elem']
 		L_ball = inputs['L_ball']
 		M_rotor = inputs['M_rotor']
 		M_nacelle = inputs['M_nacelle']
@@ -51,7 +53,6 @@ class BendingMass(ExplicitComponent):
 
 		m_elem_tower = M_tower / L_tower
 		m_elem_spar = M_spar / L_spar
-		m_elem_ball = M_ball / L_ball
 
 		outputs['M17'] = (M_rotor + M_nacelle)
 		outputs['M57'] = (M_rotor + M_nacelle) * z_towernode[-1] + I_rotor * x_d_towertop
@@ -70,7 +71,7 @@ class BendingMass(ExplicitComponent):
 					m = m_elem_spar[j]
 					break
 			if z <= z_ball:
-				m += m_elem_ball
+				m += M_ball_elem[j] / L_ball_elem[j]
 			outputs['M17'] += dz * m * x_sparelem[i]
 			outputs['M57'] += dz * m * z * x_sparelem[i]
 			outputs['M77'] += dz * m * x_sparelem[i]**2.
@@ -94,7 +95,8 @@ class BendingMass(ExplicitComponent):
 		M_tower = inputs['M_tower']
 		L_tower = inputs['L_tower']
 		Z_tower = inputs['Z_tower']
-		M_ball = inputs['M_ball']
+		L_ball_elem = inputs['L_ball_elem']
+		M_ball_elem = inputs['M_ball_elem']
 		L_ball = inputs['L_ball']
 		M_rotor = inputs['M_rotor']
 		M_nacelle = inputs['M_nacelle']
@@ -108,7 +110,6 @@ class BendingMass(ExplicitComponent):
 
 		m_elem_tower = M_tower / L_tower
 		m_elem_spar = M_spar / L_spar
-		m_elem_ball = M_ball / L_ball
 
 		partials['M17', 'z_sparnode'] = np.zeros((1,14))
 		partials['M17', 'x_sparelem'] = np.zeros((1,13))
@@ -119,7 +120,8 @@ class BendingMass(ExplicitComponent):
 		partials['M17', 'L_spar'] = np.zeros((1,10))
 		partials['M17', 'M_tower'] = np.zeros((1,10))
 		partials['M17', 'L_tower'] = np.zeros((1,10))
-		partials['M17', 'M_ball'] = 0.
+		partials['M17', 'L_ball_elem'] = np.zeros((1,10))
+		partials['M17', 'M_ball_elem'] = np.zeros((1,10))
 		partials['M17', 'L_ball'] = 0.
 		partials['M17', 'M_rotor'] = 1.
 		partials['M17', 'M_nacelle'] = 1.
@@ -128,13 +130,15 @@ class BendingMass(ExplicitComponent):
 		partials['M57', 'z_sparnode'] = np.zeros((1,14))
 		partials['M57', 'x_sparelem'] = np.zeros((1,13))
 		partials['M57', 'z_towernode'] = np.zeros((1,11))
+		partials['M57', 'z_towernode'][0,-1] += M_rotor + M_nacelle
 		partials['M57', 'x_towerelem'] = np.zeros((1,10))
 		partials['M57', 'x_d_towertop'] = I_rotor
 		partials['M57', 'M_spar'] = np.zeros((1,10))
 		partials['M57', 'L_spar'] = np.zeros((1,10))
 		partials['M57', 'M_tower'] = np.zeros((1,10))
 		partials['M57', 'L_tower'] = np.zeros((1,10))
-		partials['M57', 'M_ball'] = 0.
+		partials['M57', 'L_ball_elem'] = np.zeros((1,10))
+		partials['M57', 'M_ball_elem'] = np.zeros((1,10))
 		partials['M57', 'L_ball'] = 0.
 		partials['M57', 'M_rotor'] = z_towernode[-1]
 		partials['M57', 'M_nacelle'] = z_towernode[-1]
@@ -150,7 +154,8 @@ class BendingMass(ExplicitComponent):
 		partials['M77', 'spar_draft'] = 0.
 		partials['M77', 'M_tower'] = np.zeros((1,10))
 		partials['M77', 'L_tower'] = np.zeros((1,10))
-		partials['M77', 'M_ball'] = 0.
+		partials['M77', 'L_ball_elem'] = np.zeros((1,10))
+		partials['M77', 'M_ball_elem'] = np.zeros((1,10))
 		partials['M77', 'L_ball'] = 0.
 		partials['M77', 'M_rotor'] = 1.
 		partials['M77', 'M_nacelle'] = 1.
@@ -176,13 +181,13 @@ class BendingMass(ExplicitComponent):
 					break
 			
 			if z <= z_ball:
-				m += m_elem_ball
-				partials['M17', 'M_ball'] += dz * x_sparelem[i] * 1. / L_ball
-				partials['M17', 'L_ball'] += -dz * x_sparelem[i] * M_ball / L_ball**2.
-				partials['M57', 'M_ball'] += dz * z * x_sparelem[i] * 1. / L_ball
-				partials['M57', 'L_ball'] += -dz * z * x_sparelem[i] * M_ball / L_ball**2.
-				partials['M77', 'M_ball'] += dz * x_sparelem[i]**2. * 1. / L_ball
-				partials['M77', 'L_ball'] += -dz * x_sparelem[i]**2. * M_ball / L_ball**2.
+				m += M_ball_elem[j] / L_ball_elem[j]
+				partials['M17', 'M_ball_elem'][0,j] += dz * x_sparelem[i] * 1. / L_ball_elem[j]
+				partials['M17', 'L_ball_elem'][0,j] += -dz * x_sparelem[i] * M_ball_elem[j] / L_ball_elem[j]**2.
+				partials['M57', 'M_ball_elem'][0,j] += dz * z * x_sparelem[i] * 1. / L_ball_elem[j]
+				partials['M57', 'L_ball_elem'][0,j] += -dz * z * x_sparelem[i] * M_ball_elem[j] / L_ball_elem[j]**2.
+				partials['M77', 'M_ball_elem'][0,j] += dz * x_sparelem[i]**2. * 1. / L_ball_elem[j]
+				partials['M77', 'L_ball_elem'][0,j] += -dz * x_sparelem[i]**2. * M_ball_elem[j] / L_ball_elem[j]**2.
 
 			partials['M17', 'z_sparnode'][0,i] += -m * x_sparelem[i]
 			partials['M17', 'z_sparnode'][0,i+1] += m * x_sparelem[i]

@@ -8,10 +8,12 @@ from A_str_ext import AstrExt
 #from A_struct import Astruct
 from B_str_ext import BstrExt
 from B_struct import Bstruct
-from C_struct import Cstruct
+from C_struct_nf import Cstruct
 from A_contrl import Acontrl
-from B_contrl import Bcontrl
+from B_contrl_nf import Bcontrl
 from C_contrl import Ccontrl
+from D_contrl_nf import Dcontrl
+from Bs_Dc_Cs import BsDcCs
 from Bs_Cc import BsCc
 from Bc_Cs import BcCs
 #from A_feedbk import Afeedbk
@@ -39,13 +41,18 @@ class StateSpace(Group):
 
 		self.add_subsystem('B_struct', Bstruct(), promotes_inputs=['Bstr_ext', 'I_d', 'dtorque_dbldpitch'], promotes_outputs=['B_struct'])
 
-		self.add_subsystem('C_struct', Cstruct(), promotes_outputs=['C_struct'])
+		#self.add_subsystem('C_struct', Cstruct(), promotes_outputs=['C_struct'])
+		self.add_subsystem('C_struct', Cstruct(), promotes_inputs=['CoG_rotor'], promotes_outputs=['C_struct'])
 
 		self.add_subsystem('A_contrl', Acontrl(), promotes_inputs=['omega_lowpass'], promotes_outputs=['A_contrl'])
 
 		self.add_subsystem('B_contrl', Bcontrl(), promotes_inputs=['omega_lowpass'], promotes_outputs=['B_contrl'])
 
 		self.add_subsystem('C_contrl', Ccontrl(), promotes_inputs=['windspeed_0', 'rotspeed_0', 'k_i', 'k_p', 'gain_corr_factor'], promotes_outputs=['C_contrl'])
+
+		self.add_subsystem('D_contrl', Dcontrl(), promotes_inputs=['k_t'], promotes_outputs=['D_contrl'])
+
+		self.add_subsystem('Bs_Dc_Cs', BsDcCs(), promotes_inputs=['B_struct', 'D_contrl', 'C_struct'], promotes_outputs=['BsDcCs'])
 
 		self.add_subsystem('Bs_Cc', BsCc(), promotes_inputs=['B_struct', 'C_contrl'], promotes_outputs=['BsCc'])
 

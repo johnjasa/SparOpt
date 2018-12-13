@@ -6,7 +6,8 @@ from viscous_damping import ViscousDamping
 from global_damping import GlobalDamping
 from A_str_damp import AstrDamp
 from A_struct import Astruct
-from A_feedbk import Afeedbk
+from A_s_fb import AsFb
+from A_feedbk_nf import Afeedbk
 #from transfer_function import TransferFunction
 from transfer_function_pre import TransferFunctionPre
 from transfer_function_pre_inv import TransferFunctionPreInv
@@ -50,7 +51,10 @@ class Viscous(Group):
 
 		self.add_subsystem('A_struct', Astruct(), promotes_inputs=['CoG_rotor', 'I_d', 'dtorque_dv', 'dtorque_drotspeed', 'Astr_stiff', 'Astr_damp', 'Astr_ext'], promotes_outputs=['A_struct'])
 
-		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'BsCc', 'BcCs'], promotes_outputs=['A_feedbk'])
+		self.add_subsystem('A_s_fb', AsFb(), promotes_inputs=['A_struct', 'BsDcCs'], promotes_outputs=['A_s_fb'])
+
+		#self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'BsCc', 'BcCs'], promotes_outputs=['A_feedbk'])
+		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_s_fb', 'A_contrl', 'BsCc', 'BcCs'], promotes_outputs=['A_feedbk'])
 
 		#transfer_function = TransferFunction(freqs=freqs)
 		#transfer_function.linear_solver = LinearBlockGS()

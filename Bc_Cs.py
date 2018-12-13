@@ -5,8 +5,8 @@ from openmdao.api import ExplicitComponent
 class BcCs(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('B_contrl', val=np.zeros((2,1)))
-		self.add_input('C_struct', val=np.zeros((1,7)))
+		self.add_input('B_contrl', val=np.zeros((2,2)))
+		self.add_input('C_struct', val=np.zeros((2,7)))
 
 		self.add_output('BcCs', val=np.zeros((2,7)))
 

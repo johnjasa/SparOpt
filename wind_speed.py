@@ -126,6 +126,7 @@ class WindSpeed(ExplicitComponent):
 		"""
 		omega_ws = np.linspace(0.014361566416410483,6.283185307179586,3493)
 		thrust_wind, moment_wind, torque_wind = np.loadtxt('C:/Code/eq_wind_%d.dat' % Vhub, unpack=True)
+		#omega_ws, thrust_wind, moment_wind, torque_wind = np.loadtxt('C:/Code/windspeeds/eq_wind_%d.dat' % Vhub, unpack=True)
 		outputs['thrust_wind'] = np.interp(omega,omega_ws,thrust_wind)
 		outputs['moment_wind'] = np.interp(omega,omega_ws,moment_wind)
 		outputs['torque_wind'] = np.interp(omega,omega_ws,torque_wind)

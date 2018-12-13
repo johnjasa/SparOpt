@@ -11,6 +11,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 		self.add_input('M_spar', val=np.zeros(10), units='kg')
 		self.add_input('L_ball', val=0., units='m')
 		self.add_input('M_ball', val=0., units='kg')
+		self.add_input('M_ball_elem', val=np.zeros(10), units='kg')
 		self.add_input('M_moor', val=0., units='kg')
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('z_sparnode', val=np.zeros(14), units='m')
@@ -31,6 +32,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 		M_spar = inputs['M_spar']
 		L_ball = inputs['L_ball']
 		M_ball = inputs['M_ball']
+		M_ball_elem = inputs['M_ball_elem']
 		spar_draft = inputs['spar_draft'][0]
 		z_ball = -spar_draft + L_ball[0]
 		M_moor = inputs['M_moor']
@@ -53,7 +55,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 			if z_sparnode[i] >= z_ball:
 				outputs['normforce_mode_elem'][i] += M_ball * 9.80665
 			else:
-				outputs['normforce_mode_elem'][i] += M_ball / L_ball * (z_sparnode[i] + spar_draft) * 9.80665
+				outputs['normforce_mode_elem'][i] += np.sum(M_ball_elem[:j]) * 9.80665
 
 			if z_sparnode[i] >= z_moor:
 				outputs['normforce_mode_elem'][i] += M_moor * 9.80665
@@ -68,6 +70,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 		M_spar = inputs['M_spar']
 		L_ball = inputs['L_ball']
 		M_ball = inputs['M_ball']
+		M_ball_elem = inputs['M_ball_elem']
 		spar_draft = inputs['spar_draft'][0]
 		z_ball = -spar_draft + L_ball[0]
 		M_moor = inputs['M_moor']
@@ -87,6 +90,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 		partials['normforce_mode_elem', 'M_spar'] = np.zeros((23,10))
 		partials['normforce_mode_elem', 'L_ball'] = np.zeros(23)
 		partials['normforce_mode_elem', 'M_ball'] = np.zeros(23)
+		partials['normforce_mode_elem', 'M_ball_elem'] = np.zeros((23,10))
 		partials['normforce_mode_elem', 'spar_draft'] = np.zeros(23)
 		partials['normforce_mode_elem', 'M_moor'] = np.zeros(23)
 		partials['normforce_mode_elem', 'z_moor'] = np.zeros(23)
@@ -111,10 +115,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 			if z_sparnode[i] >= z_ball:
 				partials['normforce_mode_elem', 'M_ball'][i] += 9.80665
 			else:
-				partials['normforce_mode_elem', 'M_ball'][i] += 1. / L_ball * (z_sparnode[i] + spar_draft) * 9.80665
-				partials['normforce_mode_elem', 'L_ball'][i] += -M_ball / L_ball**2. * (z_sparnode[i] + spar_draft) * 9.80665
-				partials['normforce_mode_elem', 'z_sparnode'][i,i] += M_ball / L_ball * 9.80665
-				partials['normforce_mode_elem', 'spar_draft'][i] += M_ball / L_ball * 9.80665
+				partials['normforce_mode_elem', 'M_ball_elem'][0,:j] += 9.80665
 
 			if z_sparnode[i] >= z_moor:
 				partials['normforce_mode_elem', 'M_moor'][i] += 9.80665

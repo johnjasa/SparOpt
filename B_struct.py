@@ -14,19 +14,23 @@ class Bstruct(ExplicitComponent):
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
-		I_d = inputs['I_d']
+		I_d = inputs['I_d'][0]
 		dtorque_dbldpitch = inputs['dtorque_dbldpitch']
+
+		N_gear = 50.
 
 		B1 = np.zeros((3,2))
 		B2 = inputs['Bstr_ext']
-		B3 = np.array([[0., dtorque_dbldpitch / I_d]])
+		B3 = np.array([[-N_gear / I_d, dtorque_dbldpitch / I_d]])
 
 		outputs['B_struct'] = np.concatenate((B1,B2,B3),0)
 
 	def compute_partials(self, inputs, partials):
-		I_d = inputs['I_d']
+		I_d = inputs['I_d'][0]
 		dtorque_dbldpitch = inputs['dtorque_dbldpitch']
 
+		N_gear = 50.
+
 		partials['B_struct', 'Bstr_ext'] = np.concatenate((np.zeros((6,6)),np.identity(6),np.zeros((2,6))),0)
-		partials['B_struct', 'I_d'] = np.concatenate((np.zeros((12,1)),np.array([[0.], -dtorque_dbldpitch / I_d**2.])),0)
-		partials['B_struct', 'dtorque_dbldpitch'] = np.concatenate((np.zeros((12,1)),np.array([[0.], 1. / I_d])),0)
+		partials['B_struct', 'I_d'] = np.concatenate((np.zeros((12,1)),np.array([[N_gear / I_d**2.], -dtorque_dbldpitch / I_d**2.])),0)
+		partials['B_struct', 'dtorque_dbldpitch'] = np.concatenate((np.zeros((12,1)),np.array([[0.], [1. / I_d]])),0)
