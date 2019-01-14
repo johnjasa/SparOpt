@@ -11,7 +11,6 @@ class WindSpeed(ExplicitComponent):
 	def setup(self):
 		blades = self.options['blades']
 		self.N_b_elem = blades['N_b_elem']
-		self.cohfolder = blades['cohfolder']
 
 		freqs = self.options['freqs']
 		self.omega = freqs['omega']
@@ -124,9 +123,9 @@ class WindSpeed(ExplicitComponent):
 			outputs['moment_wind'][i] = np.sqrt(np.abs(moment_wind[i]) / S_wind[i]) / (3. / 2. * np.sum(dmoment_dv_b))
 			outputs['torque_wind'][i] = np.sqrt(np.abs(torque_wind[i]) / S_wind[i]) / (3. * np.sum(dtorque_dv_b))
 		"""
-		omega_ws = np.linspace(0.014361566416410483,6.283185307179586,3493)
-		thrust_wind, moment_wind, torque_wind = np.loadtxt('C:/Code/eq_wind_%d.dat' % Vhub, unpack=True)
-		#omega_ws, thrust_wind, moment_wind, torque_wind = np.loadtxt('C:/Code/windspeeds/eq_wind_%d.dat' % Vhub, unpack=True)
+		#omega_ws = np.linspace(0.014361566416410483,6.283185307179586,3493)
+		#thrust_wind, moment_wind, torque_wind = np.loadtxt('C:/Code/eq_wind_%d.dat' % Vhub, unpack=True)
+		omega_ws, thrust_wind, moment_wind, torque_wind = np.loadtxt('C:/Code/windspeeds/eq_wind_%d.dat' % Vhub, unpack=True)
 		outputs['thrust_wind'] = np.interp(omega,omega_ws,thrust_wind)
 		outputs['moment_wind'] = np.interp(omega,omega_ws,moment_wind)
 		outputs['torque_wind'] = np.interp(omega,omega_ws,torque_wind)

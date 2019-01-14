@@ -96,8 +96,8 @@ class BallastElem(ExplicitComponent):
 
 					partials['M_ball_elem', 'D_spar'][i,i] += np.pi / 2. * (D_spar[i] - 2. * wt_ball) * L_spar[i] * rho_ball
 					partials['M_ball_elem', 'L_spar'][i,i] += np.pi / 4. * (D_spar[i] - 2. * wt_ball)**2. * rho_ball
-					partials['M_ball_elem', 'rho_ball'][i,i] += np.pi / 4. * (D_spar[i] - 2. * wt_ball)**2. * L_spar[i]
-					partials['M_ball_elem', 'wt_ball'][i,i] += -np.pi * (D_spar[i] - 2. * wt_ball) * L_spar[i] * rho_ball
+					partials['M_ball_elem', 'rho_ball'][i,0] += np.pi / 4. * (D_spar[i] - 2. * wt_ball)**2. * L_spar[i]
+					partials['M_ball_elem', 'wt_ball'][i,0] += -np.pi * (D_spar[i] - 2. * wt_ball) * L_spar[i] * rho_ball
 
 				else:
 					L_ball_elem[i] += (M_ball - accum_mass) / (np.pi / 4. * (D_spar[i] - 2. * wt_ball)**2. * rho_ball)

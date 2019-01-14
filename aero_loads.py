@@ -132,14 +132,21 @@ class AeroLoads(ExplicitComponent):
 		dFt_drotspeed = np.zeros(N_b_elem)
 
 		for i in xrange(N_b_elem):
-			a_n_0 = f_a_n[i].ev(bldpitch_0,TSR0)
-			a_t_0 = f_a_t[i].ev(bldpitch_0,TSR0)
+			if TSR0 == 0.:
+				a_n_0 = 0.
+				a_t_0 = 0.
+			else:
+				a_n_0 = f_a_n[i].ev(bldpitch_0,TSR0)
+				a_t_0 = f_a_t[i].ev(bldpitch_0,TSR0)
 			v_n_0 = windspeed_0 * a_n_0
 			v_t_0 = rotspeed_0 * r[i] * a_t_0
 			Vn_0 = windspeed_0 - v_n_0
 			Vt_0 = rotspeed_0 * r[i] + v_t_0
 			
-			phi_0 = np.arctan(Vn_0 / Vt_0)
+			if TSR0 == 0.:
+				phi_0 = np.pi / 2.
+			else:
+				phi_0 = np.arctan(Vn_0 / Vt_0)
 			alpha_0 = 180. / np.pi * phi_0 - (twistangle0[i] + bldpitch_0 * 180. / np.pi)
 			
 			W0 = np.sqrt(Vn_0**2. + Vt_0**2.)
@@ -150,10 +157,16 @@ class AeroLoads(ExplicitComponent):
 			outputs['Fn_0'][i] = L0 * np.cos(phi_0) + D0 * np.sin(phi_0)
 			outputs['Ft_0'][i] = L0 * np.sin(phi_0) - D0 * np.cos(phi_0)
 			
-			da_n_dTSR = f_a_n[i].ev(bldpitch_0, TSR0, dx=0, dy=1)
-			da_t_dTSR = f_a_t[i].ev(bldpitch_0, TSR0, dx=0, dy=1)
-			da_n_dbldpitch = f_a_n[i].ev(bldpitch_0, TSR0, dx=1, dy=0)
-			da_t_dbldpitch = f_a_t[i].ev(bldpitch_0, TSR0, dx=1, dy=0)
+			if TSR0 == 0.:
+				da_n_dTSR = 0.
+				da_t_dTSR = 0.
+				da_n_dbldpitch = 0.
+				da_t_dbldpitch = 0.
+			else:
+				da_n_dTSR = f_a_n[i].ev(bldpitch_0, TSR0, dx=0, dy=1)
+				da_t_dTSR = f_a_t[i].ev(bldpitch_0, TSR0, dx=0, dy=1)
+				da_n_dbldpitch = f_a_n[i].ev(bldpitch_0, TSR0, dx=1, dy=0)
+				da_t_dbldpitch = f_a_t[i].ev(bldpitch_0, TSR0, dx=1, dy=0)
 			da_n_dv = da_n_dTSR * dTSR_dv
 			da_t_dv = da_t_dTSR * dTSR_dv
 			da_n_drotspeed = da_n_dTSR * dTSR_drotspeed
@@ -171,9 +184,14 @@ class AeroLoads(ExplicitComponent):
 			dVt_dbldpitch = dv_t_dbldpitch
 			dVt_drotspeed = r[i] + dv_t_drotspeed
 			
-			dphi_dv = 1. / (1. + (Vn_0 / Vt_0)**2.) * (dVn_dv * 1. / Vt_0 - Vn_0 / Vt_0**2. * dVt_dv)
-			dphi_dbldpitch = 1. / (1. + (Vn_0 / Vt_0)**2.) * (dVn_dbldpitch * 1. / Vt_0 - Vn_0 / Vt_0**2. * dVt_dbldpitch)
-			dphi_drotspeed = 1. / (1. + (Vn_0 / Vt_0)**2.) * (dVn_drotspeed * 1. / Vt_0 - Vn_0 / Vt_0**2. * dVt_drotspeed)
+			if TSR0 == 0.:
+				dphi_dv = 0.
+				dphi_dbldpitch = 0.
+				dphi_drotspeed = 0.
+			else:
+				dphi_dv = 1. / (1. + (Vn_0 / Vt_0)**2.) * (dVn_dv * 1. / Vt_0 - Vn_0 / Vt_0**2. * dVt_dv)
+				dphi_dbldpitch = 1. / (1. + (Vn_0 / Vt_0)**2.) * (dVn_dbldpitch * 1. / Vt_0 - Vn_0 / Vt_0**2. * dVt_dbldpitch)
+				dphi_drotspeed = 1. / (1. + (Vn_0 / Vt_0)**2.) * (dVn_drotspeed * 1. / Vt_0 - Vn_0 / Vt_0**2. * dVt_drotspeed)
 			dalpha_dv = 180. / np.pi * dphi_dv
 			dalpha_dbldpitch = 180. / np.pi * dphi_dbldpitch - 180. / np.pi
 			dalpha_drotspeed = 180. / np.pi * dphi_drotspeed

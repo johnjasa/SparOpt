@@ -8,7 +8,7 @@ class HullLEo(ExplicitComponent):
 		self.add_input('l_stiff', val=np.zeros(10), units='m')
 		self.add_input('beta', val=np.zeros(10))
 
-		self.add_output('l_eo', val=np.zeros(10), units='m')
+		self.add_output('l_eo', val=np.ones(10), units='m')
 
 		self.declare_partials('l_eo', 'l_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('l_eo', 'beta', rows=np.arange(10), cols=np.arange(10))

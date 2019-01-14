@@ -129,7 +129,7 @@ class NormTowerMomentWind(ExplicitComponent):
 		RAO_wind_bldpitch = inputs['Re_RAO_wind_bldpitch'] + 1j * inputs['Im_RAO_wind_bldpitch']
 
 		for i in xrange(len(mom_acc_surge)):
-			RAO_wind_tower_moment = -mom_acc_surge[i] * RAO_wind_acc_surge - mom_acc_pitch[i] * RAO_wind_acc_pitch - mom_acc_bend[i] * RAO_wind_acc_bend - mom_damp_surge[i] * RAO_wind_vel_surge - mom_damp_pitch[i] * RAO_wind_vel_pitch - mom_damp_bend[i] * RAO_wind_vel_bend + mom_grav_pitch[i] * RAO_wind_pitch + mom_grav_bend[i] * RAO_wind_bend + mom_rotspeed[i] * RAO_wind_rotspeed + mom_bldpitch[i] * RAO_wind_bldpitch + (CoG_rotor - Z_tower[0]) * dthrust_dv * thrust_wind
+			RAO_wind_tower_moment = -mom_acc_surge[i] * RAO_wind_acc_surge - mom_acc_pitch[i] * RAO_wind_acc_pitch - mom_acc_bend[i] * RAO_wind_acc_bend - mom_damp_surge[i] * RAO_wind_vel_surge - mom_damp_pitch[i] * RAO_wind_vel_pitch - mom_damp_bend[i] * RAO_wind_vel_bend + mom_grav_pitch[i] * RAO_wind_pitch + mom_grav_bend[i] * RAO_wind_bend + mom_rotspeed[i] * RAO_wind_rotspeed + mom_bldpitch[i] * RAO_wind_bldpitch + (CoG_rotor - Z_tower[i]) * dthrust_dv * thrust_wind
 
 			outputs['Re_RAO_wind_tower_moment'][:,i] = np.real(RAO_wind_tower_moment)
 			outputs['Im_RAO_wind_tower_moment'][:,i] = np.imag(RAO_wind_tower_moment)
@@ -201,7 +201,7 @@ class NormTowerMomentWind(ExplicitComponent):
 			partials['Re_RAO_wind_tower_moment', 'Re_RAO_wind_acc_pitch'][i*11:i*11+11] = -mom_acc_pitch
 			partials['Re_RAO_wind_tower_moment', 'Re_RAO_wind_acc_bend'][i*11:i*11+11] = -mom_acc_bend
 			partials['Re_RAO_wind_tower_moment', 'thrust_wind'][i*11:i*11+11] = (CoG_rotor - Z_tower) * dthrust_dv
-			partials['Re_RAO_wind_tower_moment', 'CoG_rotor'][i*11:i*11+11,0] = Z_tower * dthrust_dv * thrust_wind[i]
+			partials['Re_RAO_wind_tower_moment', 'CoG_rotor'][i*11:i*11+11,0] = dthrust_dv * thrust_wind[i]
 			partials['Re_RAO_wind_tower_moment', 'dthrust_dv'][i*11:i*11+11,0] = (CoG_rotor - Z_tower) * thrust_wind[i]
 
 			partials['Im_RAO_wind_tower_moment', 'Im_RAO_wind_pitch'][i*11:i*11+11] = mom_grav_pitch

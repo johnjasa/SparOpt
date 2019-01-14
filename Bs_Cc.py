@@ -6,9 +6,9 @@ class BsCc(ExplicitComponent):
 
 	def setup(self):
 		self.add_input('B_struct', val=np.zeros((7,2)))
-		self.add_input('C_contrl', val=np.zeros((2,2)))
+		self.add_input('C_contrl', val=np.zeros((2,4)))
 
-		self.add_output('BsCc', val=np.zeros((7,2)))
+		self.add_output('BsCc', val=np.zeros((7,4)))
 
 		self.declare_partials('*', '*')
 

@@ -15,7 +15,7 @@ class THull(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		# = inputs['']
 
-		outputs['T_hull'] = np.ones(10) #yaw moment is same as rotor pitching moment with 90 deg phase. Other components?
+		outputs['T_hull'] = np.zeros(10) #yaw moment is same as rotor pitching moment with 90 deg phase. Other components?
 
 	#def compute_partials(self, inputs, partials):
 	#	partials['', ''] = 

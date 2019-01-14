@@ -8,6 +8,8 @@ from tower_diameter import TowerDiameter
 from tower_thickness import TowerThickness
 from draft import Draft
 from z_spar import ZSpar
+from area_ringstiff import AreaRingstiff
+from hull_r_e import HullRE
 from spar_mass import SparMass
 from spar_total_mass import SparTotalMass
 from spar_inertia import SparInertia
@@ -87,7 +89,11 @@ class Substructure(Group):
 
 	 	self.add_subsystem('Z_spar', ZSpar(), promotes_inputs=['L_spar', 'spar_draft'], promotes_outputs=['Z_spar'])
 
-	 	self.add_subsystem('spar_mass', SparMass(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar'], promotes_outputs=['M_spar'])
+	 	self.add_subsystem('area_ringstiff', AreaRingstiff(), promotes_inputs=['t_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff'], promotes_outputs=['A_R'])
+
+	 	self.add_subsystem('hull_r_e', HullRE(), promotes_inputs=['D_spar_p', 'wt_spar_p', 't_f_stiff', 't_w_stiff', 'b_stiff', 'h_stiff'], promotes_outputs=['r_e'])
+
+	 	self.add_subsystem('spar_mass', SparMass(), promotes_inputs=['D_spar', 'L_spar', 'wt_spar', 'r_e', 'A_R', 'l_stiff'], promotes_outputs=['M_spar'])
 
 	 	self.add_subsystem('spar_total_mass', SparTotalMass(), promotes_inputs=['M_spar'], promotes_outputs=['tot_M_spar'])
 

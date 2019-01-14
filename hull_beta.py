@@ -9,7 +9,7 @@ class HullBeta(ExplicitComponent):
 		self.add_input('r_hull', val=np.zeros(10), units='m')
 		self.add_input('wt_spar_p', val=np.zeros(11), units='m')
 
-		self.add_output('beta', val=np.zeros(10))
+		self.add_output('beta', val=np.ones(10))
 
 		self.declare_partials('beta', 'l_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('beta', 'r_hull', rows=np.arange(10), cols=np.arange(10))

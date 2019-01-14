@@ -79,7 +79,7 @@ from ECs import ECs
 
 prob.model.add_subsystem('ECs', ECs(EC=EC), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
 
-parallel = prob.model.add_subsystem('parallel', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', 'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', 'z_moor', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', 'k_t', 'omega_lowpass', 'gain_corr_factor', 'Cd', 'struct_damp_ratio'])
+parallel = prob.model.add_subsystem('parallel', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', 'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', 'z_moor', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', 'k_t', 'omega_lowpass', 'gain_corr_factor', 'Cd', 'struct_damp_ratio', , 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
 
 from total_fatigue_damage import TotalFatigueDamage
 
@@ -88,7 +88,7 @@ prob.model.add_subsystem('total_fatigue_damage', TotalFatigueDamage(EC=EC))
 from condition_group import Condition
 
 for i in xrange(EC['N_EC']):
-	parallel.add_subsystem('cond%d' % i, Condition(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', 'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', 'z_moor', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', 'k_t', 'omega_lowpass', 'gain_corr_factor', 'Cd', 'struct_damp_ratio'])
+	parallel.add_subsystem('cond%d' % i, Condition(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', 'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', 'z_moor', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', 'k_t', 'omega_lowpass', 'gain_corr_factor', 'Cd', 'struct_damp_ratio', , 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
 
 	prob.model.connect('windspeed_0', 'parallel.cond%d.windspeed_0' % i, src_indices=[i])
 	prob.model.connect('Hs', 'parallel.cond%d.Hs' % i, src_indices=[i])

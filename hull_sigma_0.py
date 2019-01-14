@@ -9,9 +9,9 @@ class HullSigma0(ExplicitComponent):
 		self.add_input('sigma_m', val=np.zeros(10), units='MPa')
 		self.add_input('sigma_h', val=np.zeros(10), units='MPa')
 
-		self.add_output('sigma_a0', val=np.zeros(10), units='MPa')
-		self.add_output('sigma_m0', val=np.zeros(10), units='MPa')
-		self.add_output('sigma_h0', val=np.zeros(10), units='MPa')
+		self.add_output('sigma_a0', val=np.ones(10), units='MPa')
+		self.add_output('sigma_m0', val=np.ones(10), units='MPa')
+		self.add_output('sigma_h0', val=np.ones(10), units='MPa')
 
 		self.declare_partials('sigma_a0', 'sigma_a', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('sigma_m0', 'sigma_m', rows=np.arange(10), cols=np.arange(10))

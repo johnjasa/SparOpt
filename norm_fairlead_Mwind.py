@@ -24,11 +24,7 @@ class NormFairleadMWind(ExplicitComponent):
 
 		self.declare_partials('Re_RAO_Mwind_fairlead', 'Re_RAO_Mwind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Re_RAO_Mwind_fairlead', 'Re_RAO_Mwind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Re_RAO_Mwind_fairlead', 'z_moor')
-		self.declare_partials('Im_RAO_Mwind_fairlead', 'Re_RAO_Mwind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Im_RAO_Mwind_fairlead', 'Re_RAO_Mwind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Im_RAO_Mwind_fairlead', 'Im_RAO_Mwind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Im_RAO_Mwind_fairlead', 'Im_RAO_Mwind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Im_RAO_Mwind_fairlead', 'z_moor')
@@ -55,12 +51,8 @@ class NormFairleadMWind(ExplicitComponent):
 		
 		partials['Re_RAO_Mwind_fairlead', 'Re_RAO_Mwind_surge'] = np.ones(N_omega)
 		partials['Re_RAO_Mwind_fairlead', 'Re_RAO_Mwind_pitch'] = np.ones(N_omega) * z_moor
-		partials['Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_surge'] = np.zeros(N_omega)
-		partials['Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_pitch'] = np.zeros(N_omega)
 		partials['Re_RAO_Mwind_fairlead', 'z_moor'] = np.real(RAO_Mwind_pitch)
 
-		partials['Im_RAO_Mwind_fairlead', 'Re_RAO_Mwind_surge'] = np.zeros(N_omega)
-		partials['Im_RAO_Mwind_fairlead', 'Re_RAO_Mwind_pitch'] = np.zeros(N_omega)
 		partials['Im_RAO_Mwind_fairlead', 'Im_RAO_Mwind_surge'] = np.ones(N_omega)
 		partials['Im_RAO_Mwind_fairlead', 'Im_RAO_Mwind_pitch'] = np.ones(N_omega) * z_moor
 		partials['Im_RAO_Mwind_fairlead', 'z_moor'] = np.imag(RAO_Mwind_pitch)

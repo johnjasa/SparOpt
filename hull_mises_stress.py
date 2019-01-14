@@ -10,7 +10,7 @@ class HullMisesStress(ExplicitComponent):
 		self.add_input('sigma_h', val=np.zeros(10), units='MPa')
 		self.add_input('tau', val=np.zeros(10), units='MPa')
 
-		self.add_output('sigma_j', val=np.zeros(10), units='MPa')
+		self.add_output('sigma_j', val=np.ones(10), units='MPa')
 
 		self.declare_partials('sigma_j', 'sigma_a', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('sigma_j', 'sigma_m', rows=np.arange(10), cols=np.arange(10))

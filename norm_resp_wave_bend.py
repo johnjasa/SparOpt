@@ -18,15 +18,15 @@ class NormRespWaveBend(ExplicitComponent):
 		self.add_input('Im_wave_force_pitch', val=np.zeros(N_omega), units='N*m/m')
 		self.add_input('Re_wave_force_bend', val=np.zeros(N_omega), units='N/m')
 		self.add_input('Im_wave_force_bend', val=np.zeros(N_omega), units='N/m')
-		self.add_input('Re_H_feedbk', val=np.zeros((N_omega,9,6)))
-		self.add_input('Im_H_feedbk', val=np.zeros((N_omega,9,6)))
+		self.add_input('Re_H_feedbk', val=np.zeros((N_omega,11,6)))
+		self.add_input('Im_H_feedbk', val=np.zeros((N_omega,11,6)))
 
 		self.add_output('Re_RAO_wave_bend', val=np.zeros(N_omega), units='m/m')
 		self.add_output('Im_RAO_wave_bend', val=np.zeros(N_omega), units='m/m')
 
 		Hcols = Hcols1 = np.array([15,16,17])
 		for i in xrange(1,N_omega):
-			Hcols = np.concatenate((Hcols,i*9*6+Hcols1),0)
+			Hcols = np.concatenate((Hcols,i*11*6+Hcols1),0)
 
 		self.declare_partials('Re_RAO_wave_bend', 'Re_wave_force_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wave_bend', 'Im_wave_force_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))

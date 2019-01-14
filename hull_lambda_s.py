@@ -16,7 +16,7 @@ class HullLambdaS(ExplicitComponent):
 		self.add_input('f_Eh', val=np.zeros(10), units='MPa')
 		self.add_input('f_Etau', val=np.zeros(10), units='MPa')
 
-		self.add_output('lambda_s', val=np.zeros(10))
+		self.add_output('lambda_s', val=np.ones(10))
 
 		self.declare_partials('lambda_s', 'f_y')
 		self.declare_partials('lambda_s', 'sigma_j', rows=np.arange(10), cols=np.arange(10))

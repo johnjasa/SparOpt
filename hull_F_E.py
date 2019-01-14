@@ -10,10 +10,10 @@ class HullFE(ExplicitComponent):
 		self.add_input('r_hull', val=np.zeros(10), units='m')
 		self.add_input('Z_l', val=np.zeros(10))
 
-		self.add_output('f_Ea', val=np.zeros(10), units='MPa')
-		self.add_output('f_Em', val=np.zeros(10), units='MPa')
-		self.add_output('f_Eh', val=np.zeros(10), units='MPa')
-		self.add_output('f_Etau', val=np.zeros(10), units='MPa')
+		self.add_output('f_Ea', val=np.ones(10), units='MPa')
+		self.add_output('f_Em', val=np.ones(10), units='MPa')
+		self.add_output('f_Eh', val=np.ones(10), units='MPa')
+		self.add_output('f_Etau', val=np.ones(10), units='MPa')
 
 		self.declare_partials('f_Ea', 'wt_spar_p', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('f_Em', 'wt_spar_p', rows=np.arange(10), cols=np.arange(10))

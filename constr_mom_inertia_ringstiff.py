@@ -8,7 +8,7 @@ class ConstrMomInertiaRingstiff(ExplicitComponent):
 		self.add_input('I_R', val=np.zeros(10), units='m**4')
 		self.add_input('I_stiff', val=np.zeros(10), units='m**4')
 
-		self.add_output('constr_mom_inertia_ringstiff', val=np.zeros(10), units='m**4')
+		self.add_output('constr_mom_inertia_ringstiff', val=np.zeros(10))
 
 		self.declare_partials('constr_mom_inertia_ringstiff', 'I_R', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('constr_mom_inertia_ringstiff', 'I_stiff', rows=np.arange(10), cols=np.arange(10))

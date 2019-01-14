@@ -8,7 +8,7 @@ class HullRHull(ExplicitComponent):
 		self.add_input('D_spar_p', val=np.zeros(11), units='m')
 		self.add_input('wt_spar_p', val=np.zeros(11), units='m')
 
-		self.add_output('r_hull', val=np.zeros(10), units='m')
+		self.add_output('r_hull', val=np.ones(10), units='m')
 
 		self.declare_partials('r_hull', 'D_spar_p', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('r_hull', 'wt_spar_p', rows=np.arange(10), cols=np.arange(10))

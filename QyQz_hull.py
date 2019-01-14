@@ -15,8 +15,8 @@ class QyQzHull(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		# = inputs['']
 
-		outputs['Qy_hull'] = np.ones(10)
-		outputs['Qz_hull'] = np.ones(10)
+		outputs['Qy_hull'] = np.zeros(10)
+		outputs['Qz_hull'] = np.zeros(10)
 
 	#def compute_partials(self, inputs, partials):
 	#	partials['', ''] = 

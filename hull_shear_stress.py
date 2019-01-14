@@ -29,8 +29,8 @@ class HullShearStress(ExplicitComponent):
 		wt_spar_p = inputs['wt_spar_p'][:-1]
 		theta = inputs['angle_hull']
 
-		tau_T = T / (2. * np.pi * r_hull**2. * wt_spar_p)
-		tau_Q = -Qy / (np.pi * r_hull * wt_spar_p) * np.cos(theta) + Qz / (np.pi * r_hull * wt_spar_p) * np.sin(theta) 
+		tau_T = T / (2. * np.pi * r_hull**2. * wt_spar_p) * 1e-6
+		tau_Q = -Qy / (np.pi * r_hull * wt_spar_p) * np.cos(theta) * 1e-6 + Qz / (np.pi * r_hull * wt_spar_p) * np.sin(theta) * 1e-6
 		
 		outputs['tau'] = abs(tau_T + tau_Q)
 

@@ -8,7 +8,6 @@ from MyMz_hull import MyMzHull
 from QyQz_hull import QyQzHull
 from T_hull import THull
 from hull_r_hull import HullRHull
-from area_ringstiff import AreaRingstiff
 from hull_axial_stress import HullAxialStress
 from hull_bending_stress import HullBendingStress
 from hull_beta import HullBeta
@@ -19,7 +18,6 @@ from hull_hoop_stress import HullHoopStress
 from hull_shear_stress import HullShearStress
 from hull_Z_l import HullZL
 from hull_r_0 import HullR0
-from hull_r_e import HullRE
 from hull_r_f import HullRF
 from hull_z_t import HullZT
 from hull_hoop_stress_ringstiff import HullHoopStressRingstiff
@@ -57,15 +55,13 @@ class HullBuckling(Group):
 		
 		self.add_subsystem('N_hull', NHull(), promotes_inputs=['D_spar_p', 'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', 'M_moor', 'z_moor'], promotes_outputs=['N_hull'])
 		
-		self.add_subsystem('MyMz_hull', MyMzHull(), promotes_inputs=['dthrust_dv'], promotes_outputs=['My_hull', 'Mz_hull'])
+		#self.add_subsystem('MyMz_hull', MyMzHull(), promotes_inputs=['dthrust_dv'], promotes_outputs=['My_hull', 'Mz_hull'])
 		
 		self.add_subsystem('QyQz_hull', QyQzHull(), promotes_inputs=['dthrust_dv'], promotes_outputs=['Qy_hull', 'Qz_hull'])
 		
 		self.add_subsystem('T_hull', THull(), promotes_inputs=['dmoment_dv'], promotes_outputs=['T_hull'])
 		
 		self.add_subsystem('hull_r_hull', HullRHull(), promotes_inputs=['D_spar_p', 'wt_spar_p'], promotes_outputs=['r_hull'])
-		
-		self.add_subsystem('area_ringstiff', AreaRingstiff(), promotes_inputs=['t_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff'], promotes_outputs=['A_R'])
 		
 		self.add_subsystem('hull_axial_stress', HullAxialStress(), promotes_inputs=['N_hull', 'r_hull', 'wt_spar_p'], promotes_outputs=['sigma_a'])
 		
@@ -81,13 +77,11 @@ class HullBuckling(Group):
 		
 		self.add_subsystem('hull_hoop_stress', HullHoopStress(), promotes_inputs=['net_pressure', 'r_hull', 'wt_spar_p', 'alpha', 'zeta', 'sigma_a', 'sigma_m'], promotes_outputs=['sigma_h'])
 		
-		self.add_subsystem('hull_shear_stress', HullShearStress(), promotes_inputs=['T_hull', 'Qy_hull', 'Qz_hull', 'r_hull', 'wt_spar_p', 'angle_hull'], promotes_outputs=['tau'])
+		#self.add_subsystem('hull_shear_stress', HullShearStress(), promotes_inputs=['T_hull', 'Qy_hull', 'Qz_hull', 'r_hull', 'wt_spar_p', 'angle_hull'], promotes_outputs=['tau'])
 		
 		self.add_subsystem('hull_Z_l', HullZL(), promotes_inputs=['l_stiff', 'r_hull', 'wt_spar_p'], promotes_outputs=['Z_l'])
 		
 		self.add_subsystem('hull_r_0', HullR0(), promotes_inputs=['D_spar_p', 'wt_spar_p', 't_f_stiff', 't_w_stiff', 'b_stiff', 'h_stiff', 'l_eo', 'r_hull'], promotes_outputs=['r_0'])
-		
-		self.add_subsystem('hull_r_e', HullRE(), promotes_inputs=['D_spar_p', 'wt_spar_p', 't_f_stiff', 't_w_stiff', 'b_stiff', 'h_stiff'], promotes_outputs=['r_e'])
 		
 		self.add_subsystem('hull_r_f', HullRF(), promotes_inputs=['D_spar_p', 'wt_spar_p', 't_f_stiff', 'h_stiff'], promotes_outputs=['r_f'])
 		
@@ -105,9 +99,9 @@ class HullBuckling(Group):
 		
 		self.add_subsystem('hull_f_ks', HullFKs(), promotes_inputs=['f_y', 'lambda_s'], promotes_outputs=['f_ks'])
 		
-		self.add_subsystem('hull_gamma_M', HullGammaM(), promotes_inputs=['lambda_s'], promotes_outputs=['gamma_M'])
+		self.add_subsystem('hull_gamma_M', HullGammaM(), promotes_inputs=['lambda_s'], promotes_outputs=['gamma_M_hull'])
 		
-		self.add_subsystem('hull_f_ksd', HullFKsd(), promotes_inputs=['f_ks', 'gamma_M'], promotes_outputs=['f_ksd'])
+		self.add_subsystem('hull_f_ksd', HullFKsd(), promotes_inputs=['f_ks', 'gamma_M_hull'], promotes_outputs=['f_ksd'])
 		
 		self.add_subsystem('hull_f_r', HullFR(), promotes_inputs=['f_y'], promotes_outputs=['f_r'])
 		

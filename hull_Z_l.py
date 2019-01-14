@@ -9,7 +9,7 @@ class HullZL(ExplicitComponent):
 		self.add_input('r_hull', val=np.zeros(10), units='m')
 		self.add_input('wt_spar_p', val=np.zeros(11), units='m')
 
-		self.add_output('Z_l', val=np.zeros(10))
+		self.add_output('Z_l', val=np.ones(10))
 
 		self.declare_partials('Z_l', 'l_stiff', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('Z_l', 'r_hull', rows=np.arange(10), cols=np.arange(10))

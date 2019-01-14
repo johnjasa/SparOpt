@@ -11,7 +11,7 @@ class HullBendingStress(ExplicitComponent):
 		self.add_input('wt_spar_p', val=np.zeros(11), units='m')
 		self.add_input('angle_hull', val=0., units='rad')
 
-		self.add_output('sigma_m', val=np.zeros(10), units='MPa')
+		self.add_output('sigma_m', val=np.ones(10), units='MPa')
 
 		self.declare_partials('sigma_m', 'My_hull', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('sigma_m', 'Mz_hull', rows=np.arange(10), cols=np.arange(10))

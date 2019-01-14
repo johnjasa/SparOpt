@@ -9,7 +9,7 @@ class HullAxialStress(ExplicitComponent):
 		self.add_input('r_hull', val=np.zeros(10), units='m')
 		self.add_input('wt_spar_p', val=np.zeros(11), units='m')
 
-		self.add_output('sigma_a', val=np.zeros(10), units='MPa')
+		self.add_output('sigma_a', val=np.ones(10), units='MPa')
 
 		self.declare_partials('sigma_a', 'N_hull', rows=np.arange(10), cols=np.arange(10))
 		self.declare_partials('sigma_a', 'r_hull', rows=np.arange(10), cols=np.arange(10))
