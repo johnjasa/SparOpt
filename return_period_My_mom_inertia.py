@@ -15,7 +15,7 @@ class ReturnPeriodMyMomInertia(ExplicitComponent):
 		m1h = 365.25 * 24. #number of 1h sea states in a year
 
 		for i in xrange(10):
-			if inputs['long_term_My_mom_inertia_CDF'][i] == 0.:
+			if inputs['long_term_My_mom_inertia_CDF'][i] == 1.:
 				outputs['T_My_mom_inertia'][i] = 10000. * np.ones(10)
 			else:
 				outputs['T_My_mom_inertia'][i] = 1. / ((1. - inputs['long_term_My_mom_inertia_CDF'][i]) * m1h)
@@ -24,7 +24,7 @@ class ReturnPeriodMyMomInertia(ExplicitComponent):
 		m1h = 365.25 * 24. #number of 1h sea states in a year
 		
 		for i in xrange(10):
-			if inputs['long_term_My_mom_inertia_CDF'][i] == 0.:
+			if inputs['long_term_My_mom_inertia_CDF'][i] == 1.:
 				partials['T_My_mom_inertia', 'long_term_My_mom_inertia_CDF'][i,i] = 0.
 			else:
 				partials['T_My_mom_inertia', 'long_term_My_mom_inertia_CDF'][i,i] = 1. / ((1. - inputs['long_term_My_mom_inertia_CDF'][i]) * m1h)**2. * m1h

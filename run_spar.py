@@ -175,7 +175,7 @@ prob.model.connect('long_term_My_hoop_stress_cdf.long_term_My_hoop_stress_CDF', 
 prob.model.connect('long_term_My_mom_inertia_cdf.long_term_My_mom_inertia_CDF', 'return_period_My_mom_inertia.long_term_My_mom_inertia_CDF')
 
 prob.model.linear_solver = LinearRunOnce()
-
+"""
 #from openmdao.api import ScipyOptimizeDriver
 from openmdao.api import pyOptSparseDriver
 #prob.driver = ScipyOptimizeDriver()
@@ -200,12 +200,14 @@ prob.model.add_constraint('total_hull_fatigue_damage.total_hull_fatigue_damage',
 
 prob.model.add_constraint('total_hull_fatigue_damage.total_hull_fatigue_damage', upper=np.ones(10))
 
-prob.model.add_objective('return_period_surge.T_surge', upper=50.)
-prob.model.add_objective('return_period_pitch.T_pitch', upper=50.)
-prob.model.add_objective('return_period_surge.T_tower_stress', upper=50.*np.ones(10))
-prob.model.add_objective('return_period_surge.T_My_shell_buckling', upper=50.*np.ones(10))
-prob.model.add_objective('return_period_surge.T_My_hoop_stress', upper=50.*np.ones(10))
-prob.model.add_objective('return_period_surge.T_My_mom_inertia', upper=50.*np.ones(10))
+prob.model.add_constraint('return_period_surge.T_surge', lower=50.)
+prob.model.add_constraint('return_period_pitch.T_pitch', lower=50.)
+prob.model.add_constraint('return_period_surge.T_tower_stress', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_surge.T_My_shell_buckling', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_surge.T_My_hoop_stress', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_surge.T_My_mom_inertia', lower=50.*np.ones(10))
+
+prob.model.add_objective('parallel.cond0.total_cost')
 
 prob.setup()
 
@@ -213,12 +215,12 @@ prob.run_driver()
 
 prob.record_iteration('final')
 prob.cleanup()
-
 """
+
 prob.setup()
 
 prob.run_model()
-"""
+
 
 #print prob['B_visc_11']
 #print prob['stddev_vel_distr']
