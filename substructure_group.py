@@ -4,7 +4,6 @@ from openmdao.api import Group
 
 from spar_diameter import SparDiameter
 from spar_thickness import SparThickness
-from tower_diameter import TowerDiameter
 from tower_thickness import TowerThickness
 from draft import Draft
 from z_spar import ZSpar
@@ -15,7 +14,6 @@ from spar_total_mass import SparTotalMass
 from spar_inertia import SparInertia
 from spar_addedmass import SparAddedMass
 from spar_cog import SparCoG
-from z_tower import ZTower
 from tower_mass import TowerMass
 from tower_total_mass import TowerTotalMass
 from turb_mass import TurbMass
@@ -81,8 +79,6 @@ class Substructure(Group):
 
 		self.add_subsystem('spar_thickness', SparThickness(), promotes_inputs=['wt_spar_p'], promotes_outputs=['wt_spar'])
 
-		self.add_subsystem('tower_diameter', TowerDiameter(), promotes_inputs=['D_tower_p'], promotes_outputs=['D_tower'])
-
 		self.add_subsystem('tower_thickness', TowerThickness(), promotes_inputs=['wt_tower_p'], promotes_outputs=['wt_tower'])
 
 	 	self.add_subsystem('draft', Draft(), promotes_inputs=['L_spar'], promotes_outputs=['spar_draft'])
@@ -101,8 +97,6 @@ class Substructure(Group):
 
 	 	self.add_subsystem('spar_cog', SparCoG(), promotes_inputs=['L_spar', 'M_spar', 'tot_M_spar', 'spar_draft'], promotes_outputs=['CoG_spar'])
 
-	 	self.add_subsystem('Z_tower', ZTower(), promotes_inputs=['L_tower'], promotes_outputs=['Z_tower'])
-
 	 	self.add_subsystem('tower_mass', TowerMass(), promotes_inputs=['D_tower', 'L_tower', 'wt_tower'], promotes_outputs=['M_tower'])
 
 	 	self.add_subsystem('tower_total_mass', TowerTotalMass(), promotes_inputs=['M_tower'], promotes_outputs=['tot_M_tower'])
@@ -120,8 +114,6 @@ class Substructure(Group):
 	 	self.add_subsystem('volume', Volume(), promotes_inputs=['D_spar', 'L_spar'], promotes_outputs=['sub_vol'])
 
 	 	self.add_subsystem('buoyancy', Buoyancy(), promotes_inputs=['D_spar', 'L_spar', 'spar_draft', 'sub_vol'], promotes_outputs=['buoy_spar', 'CoB'])
-
-	 	#self.add_subsystem('ballast', Ballast(), promotes_inputs=['spar_draft', 'buoy_spar', 'tot_M_spar', 'D_spar', 'M_turb', 'M_moor_zero', 'rho_ball', 'wt_ball'], promotes_outputs=['M_ball', 'CoG_ball', 'L_ball'])
 
 	 	self.add_subsystem('ballast_elem', BallastElem(), promotes_inputs=['buoy_spar', 'tot_M_spar', 'D_spar', 'L_spar', 'M_turb', 'M_moor_zero', 'rho_ball', 'wt_ball'], promotes_outputs=['L_ball_elem', 'M_ball_elem'])
 

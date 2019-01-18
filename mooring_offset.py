@@ -7,6 +7,7 @@ class MooringOffset(ImplicitComponent):
 
 	def setup(self):
 		self.add_input('thrust_0', val=0., units='N')
+		self.add_input('F0_tower_drag', val=0., units='N')
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('water_depth', val=0., units='m')
 		self.add_input('EA_moor', val=1., units='N')
@@ -41,7 +42,7 @@ class MooringOffset(ImplicitComponent):
 		residuals['moor_tension_offset_lw'] = l_tot - l_eff_lw - (l_tot_hor - outputs['moor_offset']) + t_star_lw * np.arcsinh(l_eff_lw / t_star_lw) + outputs['moor_tension_offset_lw'] * l_eff_lw / EA
 		residuals['eff_length_offset_lw'] = h - mu * 9.80665 * l_eff_lw**2. / (2. * EA) - t_star_lw * (np.sqrt(1. + (l_eff_lw / t_star_lw)**2.) - 1.)
 
-		residuals['moor_offset'] = outputs['moor_tension_offset_ww'] - outputs['moor_tension_offset_lw'] - inputs['thrust_0']
+		residuals['moor_offset'] = outputs['moor_tension_offset_ww'] - outputs['moor_tension_offset_lw'] - inputs['thrust_0'] - inputs['F0_tower_drag']
 
 	def solve_nonlinear(self, inputs, outputs):
 		h = inputs['water_depth'][0] + inputs['z_moor'][0]
@@ -50,11 +51,12 @@ class MooringOffset(ImplicitComponent):
 		l_tot_hor = inputs['len_hor_moor'][0]
 		l_tot = inputs['len_tot_moor'][0]
 		thrust_0 = inputs['thrust_0'][0]
+		F0_tower_drag = inputs['F0_tower_drag'][0]
 
 		def fun(x):
 			t_star_ww = x[1] / (mu * 9.80665)
 			t_star_lw = x[3] / (mu * 9.80665)
-			return [l_tot - x[0] - l_tot_hor - x[4] + t_star_ww * np.arcsinh(x[0] / t_star_ww) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star_ww * (np.sqrt(1. + (x[0] / t_star_ww)**2.) - 1.), l_tot - x[2] - l_tot_hor + x[4] + t_star_lw * np.arcsinh(x[2] / t_star_lw) + x[3] * x[2] / EA, h - mu * 9.80665 * x[2]**2. / (2. * EA) - t_star_lw * (np.sqrt(1. + (x[2] / t_star_lw)**2.) -1.), x[1] - x[3] - thrust_0]
+			return [l_tot - x[0] - l_tot_hor - x[4] + t_star_ww * np.arcsinh(x[0] / t_star_ww) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star_ww * (np.sqrt(1. + (x[0] / t_star_ww)**2.) - 1.), l_tot - x[2] - l_tot_hor + x[4] + t_star_lw * np.arcsinh(x[2] / t_star_lw) + x[3] * x[2] / EA, h - mu * 9.80665 * x[2]**2. / (2. * EA) - t_star_lw * (np.sqrt(1. + (x[2] / t_star_lw)**2.) -1.), x[1] - x[3] - thrust_0 - F0_tower_drag]
 
 		sol = root(fun, [600.0, 1.0e6, 600.0, 1.0e6, 1.]) #TODO: zero tension and eff. length as inital guess?
 
@@ -131,6 +133,7 @@ class MooringOffset(ImplicitComponent):
 		partials['eff_length_offset_lw', 'moor_offset'] = 0.
 
 		partials['moor_offset', 'thrust_0'] = -1.
+		partials['moor_offset', 'F0_tower_drag'] = -1.
 		partials['moor_offset', 'z_moor'] = 0.
 		partials['moor_offset', 'water_depth'] = 0.
 		partials['moor_offset', 'EA_moor'] = 0.

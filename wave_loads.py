@@ -73,7 +73,7 @@ class WaveLoads(ExplicitComponent):
 					outputs['Im_wave_forces'][i,1,0] += np.imag(X5)
 					outputs['Im_wave_forces'][i,2,0] += np.imag(X7)
 
-	def compute_partials(self, inputs, partials):
+	def compute_partials(self, inputs, partials): #TODO check
 		omega_wave = self.omega_wave
 		N_omega_wave = len(omega_wave)
 
@@ -140,43 +140,13 @@ class WaveLoads(ExplicitComponent):
 					dwave_forces_dwater_depth[3*i+2,0] += 4. * 1025. * 9.80665 / wave_number[i] * G * dz * x_sparelem[j] * np.exp(1j * alpha + 1j * np.pi / 2.) * (wave_number[i] * np.sinh(wave_number[i] * (z + h)) / np.cosh(wave_number[i] * h) - wave_number[i] * np.cosh(wave_number[i] * (z + h)) * np.tanh(wave_number[i] * h) * 1. / np.cosh(wave_number[i] * h))
 
 		partials['Re_wave_forces', 'D_spar'] = np.real(dwave_forces_dD_spar)
-		partials['Re_wave_forces', 'D_spar'] = np.real(dwave_forces_dD_spar)
-		partials['Re_wave_forces', 'D_spar'] = np.real(dwave_forces_dD_spar)
-
 		partials['Re_wave_forces', 'x_sparelem'] = np.real(dwave_forces_dx_sparelem)
-
 		partials['Re_wave_forces', 'z_sparnode'] = np.real(dwave_forces_dz_sparnode)
-		partials['Re_wave_forces', 'z_sparnode'] = np.real(dwave_forces_dz_sparnode)
-		partials['Re_wave_forces', 'z_sparnode'] = np.real(dwave_forces_dz_sparnode)
-		partials['Re_wave_forces', 'z_sparnode'] = np.real(dwave_forces_dz_sparnode)
-		partials['Re_wave_forces', 'z_sparnode'] = np.real(dwave_forces_dz_sparnode)
-		partials['Re_wave_forces', 'z_sparnode'] = np.real(dwave_forces_dz_sparnode)
-
 		partials['Re_wave_forces', 'wave_number'] = np.real(dwave_forces_dwave_number)
-		partials['Re_wave_forces', 'wave_number'] = np.real(dwave_forces_dwave_number)
-		partials['Re_wave_forces', 'wave_number'] = np.real(dwave_forces_dwave_number)
-
 		partials['Re_wave_forces', 'water_depth'] = np.real(dwave_forces_dwater_depth)
-		partials['Re_wave_forces', 'water_depth'] = np.real(dwave_forces_dwater_depth)
-		partials['Re_wave_forces', 'water_depth'] = np.real(dwave_forces_dwater_depth)
-
+		
 		partials['Im_wave_forces', 'D_spar'] = np.imag(dwave_forces_dD_spar)
-		partials['Im_wave_forces', 'D_spar'] = np.imag(dwave_forces_dD_spar)
-		partials['Im_wave_forces', 'D_spar'] = np.imag(dwave_forces_dD_spar)
-
 		partials['Im_wave_forces', 'x_sparelem'] = np.imag(dwave_forces_dx_sparelem)
-
 		partials['Im_wave_forces', 'z_sparnode'] = np.imag(dwave_forces_dz_sparnode)
-		partials['Im_wave_forces', 'z_sparnode'] = np.imag(dwave_forces_dz_sparnode)
-		partials['Im_wave_forces', 'z_sparnode'] = np.imag(dwave_forces_dz_sparnode)
-		partials['Im_wave_forces', 'z_sparnode'] = np.imag(dwave_forces_dz_sparnode)
-		partials['Im_wave_forces', 'z_sparnode'] = np.imag(dwave_forces_dz_sparnode)
-		partials['Im_wave_forces', 'z_sparnode'] = np.imag(dwave_forces_dz_sparnode)
-
 		partials['Im_wave_forces', 'wave_number'] = np.imag(dwave_forces_dwave_number)
-		partials['Im_wave_forces', 'wave_number'] = np.imag(dwave_forces_dwave_number)
-		partials['Im_wave_forces', 'wave_number'] = np.imag(dwave_forces_dwave_number)
-
-		partials['Im_wave_forces', 'water_depth'] = np.imag(dwave_forces_dwater_depth)
-		partials['Im_wave_forces', 'water_depth'] = np.imag(dwave_forces_dwater_depth)
 		partials['Im_wave_forces', 'water_depth'] = np.imag(dwave_forces_dwater_depth)

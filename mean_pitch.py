@@ -6,6 +6,8 @@ class MeanPitch(ExplicitComponent):
 
 	def setup(self):
 		self.add_input('thrust_0', val=0., units='N')
+		self.add_input('F0_tower_drag', val=0., units='N')
+		self.add_input('Z0_tower_drag', val=0., units='m')
 		self.add_input('CoG_rotor', val=0., units='m')
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('buoy_spar', val=0., units='N')
@@ -21,6 +23,8 @@ class MeanPitch(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		thrust_0 = inputs['thrust_0']
+		F0_tower_drag = inputs['F0_tower_drag']
+		Z0_tower_drag = inputs['Z0_tower_drag']
 		CoG_rotor = inputs['CoG_rotor']
 		z_moor = inputs['z_moor']
 		buoy_spar = inputs['buoy_spar']
@@ -28,10 +32,12 @@ class MeanPitch(ExplicitComponent):
 		M_total = inputs['M_turb'] + inputs['tot_M_spar'] + inputs['M_ball']
 		CoG_total = inputs['CoG_total']
 
-		outputs['mean_pitch'] = np.arcsin(thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))
+		outputs['mean_pitch'] = np.arcsin((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))
 
 	def compute_partials(self, inputs, partials):
 		thrust_0 = inputs['thrust_0']
+		F0_tower_drag = inputs['F0_tower_drag']
+		Z0_tower_drag = inputs['Z0_tower_drag']
 		CoG_rotor = inputs['CoG_rotor']
 		z_moor = inputs['z_moor']
 		buoy_spar = inputs['buoy_spar']
@@ -39,12 +45,14 @@ class MeanPitch(ExplicitComponent):
 		M_total = inputs['M_turb'] + inputs['tot_M_spar'] + inputs['M_ball']
 		CoG_total = inputs['CoG_total']
 
-		partials['mean_pitch', 'thrust_0'] = ((CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))) / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.)
-		partials['mean_pitch', 'CoG_rotor'] = (thrust_0 / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))) / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.)
-		partials['mean_pitch', 'z_moor'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)) + (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-buoy_spar + M_total * 9.80665))
-		partials['mean_pitch', 'buoy_spar'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (CoB - z_moor)
-		partials['mean_pitch', 'CoB'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * buoy_spar
-		partials['mean_pitch', 'M_turb'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-9.80665 * (CoG_total - z_moor))
-		partials['mean_pitch', 'tot_M_spar'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-9.80665 * (CoG_total - z_moor))
-		partials['mean_pitch', 'M_ball'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-9.80665 * (CoG_total - z_moor))
-		partials['mean_pitch', 'CoG_total'] = 1. / np.sqrt(1. - (thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-thrust_0 * (CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-M_total * 9.80665)
+		partials['mean_pitch', 'thrust_0'] = ((CoG_rotor - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))) / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.)
+		partials['mean_pitch', 'CoG_rotor'] = (thrust_0 / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))) / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.)
+		partials['mean_pitch', 'F0_tower_drag'] = ((Z0_tower_drag - z_moor) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))) / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.)
+		partials['mean_pitch', 'Z0_tower_drag'] = (F0_tower_drag / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))) / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.)
+		partials['mean_pitch', 'z_moor'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 + F0_tower_drag) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)) + (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-buoy_spar + M_total * 9.80665))
+		partials['mean_pitch', 'buoy_spar'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (CoB - z_moor)
+		partials['mean_pitch', 'CoB'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * buoy_spar
+		partials['mean_pitch', 'M_turb'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-9.80665 * (CoG_total - z_moor))
+		partials['mean_pitch', 'tot_M_spar'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-9.80665 * (CoG_total - z_moor))
+		partials['mean_pitch', 'M_ball'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-9.80665 * (CoG_total - z_moor))
+		partials['mean_pitch', 'CoG_total'] = 1. / np.sqrt(1. - ((thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor)))**2.) * (-(thrust_0 * (CoG_rotor - z_moor) + F0_tower_drag * (Z0_tower_drag - z_moor)) / (buoy_spar * (CoB - z_moor) - M_total * 9.80665 * (CoG_total - z_moor))**2.) * (-M_total * 9.80665)

@@ -14,6 +14,8 @@ class SteadyBladePitch(ExplicitComponent):
 
 		if windspeed_0 < 12.:
 			outputs['bldpitch_0'] = 0.
+		elif windspeed_0 > 25.:
+			outputs['bldpitch_0'] = 90. * np.pi / 180.
 		else:
 			data_windspeed = np.array([12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25.])
 			data_bldpitch = np.array([6.09 , 8.33 , 10.10, 11.67, 13.09, 14.41, 15.66, 16.85, 17.99, 19.08, 20.14, 21.18, 22.19, 23.17]) * np.pi / 180.

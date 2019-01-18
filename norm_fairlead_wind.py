@@ -2,7 +2,7 @@ import numpy as np
 
 from openmdao.api import ExplicitComponent
 
-class NormFairleadMWind(ExplicitComponent):
+class NormFairleadWind(ExplicitComponent):
 
 	def initialize(self):
 		self.options.declare('freqs', types=dict)
@@ -24,11 +24,7 @@ class NormFairleadMWind(ExplicitComponent):
 
 		self.declare_partials('Re_RAO_wind_fairlead', 'Re_RAO_wind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Re_RAO_wind_fairlead', 'Re_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Re_RAO_wind_fairlead', 'Im_RAO_wind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Re_RAO_wind_fairlead', 'Im_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Re_RAO_wind_fairlead', 'z_moor')
-		self.declare_partials('Im_RAO_wind_fairlead', 'Re_RAO_wind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Im_RAO_wind_fairlead', 'Re_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Im_RAO_wind_fairlead', 'Im_RAO_wind_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Im_RAO_wind_fairlead', 'Im_RAO_wind_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
 		self.declare_partials('Im_RAO_wind_fairlead', 'z_moor')
@@ -55,12 +51,8 @@ class NormFairleadMWind(ExplicitComponent):
 		
 		partials['Re_RAO_wind_fairlead', 'Re_RAO_wind_surge'] = np.ones(N_omega)
 		partials['Re_RAO_wind_fairlead', 'Re_RAO_wind_pitch'] = np.ones(N_omega) * z_moor
-		partials['Re_RAO_wind_fairlead', 'Im_RAO_wind_surge'] = np.zeros(N_omega)
-		partials['Re_RAO_wind_fairlead', 'Im_RAO_wind_pitch'] = np.zeros(N_omega)
 		partials['Re_RAO_wind_fairlead', 'z_moor'] = np.real(RAO_wind_pitch)
 
-		partials['Im_RAO_wind_fairlead', 'Re_RAO_wind_surge'] = np.zeros(N_omega)
-		partials['Im_RAO_wind_fairlead', 'Re_RAO_wind_pitch'] = np.zeros(N_omega)
 		partials['Im_RAO_wind_fairlead', 'Im_RAO_wind_surge'] = np.ones(N_omega)
 		partials['Im_RAO_wind_fairlead', 'Im_RAO_wind_pitch'] = np.ones(N_omega) * z_moor
 		partials['Im_RAO_wind_fairlead', 'z_moor'] = np.imag(RAO_wind_pitch)

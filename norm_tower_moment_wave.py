@@ -170,25 +170,25 @@ class NormTowerMomentWave(ExplicitComponent):
 			partials['Im_RAO_wave_tower_moment', 'mom_rotspeed'][i*N_omega:i*N_omega+N_omega] = np.imag(RAO_wave_rotspeed)
 			partials['Im_RAO_wave_tower_moment', 'mom_bldpitch'][i*N_omega:i*N_omega+N_omega] = np.imag(RAO_wave_bldpitch)
 
-			for i in xrange(len(RAO_wave_acc_surge)):
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_pitch'][i*11:i*11+11] = mom_grav_pitch
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_bend'][i*11:i*11+11] = mom_grav_bend
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_rotspeed'][i*11:i*11+11] = mom_rotspeed
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_bldpitch'][i*11:i*11+11] = mom_bldpitch
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_vel_surge'][i*11:i*11+11] = -mom_damp_surge
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_vel_pitch'][i*11:i*11+11] = -mom_damp_pitch
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_vel_bend'][i*11:i*11+11] = -mom_damp_bend
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_acc_surge'][i*11:i*11+11] = -mom_acc_surge
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_acc_pitch'][i*11:i*11+11] = -mom_acc_pitch
-				partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_acc_bend'][i*11:i*11+11] = -mom_acc_bend
+		for i in xrange(len(RAO_wave_acc_surge)):
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_pitch'][i*11:i*11+11] = mom_grav_pitch
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_bend'][i*11:i*11+11] = mom_grav_bend
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_rotspeed'][i*11:i*11+11] = mom_rotspeed
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_bldpitch'][i*11:i*11+11] = mom_bldpitch
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_vel_surge'][i*11:i*11+11] = -mom_damp_surge
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_vel_pitch'][i*11:i*11+11] = -mom_damp_pitch
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_vel_bend'][i*11:i*11+11] = -mom_damp_bend
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_acc_surge'][i*11:i*11+11] = -mom_acc_surge
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_acc_pitch'][i*11:i*11+11] = -mom_acc_pitch
+			partials['Re_RAO_wave_tower_moment', 'Re_RAO_wave_acc_bend'][i*11:i*11+11] = -mom_acc_bend
 
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_pitch'][i*11:i*11+11] = mom_grav_pitch
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_bend'][i*11:i*11+11] = mom_grav_bend
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_rotspeed'][i*11:i*11+11] = mom_rotspeed
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_bldpitch'][i*11:i*11+11] = mom_bldpitch
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_vel_surge'][i*11:i*11+11] = -mom_damp_surge
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_vel_pitch'][i*11:i*11+11] = -mom_damp_pitch
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_vel_bend'][i*11:i*11+11] = -mom_damp_bend
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_acc_surge'][i*11:i*11+11] = -mom_acc_surge
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_acc_pitch'][i*11:i*11+11] = -mom_acc_pitch
-				partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_acc_bend'][i*11:i*11+11] = -mom_acc_bend
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_pitch'][i*11:i*11+11] = mom_grav_pitch
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_bend'][i*11:i*11+11] = mom_grav_bend
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_rotspeed'][i*11:i*11+11] = mom_rotspeed
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_bldpitch'][i*11:i*11+11] = mom_bldpitch
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_vel_surge'][i*11:i*11+11] = -mom_damp_surge
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_vel_pitch'][i*11:i*11+11] = -mom_damp_pitch
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_vel_bend'][i*11:i*11+11] = -mom_damp_bend
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_acc_surge'][i*11:i*11+11] = -mom_acc_surge
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_acc_pitch'][i*11:i*11+11] = -mom_acc_pitch
+			partials['Im_RAO_wave_tower_moment', 'Im_RAO_wave_acc_bend'][i*11:i*11+11] = -mom_acc_bend

@@ -3,7 +3,7 @@ import scipy.special as ss
 
 from openmdao.api import ExplicitComponent
 
-class Dirlik(ExplicitComponent):
+class TowerFatigue(ExplicitComponent):
 
 	def initialize(self):
 		self.options.declare('freqs', types=dict)
@@ -16,14 +16,14 @@ class Dirlik(ExplicitComponent):
 		self.add_input('resp_tower_stress', val=np.zeros((N_omega,11)), units='MPa**2*s/rad')
 		self.add_input('wt_tower_p', val=np.zeros(11), units='m')
 
-		self.add_output('fatigue_damage', val=np.zeros(11))
+		self.add_output('tower_fatigue_damage', val=np.zeros(11))
 
 		Cols = Cols1 = np.arange(0,11*N_omega,11)
 		for i in xrange(1,11):
 			Cols = np.concatenate((Cols,Cols1 + i),0)
 
-		self.declare_partials('fatigue_damage', 'resp_tower_stress', rows=np.repeat(np.arange(11),N_omega), cols=Cols)
-		self.declare_partials('fatigue_damage', 'wt_tower_p', rows=np.arange(11), cols=np.arange(11))
+		self.declare_partials('tower_fatigue_damage', 'resp_tower_stress', rows=np.repeat(np.arange(11),N_omega), cols=Cols)
+		self.declare_partials('tower_fatigue_damage', 'wt_tower_p', rows=np.arange(11), cols=np.arange(11))
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
@@ -62,9 +62,9 @@ class Dirlik(ExplicitComponent):
 			Q = 1.25 * (alpha_2 - G3 - G2 * R) / G1
 			
 			if wt > wt_ref:
-				outputs['fatigue_damage'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (wt / wt_ref)**(t_exp * k)
+				outputs['tower_fatigue_damage'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (wt / wt_ref)**(t_exp * k)
 			else:
-				outputs['fatigue_damage'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3))
+				outputs['tower_fatigue_damage'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3))
 
 	def compute_partials(self, inputs, partials):
 		omega = self.omega
@@ -132,8 +132,8 @@ class Dirlik(ExplicitComponent):
 			dQ_dresp = 1.25 * (dalpha_2_dresp - dG3_dresp - dG2_dresp * R - G2 * dR_dresp) / G1 - Q / G1 * dG1_dresp
 
 			if wt > wt_ref:
-				partials['fatigue_damage', 'resp_tower_stress'][i*N_omega:i*N_omega+N_omega] = T * C**(-1.) * (dv_p_dresp * (2. * sigma)**k + v_p * k * (2. * sigma)**(k - 1.) * 2. * dsigma_dresp) * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (wt / wt_ref)**(t_exp * k) + T * C**(-1.) * v_p * (2. * sigma)**k * (ss.gamma(1. + k) * (dG1_dresp * Q**k + G1 * k * Q**(k - 1.) * dQ_dresp) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (dG2_dresp * R**k + G2 * k * R**(k - 1.) * dR_dresp + dG3_dresp)) * (wt / wt_ref)**(t_exp * k)
-				partials['fatigue_damage', 'wt_tower_p'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (t_exp * k / wt_ref) * (wt / wt_ref)**(t_exp * k - 1.)
+				partials['tower_fatigue_damage', 'resp_tower_stress'][i*N_omega:i*N_omega+N_omega] = T * C**(-1.) * (dv_p_dresp * (2. * sigma)**k + v_p * k * (2. * sigma)**(k - 1.) * 2. * dsigma_dresp) * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (wt / wt_ref)**(t_exp * k) + T * C**(-1.) * v_p * (2. * sigma)**k * (ss.gamma(1. + k) * (dG1_dresp * Q**k + G1 * k * Q**(k - 1.) * dQ_dresp) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (dG2_dresp * R**k + G2 * k * R**(k - 1.) * dR_dresp + dG3_dresp)) * (wt / wt_ref)**(t_exp * k)
+				partials['tower_fatigue_damage', 'wt_tower_p'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) * (t_exp * k / wt_ref) * (wt / wt_ref)**(t_exp * k - 1.)
 			else:
-				partials['fatigue_damage', 'resp_tower_stress'][i*N_omega:i*N_omega+N_omega] = T * C**(-1.) * (dv_p_dresp * (2. * sigma)**k + v_p * k * (2. * sigma)**(k - 1.) * 2. * dsigma_dresp) * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) + T * C**(-1.) * v_p * (2. * sigma)**k * (ss.gamma(1. + k) * (dG1_dresp * Q**k + G1 * k * Q**(k - 1.) * dQ_dresp) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (dG2_dresp * R**k + G2 * k * R**(k - 1.) * dR_dresp + dG3_dresp))
-				partials['fatigue_damage', 'wt_tower_p'][i] = 0.
+				partials['tower_fatigue_damage', 'resp_tower_stress'][i*N_omega:i*N_omega+N_omega] = T * C**(-1.) * (dv_p_dresp * (2. * sigma)**k + v_p * k * (2. * sigma)**(k - 1.) * 2. * dsigma_dresp) * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3)) + T * C**(-1.) * v_p * (2. * sigma)**k * (ss.gamma(1. + k) * (dG1_dresp * Q**k + G1 * k * Q**(k - 1.) * dQ_dresp) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (dG2_dresp * R**k + G2 * k * R**(k - 1.) * dR_dresp + dG3_dresp))
+				partials['tower_fatigue_damage', 'wt_tower_p'][i] = 0.

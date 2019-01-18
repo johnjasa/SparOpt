@@ -14,7 +14,7 @@ class ZeroUpcrossingTowerStress(ExplicitComponent):
 
 		self.add_input('resp_tower_stress', val=np.zeros((N_omega,11)), units='MPa**2*s/rad')
 
-		self.add_output('v_z_tower_stress', val=np.zeros(11), units='1/s')
+		self.add_output('v_z_tower_stress', val=np.zeros(10), units='1/s')
 
 		self.declare_partials('*', '*')
 
@@ -23,7 +23,7 @@ class ZeroUpcrossingTowerStress(ExplicitComponent):
 
 		S_stress = inputs['resp_tower_stress']
 
-		for i in xrange(11):
+		for i in xrange(10):
 			m0 = np.trapz(S_stress[:,i],omega)
 			m2 = np.trapz(omega**2. * S_stress[:,i],omega)
 			
@@ -36,9 +36,9 @@ class ZeroUpcrossingTowerStress(ExplicitComponent):
 
 		S_stress = inputs['resp_tower_stress']
 
-		partials['v_z_tower_stress', 'resp_tower_stress'] = np.zeros((11,11*N_omega))
+		partials['v_z_tower_stress', 'resp_tower_stress'] = np.zeros((10,10*N_omega))
 
-		for i in xrange(11):
+		for i in xrange(10):
 			m0 = np.trapz(S_stress[:,i],omega)
 			m2 = np.trapz(omega**2. * S_stress[:,i],omega)
 
@@ -50,4 +50,4 @@ class ZeroUpcrossingTowerStress(ExplicitComponent):
 			dm0_dresp[-1] += -domega / 2.
 			dm2_dresp[-1] += -omega[-1]**2. * domega / 2.
 		
-			partials['v_z_tower_stress', 'resp_tower_stress'][i,i:11*N_omega:11] += 1. / (2. * np.pi) * 0.5 / np.sqrt(m2 / m0) * (dm2_dresp / m0 - m2 / m0**2. * dm0_dresp)
+			partials['v_z_tower_stress', 'resp_tower_stress'][i,i:10*N_omega:10] += 1. / (2. * np.pi) * 0.5 / np.sqrt(m2 / m0) * (dm2_dresp / m0 - m2 / m0**2. * dm0_dresp)

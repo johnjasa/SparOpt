@@ -26,4 +26,4 @@ class TowerBuckling(Group):
 
 		self.add_subsystem('tower_chi_x', TowerChiX(), promotes_inputs=['lambda_x', 'alpha_x'], promotes_outputs=['chi_x'])
 
-		self.add_subsystem('tower_buckling_resist', TowerBucklingResist(), promotes_inputs=['chi_x', 'f_y', 'gamma_M_tower', 'gamma_F_tower'], promotes_outputs=['maxval_tower_buckling'])
+		self.add_subsystem('tower_buckling_resist', TowerBucklingResist(), promotes_inputs=['chi_x', 'f_y', 'gamma_M_tower', 'gamma_F_tower'], promotes_outputs=['maxval_tower_stress'])
