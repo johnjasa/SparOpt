@@ -25,5 +25,5 @@ class LongTermSurgeCDF(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['long_term_surge_CDF', 'short_surge_term_CDF%d' % i] = inputs['p%d' % i]
-			partials['long_term_surge_CDF', 'p%d' % i] = inputs['short_surge_term_CDF%d' % i]
+			partials['long_term_surge_CDF', 'short_term_surge_CDF%d' % i] = inputs['p%d' % i]
+			partials['long_term_surge_CDF', 'p%d' % i] = inputs['short_term_surge_CDF%d' % i]

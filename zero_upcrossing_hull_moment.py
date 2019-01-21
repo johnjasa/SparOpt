@@ -36,7 +36,7 @@ class ZeroUpcrossingHullMoment(ExplicitComponent):
 
 		S_moment = inputs['resp_hull_moment']
 
-		partials['v_z_hull_moments', 'resp_hull_moment'] = np.zeros((10,10*N_omega))
+		partials['v_z_hull_moment', 'resp_hull_moment'] = np.zeros((10,10*N_omega))
 
 		for i in xrange(10):
 			m0 = np.trapz(S_moment[:,i],omega)

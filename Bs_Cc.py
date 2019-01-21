@@ -17,4 +17,4 @@ class BsCc(ExplicitComponent):
 
 	def compute_partials(self, inputs, partials):
 		partials['BsCc', 'B_struct'] = np.kron(np.identity(7),np.transpose(inputs['C_contrl']))
-		partials['BsCc', 'C_contrl'] = np.kron(inputs['B_struct'],np.identity(2))
+		partials['BsCc', 'C_contrl'] = np.kron(inputs['B_struct'],np.identity(4))

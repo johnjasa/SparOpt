@@ -16,7 +16,7 @@ class ReturnPeriodMyShellBuckling(ExplicitComponent):
 
 		for i in xrange(10):
 			if inputs['long_term_My_shell_buckling_CDF'][i] == 1.:
-				outputs['T_My_shell_buckling'][i] = 10000. * np.ones(10)
+				outputs['T_My_shell_buckling'][i] = 10000.
 			else:
 				outputs['T_My_shell_buckling'][i] = 1. / ((1. - inputs['long_term_My_shell_buckling_CDF'][i]) * m1h)
 	

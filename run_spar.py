@@ -175,12 +175,12 @@ prob.model.connect('long_term_My_hoop_stress_cdf.long_term_My_hoop_stress_CDF', 
 prob.model.connect('long_term_My_mom_inertia_cdf.long_term_My_mom_inertia_CDF', 'return_period_My_mom_inertia.long_term_My_mom_inertia_CDF')
 
 prob.model.linear_solver = LinearRunOnce()
-"""
-#from openmdao.api import ScipyOptimizeDriver
-from openmdao.api import pyOptSparseDriver
-#prob.driver = ScipyOptimizeDriver()
-prob.driver = pyOptSparseDriver()
-prob.driver.options['optimizer'] = 'SNOPT'
+
+from openmdao.api import ScipyOptimizeDriver
+#from openmdao.api import pyOptSparseDriver
+prob.driver = ScipyOptimizeDriver()
+#prob.driver = pyOptSparseDriver()
+#prob.driver.options['optimizer'] = 'SNOPT'
 
 prob.add_recorder(SqliteRecorder("cases.sql"))
 
@@ -191,21 +191,19 @@ prob.recording_options['record_desvars'] = True
 
 prob.model.add_design_var('D_spar_p', lower=np.ones(11), upper=30.*np.ones(11))
 prob.model.add_design_var('wt_spar_p', lower=np.zeros(11), upper=0.5*np.ones(11))
-prob.model.add_design_var('L_spar', lower=np.array([1., 1., 1., 1., 1., 1., 1., 1., 1., 10.]), upper=30.*np.ones(11))
+prob.model.add_design_var('L_spar', lower=np.array([1., 1., 1., 1., 1., 1., 1., 1., 1., 10.]), upper=30.*np.ones(10))
 prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=30.*np.ones(11))
 prob.model.add_design_var('wt_tower_p', lower=np.zeros(11), upper=0.5*np.ones(11))
 
-prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(10))
-prob.model.add_constraint('total_hull_fatigue_damage.total_hull_fatigue_damage', upper=np.ones(10))
-
+prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 prob.model.add_constraint('total_hull_fatigue_damage.total_hull_fatigue_damage', upper=np.ones(10))
 
 prob.model.add_constraint('return_period_surge.T_surge', lower=50.)
 prob.model.add_constraint('return_period_pitch.T_pitch', lower=50.)
-prob.model.add_constraint('return_period_surge.T_tower_stress', lower=50.*np.ones(10))
-prob.model.add_constraint('return_period_surge.T_My_shell_buckling', lower=50.*np.ones(10))
-prob.model.add_constraint('return_period_surge.T_My_hoop_stress', lower=50.*np.ones(10))
-prob.model.add_constraint('return_period_surge.T_My_mom_inertia', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_tower_stress.T_tower_stress', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_My_shell_buckling.T_My_shell_buckling', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_My_hoop_stress.T_My_hoop_stress', lower=50.*np.ones(10))
+prob.model.add_constraint('return_period_My_mom_inertia.T_My_mom_inertia', lower=50.*np.ones(10))
 
 prob.model.add_objective('parallel.cond0.total_cost')
 
@@ -215,12 +213,12 @@ prob.run_driver()
 
 prob.record_iteration('final')
 prob.cleanup()
-"""
 
+"""
 prob.setup()
 
 prob.run_model()
-
+"""
 
 #print prob['B_visc_11']
 #print prob['stddev_vel_distr']

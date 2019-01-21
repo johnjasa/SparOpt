@@ -66,17 +66,17 @@ class HullFatigue(ExplicitComponent):
 			else:
 				outputs['hull_fatigue_damage'][i] = T * C**(-1.) * v_p * (2. * sigma)**k * (G1 * Q**k * ss.gamma(1. + k) + np.sqrt(2.)**k * ss.gamma(1. + k / 2.) * (G2 * R**k + G3))
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 		domega = omega[1] - omega[0]
 
 		resp_hull_stress = inputs['resp_hull_stress']
-		wt_spar_p = inputs['wt_spar_p']
+		wt_spar_p = inputs['wt_spar_p'][:-1]
 
 		for i in xrange(len(wt_spar_p)):
 			S_stress = resp_hull_stress[:,i]
-			wt = wt_spar_p[i][:-1]
+			wt = wt_spar_p[i]
 
 			logC = 12.164
 			k = 3.0

@@ -25,5 +25,5 @@ class LongTermMoorTenCDF(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['long_term_moor_ten_CDF', 'short_moor_ten_term_CDF%d' % i] = inputs['p%d' % i]
-			partials['long_term_moor_ten_CDF', 'p%d' % i] = inputs['short_moor_ten_term_CDF%d' % i]
+			partials['long_term_moor_ten_CDF', 'short_term_moor_ten_CDF%d' % i] = inputs['p%d' % i]
+			partials['long_term_moor_ten_CDF', 'p%d' % i] = inputs['short_term_moor_ten_CDF%d' % i]

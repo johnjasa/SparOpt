@@ -16,5 +16,5 @@ class BcCs(ExplicitComponent):
 		outputs['BcCs'] = np.matmul(inputs['B_contrl'],inputs['C_struct'])
 
 	def compute_partials(self, inputs, partials):
-		partials['BcCs', 'B_contrl'] = np.kron(np.identity(2),np.transpose(inputs['C_struct']))
+		partials['BcCs', 'B_contrl'] = np.kron(np.identity(4),np.transpose(inputs['C_struct']))
 		partials['BcCs', 'C_struct'] = np.kron(inputs['B_contrl'],np.identity(7))

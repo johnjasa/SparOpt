@@ -16,7 +16,7 @@ class ReturnPeriodMyMomInertia(ExplicitComponent):
 
 		for i in xrange(10):
 			if inputs['long_term_My_mom_inertia_CDF'][i] == 1.:
-				outputs['T_My_mom_inertia'][i] = 10000. * np.ones(10)
+				outputs['T_My_mom_inertia'][i] = 10000.
 			else:
 				outputs['T_My_mom_inertia'][i] = 1. / ((1. - inputs['long_term_My_mom_inertia_CDF'][i]) * m1h)
 	

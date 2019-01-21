@@ -25,5 +25,7 @@ class LongTermMyShellBucklingCDF(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['long_term_My_shell_buckling_CDF', 'short_My_shell_buckling_term_CDF%d' % i] = np.ones(10) * inputs['p%d' % i]
-			partials['long_term_My_shell_buckling_CDF', 'p%d' % i] = inputs['short_My_shell_buckling_term_CDF%d' % i]
+			for j in xrange(10):
+				partials['long_term_My_shell_buckling_CDF', 'short_term_My_shell_buckling_CDF%d' % i][j,j] = inputs['p%d' % i]
+			
+			partials['long_term_My_shell_buckling_CDF', 'p%d' % i][:,0] = inputs['short_term_My_shell_buckling_CDF%d' % i]

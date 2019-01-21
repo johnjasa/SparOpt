@@ -23,20 +23,20 @@ class HullStressSpectrum(ExplicitComponent):
 		self.declare_partials('resp_hull_stress', 'wt_spar_p', rows=np.arange(10*N_omega), cols=np.tile(np.arange(10),N_omega))
 
 	def compute(self, inputs, outputs):
-		D_tower_p = inputs['D_spar_p'][:-1]
-		wt_tower_p = inputs['wt_spar_p'][:-1]
+		D_spar_p = inputs['D_spar_p'][:-1]
+		wt_spar_p = inputs['wt_spar_p'][:-1]
 		
-		for i in xrange(len(D_tower_p)):
-			outputs['resp_hull_stress'][:,i] = inputs['resp_hull_moment'][:,i] / (np.pi / 64. * (D_tower_p[i]**4. - (D_tower_p[i] - 2. * wt_tower_p[i])**4.))**2. * (D_tower_p[i] / 2. * 10.**(-6.))**2.
+		for i in xrange(len(D_spar_p)):
+			outputs['resp_hull_stress'][:,i] = inputs['resp_hull_moment'][:,i] / (np.pi / 64. * (D_spar_p[i]**4. - (D_spar_p[i] - 2. * wt_spar_p[i])**4.))**2. * (D_spar_p[i] / 2. * 10.**(-6.))**2.
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		N_omega = len(self.omega)
 
-		D_tower_p = inputs['D_spar_p'][:-1]
-		wt_tower_p = inputs['wt_spar_p'][:-1]
+		D_spar_p = inputs['D_spar_p'][:-1]
+		wt_spar_p = inputs['wt_spar_p'][:-1]
 
 		for i in xrange(N_omega):
-			partials['resp_hull_stress', 'D_spar_p'][i*10:i*10+10] = inputs['resp_hull_moment'][i] / (np.pi / 64. * (D_tower_p**4. - (D_tower_p - 2. * wt_tower_p)**4.))**2. * (D_tower_p / 2. * 10.**(-6.)) * 10.**(-6.) + inputs['resp_tower_moment'][i] * (D_tower_p / 2. * 10.**(-6.))**2. * (-2.) / (np.pi / 64. * (D_tower_p**4. - (D_tower_p - 2. * wt_tower_p)**4.))**3. * np.pi / 16. * (D_tower_p**3. - (D_tower_p - 2. * wt_tower_p)**3.)
-			partials['resp_hull_stress', 'wt_spar_p'][i*10:i*10+10] = -inputs['resp_hull_moment'][i] * (D_tower_p / 2. * 10.**(-6.))**2. * 2. / (np.pi / 64. * (D_tower_p**4. - (D_tower_p - 2. * wt_tower_p)**4.))**3. * np.pi / 8. * (D_tower_p - 2. * wt_tower_p)**3.
+			partials['resp_hull_stress', 'D_spar_p'][i*10:i*10+10] = inputs['resp_hull_moment'][i] / (np.pi / 64. * (D_spar_p**4. - (D_spar_p - 2. * wt_spar_p)**4.))**2. * (D_spar_p / 2. * 10.**(-6.)) * 10.**(-6.) + inputs['resp_hull_moment'][i] * (D_spar_p / 2. * 10.**(-6.))**2. * (-2.) / (np.pi / 64. * (D_spar_p**4. - (D_spar_p - 2. * wt_spar_p)**4.))**3. * np.pi / 16. * (D_spar_p**3. - (D_spar_p - 2. * wt_spar_p)**3.)
+			partials['resp_hull_stress', 'wt_spar_p'][i*10:i*10+10] = -inputs['resp_hull_moment'][i] * (D_spar_p / 2. * 10.**(-6.))**2. * 2. / (np.pi / 64. * (D_spar_p**4. - (D_spar_p - 2. * wt_spar_p)**4.))**3. * np.pi / 8. * (D_spar_p - 2. * wt_spar_p)**3.
 
-			partials['resp_hull_stress', 'resp_hull_moment'][i*10:i*10+10] = 1. / (np.pi / 64. * (D_tower_p**4. - (D_tower_p - 2. * wt_tower_p)**4.))**2. * (D_tower_p / 2. * 10.**(-6.))**2.
+			partials['resp_hull_stress', 'resp_hull_moment'][i*10:i*10+10] = 1. / (np.pi / 64. * (D_spar_p**4. - (D_spar_p - 2. * wt_spar_p)**4.))**2. * (D_spar_p / 2. * 10.**(-6.))**2.

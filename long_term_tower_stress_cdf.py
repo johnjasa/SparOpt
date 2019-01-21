@@ -25,5 +25,7 @@ class LongTermTowerStressCDF(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['long_term_tower_stress_CDF', 'short_tower_stress_term_CDF%d' % i] = np.ones(10) * inputs['p%d' % i]
-			partials['long_term_tower_stress_CDF', 'p%d' % i] = inputs['short_tower_stress_term_CDF%d' % i]
+			for j in xrange(10):
+				partials['long_term_tower_stress_CDF', 'short_term_tower_stress_CDF%d' % i][j,j] = inputs['p%d' % i]
+			
+			partials['long_term_tower_stress_CDF', 'p%d' % i][:,0] = inputs['short_term_tower_stress_CDF%d' % i]

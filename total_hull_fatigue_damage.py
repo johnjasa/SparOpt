@@ -27,5 +27,8 @@ class TotalHullFatigueDamage(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['total_hull_fatigue_damage', 'hull_fatigue_damage%d' % i] = np.ones(11) * inputs['p%d' % i] * inputs['DFF_hull'] * 24. * 365.25 * 20.
-			partials['total_hull_fatigue_damage', 'p%d' % i] = inputs['hull_fatigue_damage%d' % i] * inputs['DFF_hull'] * 24. * 365.25 * 20.
+			for j in xrange(10):
+				partials['total_hull_fatigue_damage', 'hull_fatigue_damage%d' % i][j,j] += inputs['p%d' % i] * inputs['DFF_hull'] * 24. * 365.25 * 20.
+			
+			partials['total_hull_fatigue_damage', 'p%d' % i][:,0] += inputs['hull_fatigue_damage%d' % i] * inputs['DFF_hull'] * 24. * 365.25 * 20.
+			partials['total_hull_fatigue_damage', 'DFF_hull'][:,0] += inputs['hull_fatigue_damage%d' % i] * inputs['p%d' % i] * 24. * 365.25 * 20.

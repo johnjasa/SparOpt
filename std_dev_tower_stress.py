@@ -29,7 +29,7 @@ class StdDevTowerStress(ExplicitComponent):
 		N_omega = len(omega)
 		domega = omega[1] - omega[0]
 
-		partials['stddev_tower_stress', 'resp_tower_stress'] = np.zeros((10,10*N_omega))
+		partials['stddev_tower_stress', 'resp_tower_stress'] = np.zeros((10,11*N_omega))
 		
 		for i in xrange(10):
 			partials['stddev_tower_stress', 'resp_tower_stress'][i,i:10*N_omega:10] += np.ones(N_omega) * 0.5 / np.sqrt(np.trapz(inputs['resp_tower_stress'][:,i], omega)) * domega

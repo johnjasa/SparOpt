@@ -25,5 +25,5 @@ class LongTermPitchCDF(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['long_term_pitch_CDF', 'short_pitch_term_CDF%d' % i] = inputs['p%d' % i]
-			partials['long_term_pitch_CDF', 'p%d' % i] = inputs['short_pitch_term_CDF%d' % i]
+			partials['long_term_pitch_CDF', 'short_term_pitch_CDF%d' % i] = inputs['p%d' % i]
+			partials['long_term_pitch_CDF', 'p%d' % i] = inputs['short_term_pitch_CDF%d' % i]

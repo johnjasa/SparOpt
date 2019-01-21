@@ -36,7 +36,7 @@ class ZeroUpcrossingTowerStress(ExplicitComponent):
 
 		S_stress = inputs['resp_tower_stress']
 
-		partials['v_z_tower_stress', 'resp_tower_stress'] = np.zeros((10,10*N_omega))
+		partials['v_z_tower_stress', 'resp_tower_stress'] = np.zeros((10,11*N_omega))
 
 		for i in xrange(10):
 			m0 = np.trapz(S_stress[:,i],omega)

@@ -27,5 +27,8 @@ class TotalTowerFatigueDamage(ExplicitComponent):
 	
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
-			partials['total_tower_fatigue_damage', 'tower_fatigue_damage%d' % i] = np.ones(11) * inputs['p%d' % i] * inputs['DFF_tower'] * 24. * 365.25 * 20.
-			partials['total_tower_fatigue_damage', 'p%d' % i] = inputs['tower_fatigue_damage%d' % i] * inputs['DFF_tower'] * 24. * 365.25 * 20.
+			for j in xrange(11):
+				partials['total_tower_fatigue_damage', 'tower_fatigue_damage%d' % i][j,j] += inputs['p%d' % i] * inputs['DFF_tower'] * 24. * 365.25 * 20.
+			
+			partials['total_tower_fatigue_damage', 'p%d' % i][:,0] += inputs['tower_fatigue_damage%d' % i] * inputs['DFF_tower'] * 24. * 365.25 * 20.
+			partials['total_tower_fatigue_damage', 'DFF_tower'][:,0] += inputs['tower_fatigue_damage%d' % i] * inputs['p%d' % i] * 24. * 365.25 * 20.
