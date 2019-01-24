@@ -125,7 +125,7 @@ prob.model.add_subsystem('mean_tower_drag', MeanTowerDrag(), promotes_inputs=['D
 mooring_group = Mooring()
 
 prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
-'thrust_0', 'F0_tower_drag'], promotes_outputs=['M_moor_zero', 'K_moor', 'M_moor', 'moor_offset'])
+'thrust_0', 'F0_tower_drag'], promotes_outputs=['M_moor_zero', 'K_moor', 'M_moor', 'moor_offset', 'maxval_fairlead', 'mean_moor_ten'])
 
 substructure_group = Substructure(freqs=freqs)
 
@@ -177,8 +177,8 @@ prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_for
 	'z_towernode', 'x_towerelem', 'x_towernode', 'x_d_towertop', 'D_spar', 'L_spar', 'Z_spar', 'wave_number', 'water_depth', 'moor_offset', 'z_moor', 'K_moor', \
 	'thrust_0', 'buoy_spar', 'CoB', 'M_turb', 'tot_M_spar', 'M_ball', 'CoG_total', 'M_spar', 'stddev_vel_distr', 'z_sparnode', 'x_sparnode', 'x_sparelem', 'spar_draft', \
 	'L_ball', 'M_ball_elem', 'F0_tower_drag', 'Z0_tower_drag', 'D_spar_p', 'wt_spar_p'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', \
-	'stddev_bldpitch', 'stddev_tower_stress', 'stddev_hull_moment', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'v_z_surge', \
-	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'tower_fatigue_damage', 'hull_fatigue_damage'])
+	'stddev_bldpitch', 'stddev_tower_stress', 'stddev_hull_moment', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'v_z_surge', \
+	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage'])
 
 hull_buckling_balance = HullBalance()
 
@@ -211,10 +211,10 @@ prob.model.add_subsystem('tower_buckling', tower_buckling_group, promotes_inputs
 extreme_response_group = ExtremeResponse()
 
 prob.model.add_subsystem('extreme_response', extreme_response_group, promotes_inputs=['maxval_surge', 'maxval_pitch', 'maxval_tower_stress', \
-	'maxval_My_shell_buckling', 'maxval_My_hoop_stress', 'maxval_My_mom_inertia', 'stddev_surge', 'stddev_pitch', 'stddev_tower_stress', \
-	'stddev_hull_moment', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'v_z_surge', 'v_z_pitch', 'v_z_tower_stress', \
-	'v_z_hull_moment'], promotes_outputs=['short_term_surge_CDF', 'short_term_pitch_CDF', 'short_term_tower_stress_CDF', 'short_term_My_shell_buckling_CDF', \
-	'short_term_My_hoop_stress_CDF', 'short_term_My_mom_inertia_CDF'])
+	'maxval_My_shell_buckling', 'maxval_My_hoop_stress', 'maxval_My_mom_inertia', 'maxval_fairlead', 'maxval_moor_ten', 'stddev_surge', 'stddev_pitch', 'stddev_tower_stress', \
+	'stddev_hull_moment', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'moor_offset', 'mean_moor_ten', 'v_z_surge', 'v_z_pitch', 'v_z_tower_stress', \
+	'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten'], promotes_outputs=['short_term_surge_CDF', 'short_term_pitch_CDF', 'short_term_tower_stress_CDF', 'short_term_My_shell_buckling_CDF', \
+	'short_term_My_hoop_stress_CDF', 'short_term_My_mom_inertia_CDF', 'short_term_fairlead_CDF', 'short_term_moor_ten_CDF'])
 
 cost_group = Cost()
 
@@ -273,11 +273,11 @@ prob.run_model()
 
 #prob.record_iteration('final')
 #prob.cleanup()
-print prob['mean_tower_stress']
-print prob['stddev_tower_stress']
-print prob['v_z_tower_stress']
-print prob['maxval_tower_stress']
-print prob['short_term_tower_stress_CDF']
+#print prob['mean_tower_stress']
+#print prob['stddev_tower_stress']
+#print prob['v_z_tower_stress']
+#print prob['maxval_tower_stress']
+#print prob['short_term_tower_stress_CDF']
 
 #print prob['B_visc_11']
 #print prob['stddev_vel_distr']

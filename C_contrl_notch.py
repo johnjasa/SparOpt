@@ -24,12 +24,15 @@ class Ccontrl(ExplicitComponent):
 
 		K = 251153.48 #Nm/(rad/s)**2
 
-		if windspeed_0 < 11.4: #rated wind speed
-			outputs['C_contrl'] = np.array([[0., 2. * K * rotspeed_0, 0., 0.],[0., 0., 0., 0.]])
+		if (windspeed_0 > 25.) or (windspeed_0 < 4.):
+			outputs['C_contrl'] = np.zeros((2,4))
 		else:
-			outputs['C_contrl'] = np.array([[0., 0., 0., 0.],[eta * k_i, eta * k_p, 0., 0.]])
+			if windspeed_0 < 11.4: #rated wind speed
+				outputs['C_contrl'] = np.array([[0., 2. * K * rotspeed_0, 0., 0.],[0., 0., 0., 0.]])
+			else:
+				outputs['C_contrl'] = np.array([[0., 0., 0., 0.],[eta * k_i, eta * k_p, 0., 0.]])
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		windspeed_0 = inputs['windspeed_0']
 		rotspeed_0 = inputs['rotspeed_0']
 		k_i = inputs['k_i']
@@ -38,15 +41,22 @@ class Ccontrl(ExplicitComponent):
 
 		K = 251153.48 #Nm/(rad/s)**2
 
-		if windspeed_0 < 11.4: #rated wind speed
-			partials['C_contrl', 'windspeed_0'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
-			partials['C_contrl', 'rotspeed_0'] = np.array([[0., 2. * K, 0., 0., 0., 0., 0., 0.]]).T
-			partials['C_contrl', 'k_i'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
-			partials['C_contrl', 'k_p'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
-			partials['C_contrl', 'gain_corr_factor'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+		if (windspeed_0 > 25.) or (windspeed_0 < 4.):
+			partials['C_contrl', 'windspeed_0'] = np.zeros((8,1))
+			partials['C_contrl', 'rotspeed_0'] = np.zeros((8,1))
+			partials['C_contrl', 'k_i'] = np.zeros((8,1))
+			partials['C_contrl', 'k_p'] = np.zeros((8,1))
+			partials['C_contrl', 'gain_corr_factor'] = np.zeros((8,1))
 		else:
-			partials['C_contrl', 'windspeed_0'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
-			partials['C_contrl', 'rotspeed_0'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
-			partials['C_contrl', 'k_i'] = np.array([[0., 0., 0., 0., eta, 0., 0., 0.]]).T
-			partials['C_contrl', 'k_p'] = np.array([[0., 0., 0., 0., 0., eta, 0., 0.]]).T
-			partials['C_contrl', 'gain_corr_factor'] = np.array([[0., 0., 0., 0., k_i, k_p, 0., 0.]]).T
+			if windspeed_0 < 11.4: #rated wind speed
+				partials['C_contrl', 'windspeed_0'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+				partials['C_contrl', 'rotspeed_0'] = np.array([[0., 2. * K, 0., 0., 0., 0., 0., 0.]]).T
+				partials['C_contrl', 'k_i'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+				partials['C_contrl', 'k_p'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+				partials['C_contrl', 'gain_corr_factor'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+			else:
+				partials['C_contrl', 'windspeed_0'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+				partials['C_contrl', 'rotspeed_0'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0.]]).T
+				partials['C_contrl', 'k_i'] = np.array([[0., 0., 0., 0., eta, 0., 0., 0.]]).T
+				partials['C_contrl', 'k_p'] = np.array([[0., 0., 0., 0., 0., eta, 0., 0.]]).T
+				partials['C_contrl', 'gain_corr_factor'] = np.array([[0., 0., 0., 0., k_i, k_p, 0., 0.]]).T

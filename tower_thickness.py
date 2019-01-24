@@ -19,7 +19,7 @@ class TowerThickness(ExplicitComponent):
 		for i in range(len(wt_tower_p)-1):
 			outputs['wt_tower'][i] = (wt_tower_p[i] + wt_tower_p[i+1]) / 2.
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		wt_tower_p  = inputs['wt_tower_p']
 
 		partials['wt_tower', 'wt_tower_p'] = np.zeros((len(wt_tower_p)-1,len(wt_tower_p)))

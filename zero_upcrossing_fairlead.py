@@ -2,7 +2,7 @@ import numpy as np
 
 from openmdao.api import ExplicitComponent
 
-class ZeroUpcrossingMoorTen(ExplicitComponent):
+class ZeroUpcrossingFairlead(ExplicitComponent):
 
 	def initialize(self):
 		self.options.declare('freqs', types=dict)
@@ -12,30 +12,30 @@ class ZeroUpcrossingMoorTen(ExplicitComponent):
 		self.omega = freqs['omega']
 		N_omega = len(self.omega)
 
-		self.add_input('resp_moor_ten', val=np.zeros(N_omega), units='N**2*s/rad')
+		self.add_input('resp_fairlead', val=np.zeros(N_omega), units='m**2*s/rad')
 
-		self.add_output('v_z_moor_ten', val=0., units='1/s')
+		self.add_output('v_z_fairlead', val=0., units='1/s')
 
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
 
-		S_resp = inputs['resp_moor_ten']
+		S_resp = inputs['resp_fairlead']
 
 		m0 = np.trapz(S_resp,omega)
 		m2 = np.trapz(omega**2. * S_resp,omega)
 		
-		outputs['v_z_moor_ten'] = 1. / (2. * np.pi) * np.sqrt(m2 / m0)
+		outputs['v_z_fairlead'] = 1. / (2. * np.pi) * np.sqrt(m2 / m0)
 
 	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 		domega = omega[1] - omega[0]
 
-		S_resp = inputs['resp_moor_ten']
+		S_resp = inputs['resp_fairlead']
 
-		partials['v_z_moor_ten', 'resp_moor_ten'] = np.zeros((1,N_omega))
+		partials['v_z_fairlead', 'resp_fairlead'] = np.zeros((1,N_omega))
 
 		m0 = np.trapz(S_resp,omega)
 		m2 = np.trapz(omega**2. * S_resp,omega)
@@ -48,4 +48,4 @@ class ZeroUpcrossingMoorTen(ExplicitComponent):
 		dm0_dresp[-1] += -domega / 2.
 		dm2_dresp[-1] += -omega[-1]**2. * domega / 2.
 		
-		partials['v_z_moor_ten', 'resp_moor_ten'][0,:] += 1. / (2. * np.pi) * 0.5 / np.sqrt(m2 / m0) * (dm2_dresp / m0 - m2 / m0**2. * dm0_dresp)
+		partials['v_z_fairlead', 'resp_fairlead'][0,:] += 1. / (2. * np.pi) * 0.5 / np.sqrt(m2 / m0) * (dm2_dresp / m0 - m2 / m0**2. * dm0_dresp)

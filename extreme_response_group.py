@@ -8,6 +8,8 @@ from short_term_tower_stress_cdf import ShortTermTowerStressCDF
 from short_term_My_shell_buckling_cdf import ShortTermMyShellBucklingCDF
 from short_term_My_hoop_stress_cdf import ShortTermMyHoopStressCDF
 from short_term_My_mom_inertia_cdf import ShortTermMyMomInertiaCDF
+from short_term_fairlead_cdf import ShortTermFairleadCDF
+from short_term_moor_ten_cdf import ShortTermMoorTenCDF
 
 class ExtremeResponse(Group):
 
@@ -24,3 +26,7 @@ class ExtremeResponse(Group):
 		self.add_subsystem('short_term_My_hoop_stress_cdf', ShortTermMyHoopStressCDF(), promotes_inputs=['v_z_hull_moment', 'mean_hull_moment', 'stddev_hull_moment', 'maxval_My_hoop_stress'], promotes_outputs=['short_term_My_hoop_stress_CDF'])
 
 		self.add_subsystem('short_term_My_mom_inertia_cdf', ShortTermMyMomInertiaCDF(), promotes_inputs=['v_z_hull_moment', 'mean_hull_moment', 'stddev_hull_moment', 'maxval_My_mom_inertia'], promotes_outputs=['short_term_My_mom_inertia_CDF'])
+
+		self.add_subsystem('short_term_fairlead_cdf', ShortTermFairleadCDF(), promotes_inputs=['v_z_fairlead', 'moor_offset', 'stddev_fairlead', 'maxval_fairlead'], promotes_outputs=['short_term_fairlead_CDF'])
+
+		self.add_subsystem('short_term_moor_ten_cdf', ShortTermMoorTenCDF(), promotes_inputs=['v_z_moor_ten', 'mean_moor_ten', 'stddev_moor_ten', 'maxval_moor_ten'], promotes_outputs=['short_term_moor_ten_CDF'])

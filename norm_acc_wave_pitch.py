@@ -29,7 +29,7 @@ class NormAccWavePitch(ExplicitComponent):
 		outputs['Re_RAO_wave_acc_pitch'] = -inputs['Re_RAO_wave_pitch'] * omega**2.
 		outputs['Im_RAO_wave_acc_pitch'] = -inputs['Im_RAO_wave_pitch'] * omega**2.
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(self.omega)
 

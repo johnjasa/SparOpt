@@ -18,6 +18,9 @@ class MooringChain(ExplicitComponent):
 		D_moor = inputs['D_moor']
 		gamma_F_moor = inputs['gamma_F_moor']
 
+		#Min breaking strength taken from DNVGL-OS-E302
+		#Mass density taken from N. Barltrop "Floating Structures: A Guide for Design and Analysis"
+
 		c = 22.3 #grade 3
 		#c = 27.4 #grade 4
 		#c = 30.4 #grade 4s
@@ -27,7 +30,7 @@ class MooringChain(ExplicitComponent):
 		outputs['EA_moor'] = 90000. * (1000. * D_moor)**2.
 		outputs['maxval_moor_ten'] = 0.95 * c * (1000. * D_moor)**2. * (44. - 0.08 * (1000. * D_moor)) / gamma_F_moor #0.95 taken from DNV-OS-J103
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		D_moor = inputs['D_moor']
 		gamma_F_moor = inputs['gamma_F_moor']
 

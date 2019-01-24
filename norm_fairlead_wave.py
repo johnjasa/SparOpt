@@ -22,11 +22,11 @@ class NormFairleadWave(ExplicitComponent):
 		self.add_output('Re_RAO_wave_fairlead', val=np.zeros(N_omega), units='m/m')
 		self.add_output('Im_RAO_wave_fairlead', val=np.zeros(N_omega), units='m/m')
 
-		self.declare_partials('Re_RAO_wave_fairlead', 'Re_RAO_wave_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Re_RAO_wave_fairlead', 'Re_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
+		self.declare_partials('Re_RAO_wave_fairlead', 'Re_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Re_RAO_wave_fairlead', 'Re_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wave_fairlead', 'z_moor')
-		self.declare_partials('Im_RAO_wave_fairlead', 'Im_RAO_wave_surge', rows=np.arange(N_omega), cols=np.zeros(N_omega))
-		self.declare_partials('Im_RAO_wave_fairlead', 'Im_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.zeros(N_omega))
+		self.declare_partials('Im_RAO_wave_fairlead', 'Im_RAO_wave_surge', rows=np.arange(N_omega), cols=np.arange(N_omega))
+		self.declare_partials('Im_RAO_wave_fairlead', 'Im_RAO_wave_pitch', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Im_RAO_wave_fairlead', 'z_moor')
 
 	def compute(self, inputs, outputs):
@@ -40,7 +40,7 @@ class NormFairleadWave(ExplicitComponent):
 
 		outputs['Im_RAO_wave_fairlead'] = np.imag(RAO_wave_fairlead)
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

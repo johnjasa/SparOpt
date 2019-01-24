@@ -19,7 +19,7 @@ class SparThickness(ExplicitComponent):
 		for i in range(len(wt_spar_p)-1):
 			outputs['wt_spar'][i] = (wt_spar_p[i] + wt_spar_p[i+1]) / 2.
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		wt_spar_p  = inputs['wt_spar_p']
 
 		partials['wt_spar', 'wt_spar_p'] = np.zeros((len(wt_spar_p)-1,len(wt_spar_p)))

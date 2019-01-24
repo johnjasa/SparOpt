@@ -20,9 +20,9 @@ class NormMoorTenMWind(ExplicitComponent):
 		self.add_output('Re_RAO_Mwind_moor_ten', val=np.zeros(N_omega), units='N/(m/s)')
 		self.add_output('Im_RAO_Mwind_moor_ten', val=np.zeros(N_omega), units='N/(m/s)')
 
-		self.declare_partials('Re_RAO_Mwind_moor_ten', 'Re_RAO_Mwind_fairlead', rows=np.arange(N_omega), cols=np.zeros(N_omega))
+		self.declare_partials('Re_RAO_Mwind_moor_ten', 'Re_RAO_Mwind_fairlead', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_Mwind_moor_ten', 'K_moor')
-		self.declare_partials('Im_RAO_Mwind_moor_ten', 'Im_RAO_Mwind_fairlead', rows=np.arange(N_omega), cols=np.zeros(N_omega))
+		self.declare_partials('Im_RAO_Mwind_moor_ten', 'Im_RAO_Mwind_fairlead', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Im_RAO_Mwind_moor_ten', 'K_moor')
 
 	def compute(self, inputs, outputs):
@@ -35,7 +35,7 @@ class NormMoorTenMWind(ExplicitComponent):
 
 		outputs['Im_RAO_Mwind_moor_ten'] = np.imag(RAO_Mwind_moor_ten)
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

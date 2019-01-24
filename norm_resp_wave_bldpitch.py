@@ -70,7 +70,7 @@ class NormRespWaveBldpitch(ExplicitComponent):
 		outputs['Re_RAO_wave_bldpitch'] = np.real(RAO_wave_bldpitch)
 		outputs['Im_RAO_wave_bldpitch'] = np.imag(RAO_wave_bldpitch)
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

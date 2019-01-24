@@ -73,7 +73,7 @@ class WaveLoads(ExplicitComponent):
 					outputs['Im_wave_forces'][i,1,0] += np.imag(X5)
 					outputs['Im_wave_forces'][i,2,0] += np.imag(X7)
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega_wave = self.omega_wave
 		N_omega_wave = len(omega_wave)
 

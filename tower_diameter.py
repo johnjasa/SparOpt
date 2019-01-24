@@ -19,7 +19,7 @@ class TowerDiameter(ExplicitComponent):
 		for i in range(len(D_tower_p)-1):
 			outputs['D_tower'][i] = (D_tower_p[i] + D_tower_p[i+1]) / 2.
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		D_tower_p  = inputs['D_tower_p']
 
 		partials['D_tower', 'D_tower_p'] = np.zeros((len(D_tower_p)-1,len(D_tower_p)))

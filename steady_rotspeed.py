@@ -15,7 +15,7 @@ class SteadyRotSpeed(ExplicitComponent):
 		if (windspeed_0 > 25.) or (windspeed_0 < 4.):
 			outputs['rotspeed_0'] = 0.
 		else:
-			if windspeed_0 >= 11.:
+			if windspeed_0 >= 11.4:
 				outputs['rotspeed_0'] = 9.6 * 2. * np.pi / 60.
 			elif windspeed_0 <= 7.:
 				outputs['rotspeed_0'] = 6.0 * 2. * np.pi / 60.

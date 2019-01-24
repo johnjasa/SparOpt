@@ -19,7 +19,7 @@ class ModeshapeElemEI(ExplicitComponent):
 		N_sparelem = 13
 		N_towerelem = 10
 
-		outputs['EI_mode_elem'] = np.zeros(N_sparelem + N_towerelem)
+		outputs['EI_mode_elem'] = np.zeros(N_sparelem + N_towerelem) #TODO
 
 		for i in xrange(N_sparelem):
 			outputs['EI_mode_elem'][i] = 1e15 #np.pi / 64. * (D_spar[i]**4. - (D_spar[i] - 2. * wt_spar[i])**4.) * 2.1e11

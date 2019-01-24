@@ -12,7 +12,7 @@ class SteadyBladePitch(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		windspeed_0 = inputs['windspeed_0']
 
-		if windspeed_0 < 12.:
+		if windspeed_0 < 11.4:
 			outputs['bldpitch_0'] = 0.
 		elif windspeed_0 > 25.:
 			outputs['bldpitch_0'] = 90. * np.pi / 180.

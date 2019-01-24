@@ -35,7 +35,7 @@ class RespSpectrumSurge(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		outputs['resp_surge'] = np.abs(inputs['Re_RAO_wave_surge'] + 1j * inputs['Im_RAO_wave_surge'])**2. * inputs['S_wave'] + np.abs(inputs['Re_RAO_wind_surge'] + 1j * inputs['Im_RAO_wind_surge'])**2. * inputs['S_wind'] + np.abs(inputs['Re_RAO_Mwind_surge'] + 1j * inputs['Im_RAO_Mwind_surge'])**2. * inputs['S_wind']
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		partials['resp_surge', 'Re_RAO_wave_surge'] = 2. * inputs['Re_RAO_wave_surge'] * inputs['S_wave']
 		partials['resp_surge', 'Im_RAO_wave_surge'] = 2. * inputs['Im_RAO_wave_surge'] * inputs['S_wave']
 		partials['resp_surge', 'Re_RAO_wind_surge'] = 2. * inputs['Re_RAO_wind_surge'] * inputs['S_wind']

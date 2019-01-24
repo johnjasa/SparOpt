@@ -25,7 +25,7 @@ class ShortTermTowerStressCDF(ExplicitComponent):
 		for i in xrange(10):
 			outputs['short_term_tower_stress_CDF'][i] = np.exp(-v_z_extreme[i] * T * np.exp(-(value_extreme[i] - mean_extreme[i])**2. / (2. * stddev_extreme[i]**2.)))
 	
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		v_z_extreme = inputs['v_z_tower_stress']
 		mean_extreme = inputs['mean_tower_stress']
 		stddev_extreme = inputs['stddev_tower_stress']

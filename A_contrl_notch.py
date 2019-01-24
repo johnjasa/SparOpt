@@ -20,11 +20,11 @@ class Acontrl(ExplicitComponent):
 
 		outputs['A_contrl'] = np.array([[0., 1., 0., 0.],[0., -omega_lowpass, 0., -bandwidth_notch * omega_lowpass], [0., 0., 0., 1.], [0., 0., -omega_notch**2., -bandwidth_notch]])
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega_lowpass = inputs['omega_lowpass']
 		omega_notch = inputs['omega_notch']
 		bandwidth_notch = inputs['bandwidth_notch']
 	
 		partials['A_contrl', 'omega_lowpass'] = np.array([[0., 0., 0., 0., 0., -1., 0., -bandwidth_notch, 0., 0., 0., 0., 0., 0., 0., 0.]]).T
 		partials['A_contrl', 'omega_notch'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -2. * omega_notch, 0.]]).T
-		partials['A_contrl', 'bandwidth_notch'] = np.array([[0., 0., 0., 0., 0., -1., 0., -omega_lowpass, 0., 0., 0., 0., 0., 0., 0., -1.]]).T
+		partials['A_contrl', 'bandwidth_notch'] = np.array([[0., 0., 0., 0., 0., 0., 0., -omega_lowpass, 0., 0., 0., 0., 0., 0., 0., -1.]]).T

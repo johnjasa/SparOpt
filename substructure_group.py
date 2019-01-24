@@ -6,6 +6,7 @@ from spar_diameter import SparDiameter
 from spar_thickness import SparThickness
 from tower_thickness import TowerThickness
 from draft import Draft
+from lower_bound_z_moor import LowerBoundZMoor
 from z_spar import ZSpar
 from area_ringstiff import AreaRingstiff
 from hull_r_e import HullRE
@@ -21,6 +22,7 @@ from tower_inertia import TowerInertia
 from tower_cog import TowerCoG
 from turb_inertia import TurbInertia
 from turb_cog import TurbCoG
+from buoy_vs_mass import BuoyVsMass
 from ballast_elem import BallastElem
 from ballast_len import BallastLen
 from ballast_mass import BallastMass
@@ -83,6 +85,8 @@ class Substructure(Group):
 
 	 	self.add_subsystem('draft', Draft(), promotes_inputs=['L_spar'], promotes_outputs=['spar_draft'])
 
+	 	self.add_subsystem('lower_bound_z_moor', LowerBoundZMoor(), promotes_inputs=['z_moor', 'spar_draft'], promotes_outputs=['lower_bound_z_moor'])
+
 	 	self.add_subsystem('Z_spar', ZSpar(), promotes_inputs=['L_spar', 'spar_draft'], promotes_outputs=['Z_spar'])
 
 	 	self.add_subsystem('area_ringstiff', AreaRingstiff(), promotes_inputs=['t_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff'], promotes_outputs=['A_R'])
@@ -114,6 +118,8 @@ class Substructure(Group):
 	 	self.add_subsystem('volume', Volume(), promotes_inputs=['D_spar', 'L_spar'], promotes_outputs=['sub_vol'])
 
 	 	self.add_subsystem('buoyancy', Buoyancy(), promotes_inputs=['D_spar', 'L_spar', 'spar_draft', 'sub_vol'], promotes_outputs=['buoy_spar', 'CoB'])
+
+	 	self.add_subsystem('buoy_vs_mass', BuoyVsMass(), promotes_inputs=['buoy_spar', 'tot_M_spar', 'M_turb', 'M_moor_zero'], promotes_outputs=['buoy_mass'])
 
 	 	self.add_subsystem('ballast_elem', BallastElem(), promotes_inputs=['buoy_spar', 'tot_M_spar', 'D_spar', 'L_spar', 'M_turb', 'M_moor_zero', 'rho_ball', 'wt_ball'], promotes_outputs=['L_ball_elem', 'M_ball_elem'])
 

@@ -23,7 +23,7 @@ class StdDevMoorTen(ExplicitComponent):
 
 		outputs['stddev_moor_ten'] = np.sqrt(np.trapz(inputs['resp_moor_ten'], omega))
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 		domega = omega[1] - omega[0]

@@ -13,16 +13,16 @@ class NormMoorTenWave(ExplicitComponent):
 		N_omega = len(self.omega)
 
 
-		self.add_input('Re_RAO_wave_fairlead', val=np.zeros(N_omega), units='m/(m/s)')
-		self.add_input('Im_RAO_wave_fairlead', val=np.zeros(N_omega), units='m/(m/s)')
+		self.add_input('Re_RAO_wave_fairlead', val=np.zeros(N_omega), units='m/m')
+		self.add_input('Im_RAO_wave_fairlead', val=np.zeros(N_omega), units='m/m')
 		self.add_input('K_moor', val=0., units='N/m')
 
-		self.add_output('Re_RAO_wave_moor_ten', val=np.zeros(N_omega), units='N/(m/s)')
-		self.add_output('Im_RAO_wave_moor_ten', val=np.zeros(N_omega), units='N/(m/s)')
+		self.add_output('Re_RAO_wave_moor_ten', val=np.zeros(N_omega), units='N/m')
+		self.add_output('Im_RAO_wave_moor_ten', val=np.zeros(N_omega), units='N/m')
 
-		self.declare_partials('Re_RAO_wave_moor_ten', 'Re_RAO_wave_fairlead', rows=np.arange(N_omega), cols=np.zeros(N_omega))
+		self.declare_partials('Re_RAO_wave_moor_ten', 'Re_RAO_wave_fairlead', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Re_RAO_wave_moor_ten', 'K_moor')
-		self.declare_partials('Im_RAO_wave_moor_ten', 'Im_RAO_wave_fairlead', rows=np.arange(N_omega), cols=np.zeros(N_omega))
+		self.declare_partials('Im_RAO_wave_moor_ten', 'Im_RAO_wave_fairlead', rows=np.arange(N_omega), cols=np.arange(N_omega))
 		self.declare_partials('Im_RAO_wave_moor_ten', 'K_moor')
 
 	def compute(self, inputs, outputs):
@@ -35,7 +35,7 @@ class NormMoorTenWave(ExplicitComponent):
 
 		outputs['Im_RAO_wave_moor_ten'] = np.imag(RAO_wave_moor_ten)
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

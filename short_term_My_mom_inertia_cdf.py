@@ -25,7 +25,7 @@ class ShortTermMyMomInertiaCDF(ExplicitComponent):
 		for i in xrange(10):
 			outputs['short_term_My_mom_inertia_CDF'][i] = np.exp(-v_z_extreme[i] * T * np.exp(-(value_extreme[i] - mean_extreme[i])**2. / (2. * stddev_extreme[i]**2.)))
 	
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		v_z_extreme = inputs['v_z_hull_moment']
 		mean_extreme = inputs['mean_hull_moment']
 		stddev_extreme = inputs['stddev_hull_moment']

@@ -29,7 +29,7 @@ class NormVelMWindBend(ExplicitComponent):
 		outputs['Re_RAO_Mwind_vel_bend'] = -inputs['Im_RAO_Mwind_bend'] * omega
 		outputs['Im_RAO_Mwind_vel_bend'] = inputs['Re_RAO_Mwind_bend'] * omega
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

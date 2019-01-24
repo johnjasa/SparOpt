@@ -28,7 +28,7 @@ class BallastCoG(ExplicitComponent):
 		
 		outputs['CoG_ball'] = CoG_t_mass / M_ball
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		L_ball_elem  = inputs['L_ball_elem']
 		M_ball_elem  = inputs['M_ball_elem']
 		M_ball  = inputs['M_ball']

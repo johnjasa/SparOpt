@@ -29,7 +29,7 @@ class NormVelWindPitch(ExplicitComponent):
 		outputs['Re_RAO_wind_vel_pitch'] = -inputs['Im_RAO_wind_pitch'] * omega
 		outputs['Im_RAO_wind_vel_pitch'] = inputs['Re_RAO_wind_pitch'] * omega
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

@@ -20,15 +20,22 @@ from norm_acc_Mwind_bend import NormAccMWindBend
 from norm_fairlead_wave import NormFairleadWave
 from norm_fairlead_wind import NormFairleadWind
 from norm_fairlead_Mwind import NormFairleadMWind
+from norm_moor_ten_wave import NormMoorTenWave
+from norm_moor_ten_wind import NormMoorTenWind
+from norm_moor_ten_Mwind import NormMoorTenMWind
 from resp_spectrum_surge import RespSpectrumSurge
 from resp_spectrum_pitch import RespSpectrumPitch
 from resp_spectrum_bend import RespSpectrumBend
 from resp_spectrum_rotspeed import RespSpectrumRotspeed
 from resp_spectrum_bldpitch import RespSpectrumBldpitch
+from resp_spectrum_fairlead import RespSpectrumFairlead
+from moor_ten_spectrum import MoorTenSpectrum
 from vel_spectrum_surge import VelSpectrumSurge
 from vel_spectrum_pitch import VelSpectrumPitch
 from vel_spectrum_bend import VelSpectrumBend
 from std_dev_resp import StdDevResp
+from std_dev_fairlead import StdDevFairlead
+from std_dev_moor_ten import StdDevMoorTen
 from tower_moment_gains import TowerMomentGains
 from norm_tower_moment_wave import NormTowerMomentWave
 from norm_tower_moment_wind import NormTowerMomentWind
@@ -53,6 +60,8 @@ from zero_upcrossing_surge import ZeroUpcrossingSurge
 from zero_upcrossing_pitch import ZeroUpcrossingPitch
 from zero_upcrossing_tower_stress import ZeroUpcrossingTowerStress
 from zero_upcrossing_hull_moment import ZeroUpcrossingHullMoment
+from zero_upcrossing_fairlead import ZeroUpcrossingFairlead
+from zero_upcrossing_moor_ten import ZeroUpcrossingMoorTen
 from tower_fatigue import TowerFatigue
 from hull_fatigue import HullFatigue
 
@@ -100,6 +109,12 @@ class Postpro(Group):
 
 		self.add_subsystem('norm_fairlead_Mwind', NormFairleadMWind(freqs=freqs), promotes_inputs=['Re_RAO_Mwind_surge', 'Re_RAO_Mwind_pitch', 'Im_RAO_Mwind_surge', 'Im_RAO_Mwind_pitch', 'z_moor'], promotes_outputs=['Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_fairlead'])
 
+		self.add_subsystem('norm_moor_ten_wave', NormMoorTenWave(freqs=freqs), promotes_inputs=['Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'K_moor'], promotes_outputs=['Re_RAO_wave_moor_ten', 'Im_RAO_wave_moor_ten'])
+
+	 	self.add_subsystem('norm_moor_ten_wind', NormMoorTenWind(freqs=freqs), promotes_inputs=['Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead', 'K_moor'], promotes_outputs=['Re_RAO_wind_moor_ten', 'Im_RAO_wind_moor_ten'])
+
+		self.add_subsystem('norm_moor_ten_Mwind', NormMoorTenMWind(freqs=freqs), promotes_inputs=['Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_fairlead', 'K_moor'], promotes_outputs=['Re_RAO_Mwind_moor_ten', 'Im_RAO_Mwind_moor_ten'])
+
 		self.add_subsystem('resp_spectrum_surge', RespSpectrumSurge(freqs=freqs), promotes_inputs=['Re_RAO_wave_surge', 'Im_RAO_wave_surge', 'Re_RAO_wind_surge', 'Im_RAO_wind_surge', 'Re_RAO_Mwind_surge', 'Im_RAO_Mwind_surge', 'S_wave', 'S_wind'], promotes_outputs=['resp_surge'])
 
 		self.add_subsystem('resp_spectrum_pitch', RespSpectrumPitch(freqs=freqs), promotes_inputs=['Re_RAO_wave_pitch', 'Im_RAO_wave_pitch', 'Re_RAO_wind_pitch', 'Im_RAO_wind_pitch', 'Re_RAO_Mwind_pitch', 'Im_RAO_Mwind_pitch', 'S_wave', 'S_wind'], promotes_outputs=['resp_pitch'])
@@ -110,6 +125,10 @@ class Postpro(Group):
 
 		self.add_subsystem('resp_spectrum_bldpitch', RespSpectrumBldpitch(freqs=freqs), promotes_inputs=['Re_RAO_wave_bldpitch', 'Im_RAO_wave_bldpitch', 'Re_RAO_wind_bldpitch', 'Im_RAO_wind_bldpitch', 'Re_RAO_Mwind_bldpitch', 'Im_RAO_Mwind_bldpitch', 'S_wave', 'S_wind'], promotes_outputs=['resp_bldpitch'])
 
+	 	self.add_subsystem('resp_spectrum_fairlead', RespSpectrumFairlead(freqs=freqs), promotes_inputs=['Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead', 'Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_fairlead', 'S_wave', 'S_wind'], promotes_outputs=['resp_fairlead'])
+
+	 	self.add_subsystem('moor_ten_spectrum', MoorTenSpectrum(freqs=freqs), promotes_inputs=['Re_RAO_wave_moor_ten', 'Im_RAO_wave_moor_ten', 'Re_RAO_wind_moor_ten', 'Im_RAO_wind_moor_ten', 'Re_RAO_Mwind_moor_ten', 'Im_RAO_Mwind_moor_ten', 'S_wave', 'S_wind'], promotes_outputs=['resp_moor_ten'])
+
 	 	self.add_subsystem('vel_spectrum_surge', VelSpectrumSurge(freqs=freqs), promotes_inputs=['Re_RAO_wave_vel_surge', 'Im_RAO_wave_vel_surge', 'Re_RAO_wind_vel_surge', 'Im_RAO_wind_vel_surge', 'Re_RAO_Mwind_vel_surge', 'Im_RAO_Mwind_vel_surge', 'S_wave', 'S_wind'], promotes_outputs=['resp_vel_surge'])
 
 	 	self.add_subsystem('vel_spectrum_pitch', VelSpectrumPitch(freqs=freqs), promotes_inputs=['Re_RAO_wave_vel_pitch', 'Im_RAO_wave_vel_pitch', 'Re_RAO_wind_vel_pitch', 'Im_RAO_wind_vel_pitch', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'S_wave', 'S_wind'], promotes_outputs=['resp_vel_pitch'])
@@ -117,6 +136,10 @@ class Postpro(Group):
 	 	self.add_subsystem('vel_spectrum_bend', VelSpectrumBend(freqs=freqs), promotes_inputs=['Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_bend', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_bend', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'S_wave', 'S_wind'], promotes_outputs=['resp_vel_bend'])
 
 	 	self.add_subsystem('std_dev_resp', StdDevResp(freqs=freqs), promotes_inputs=['resp_surge', 'resp_pitch', 'resp_bend', 'resp_rotspeed', 'resp_bldpitch'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', 'stddev_bldpitch'])
+
+	 	self.add_subsystem('std_dev_fairlead', StdDevFairlead(freqs=freqs), promotes_inputs=['resp_fairlead'], promotes_outputs=['stddev_fairlead'])
+
+	 	self.add_subsystem('std_dev_moor_ten', StdDevMoorTen(freqs=freqs), promotes_inputs=['resp_moor_ten'], promotes_outputs=['stddev_moor_ten'])
 
 		self.add_subsystem('tower_moment_gains', TowerMomentGains(), promotes_inputs=['M_tower', 'M_nacelle', 'M_rotor', 'I_rotor', 'CoG_nacelle', 'CoG_rotor', 'z_towernode', 'x_towerelem', 'x_towernode', 'x_d_towertop', 'dthrust_dv', 'dmoment_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch'], promotes_outputs=['mom_acc_surge', 'mom_acc_pitch', 'mom_acc_bend', 'mom_damp_surge', 'mom_damp_pitch', 'mom_damp_bend', 'mom_grav_pitch', 'mom_grav_bend', 'mom_rotspeed', 'mom_bldpitch'])
 
@@ -165,6 +188,10 @@ class Postpro(Group):
 	 	self.add_subsystem('zero_upcrossing_tower_stress', ZeroUpcrossingTowerStress(freqs=freqs), promotes_inputs=['resp_tower_stress'], promotes_outputs=['v_z_tower_stress'])
 
 	 	self.add_subsystem('zero_upcrossing_hull_moment', ZeroUpcrossingHullMoment(freqs=freqs), promotes_inputs=['resp_hull_moment'], promotes_outputs=['v_z_hull_moment'])
+
+	 	self.add_subsystem('zero_upcrossing_fairlead', ZeroUpcrossingFairlead(freqs=freqs), promotes_inputs=['resp_fairlead'], promotes_outputs=['v_z_fairlead'])
+
+	 	self.add_subsystem('zero_upcrossing_moor_ten', ZeroUpcrossingMoorTen(freqs=freqs), promotes_inputs=['resp_moor_ten'], promotes_outputs=['v_z_moor_ten'])
 
 	 	self.add_subsystem('tower_fatigue', TowerFatigue(freqs=freqs), promotes_inputs=['resp_tower_stress', 'wt_tower_p'], promotes_outputs=['tower_fatigue_damage'])
 

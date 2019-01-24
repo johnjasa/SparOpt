@@ -35,7 +35,7 @@ class RespSpectrumPitch(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		outputs['resp_pitch'] = np.abs(inputs['Re_RAO_wave_pitch'] + 1j * inputs['Im_RAO_wave_pitch'])**2. * inputs['S_wave'] + np.abs(inputs['Re_RAO_wind_pitch'] + 1j * inputs['Im_RAO_wind_pitch'])**2. * inputs['S_wind'] + np.abs(inputs['Re_RAO_Mwind_pitch'] + 1j * inputs['Im_RAO_Mwind_pitch'])**2. * inputs['S_wind']
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		partials['resp_pitch', 'Re_RAO_wave_pitch'] = 2. * inputs['Re_RAO_wave_pitch'] * inputs['S_wave']
 		partials['resp_pitch', 'Im_RAO_wave_pitch'] = 2. * inputs['Im_RAO_wave_pitch'] * inputs['S_wave']
 		partials['resp_pitch', 'Re_RAO_wind_pitch'] = 2. * inputs['Re_RAO_wind_pitch'] * inputs['S_wind']

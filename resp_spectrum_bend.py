@@ -35,7 +35,7 @@ class RespSpectrumBend(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		outputs['resp_bend'] = np.abs(inputs['Re_RAO_wave_bend'] + 1j * inputs['Im_RAO_wave_bend'])**2. * inputs['S_wave'] + np.abs(inputs['Re_RAO_wind_bend'] + 1j * inputs['Im_RAO_wind_bend'])**2. * inputs['S_wind'] + np.abs(inputs['Re_RAO_Mwind_bend'] + 1j * inputs['Im_RAO_Mwind_bend'])**2. * inputs['S_wind']
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		partials['resp_bend', 'Re_RAO_wave_bend'] = 2. * inputs['Re_RAO_wave_bend'] * inputs['S_wave']
 		partials['resp_bend', 'Im_RAO_wave_bend'] = 2. * inputs['Im_RAO_wave_bend'] * inputs['S_wave']
 		partials['resp_bend', 'Re_RAO_wind_bend'] = 2. * inputs['Re_RAO_wind_bend'] * inputs['S_wind']

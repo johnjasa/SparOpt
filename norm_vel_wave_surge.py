@@ -29,7 +29,7 @@ class NormVelWaveSurge(ExplicitComponent):
 		outputs['Re_RAO_wave_vel_surge'] = -inputs['Im_RAO_wave_surge'] * omega
 		outputs['Im_RAO_wave_vel_surge'] = inputs['Re_RAO_wave_surge'] * omega
 
-	def compute_partials(self, inputs, partials): #TODO check
+	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 

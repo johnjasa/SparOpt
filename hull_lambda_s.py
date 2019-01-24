@@ -10,7 +10,7 @@ class HullLambdaS(ExplicitComponent):
 		self.add_input('sigma_a0', val=np.zeros(10), units='MPa')
 		self.add_input('sigma_m0', val=np.zeros(10), units='MPa')
 		self.add_input('sigma_h0', val=np.zeros(10), units='MPa')
-		self.add_input('tau', val=np.zeros(10), units='MPa')
+		self.add_input('tau', val=np.ones(10), units='MPa')
 		self.add_input('f_Ea', val=np.zeros(10), units='MPa')
 		self.add_input('f_Em', val=np.zeros(10), units='MPa')
 		self.add_input('f_Eh', val=np.zeros(10), units='MPa')
