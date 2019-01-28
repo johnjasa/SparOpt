@@ -46,6 +46,7 @@ class Buoyancy(ExplicitComponent):
 		partials['CoB', 'D_spar'] = np.zeros((1,10))
 		partials['CoB', 'L_spar'] = np.zeros((1,10))
 		partials['CoB', 'spar_draft'] = 0.
+		partials['CoB', 'sub_vol'] = 0.
 
 		CoB_t_vol = 0.
 

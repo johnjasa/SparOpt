@@ -20,6 +20,7 @@ class LongTermMoorTenCDF(ExplicitComponent):
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
+		outputs['long_term_moor_ten_CDF'] = 0.
 		for i in xrange(self.N_EC):
 			outputs['long_term_moor_ten_CDF'] += inputs['short_term_moor_ten_CDF%d' % i] * inputs['p%d' % i]
 	

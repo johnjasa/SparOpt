@@ -28,4 +28,4 @@ class NetPressure(ExplicitComponent):
 		"""
 
 	def compute_partials(self, inputs, partials):
-		partials['net_pressure', 'Z_spar'] =  1025. * 9.80665 * 1e-6 * np.ones(10)
+		partials['net_pressure', 'Z_spar'] = 1025. * 9.80665 * 1e-6 * np.ones(10)

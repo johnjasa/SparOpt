@@ -19,7 +19,7 @@ class MooringChain(ExplicitComponent):
 		gamma_F_moor = inputs['gamma_F_moor']
 
 		#Min breaking strength taken from DNVGL-OS-E302
-		#Mass density taken from N. Barltrop "Floating Structures: A Guide for Design and Analysis"
+		#Mass density and axial stiffness taken from N. Barltrop "Floating Structures: A Guide for Design and Analysis"
 
 		c = 22.3 #grade 3
 		#c = 27.4 #grade 4

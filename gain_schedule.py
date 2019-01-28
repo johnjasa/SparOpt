@@ -17,12 +17,7 @@ class GainSchedule(ExplicitComponent):
 		K1 = 2.0597 #found numerically by fitting quadratic curve to torque sensitivities at different above-rated wind speeds
 		K2 = 0.0592
 
-		#outputs['gain_corr_factor'] = 1. / (1. + bldpitch_0 / K1 + bldpitch_0**2. / K2)
-
-		gain_theta = np.array([0., 5., 10., 15., 20., 90.]) * np.pi / 180.
-		gain_eta = np.array([1.00, 0.56, 0.39, 0.30, 0.24, 0.05])
-	
-		outputs['gain_corr_factor'] = np.interp(bldpitch_0, gain_theta, gain_eta)
+		outputs['gain_corr_factor'] = 1. / (1. + bldpitch_0 / K1 + bldpitch_0**2. / K2)
 
 	def compute_partials(self, inputs, partials):
 		bldpitch_0 = inputs['bldpitch_0']

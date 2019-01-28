@@ -72,6 +72,16 @@ class HullWaveExcitMom(ExplicitComponent):
 		wave_number = inputs['wave_number']
 		h = inputs['water_depth'][0]
 
+		partials['Re_hull_wave_mom', 'D_spar'] = np.zeros((10*N_omega_wave,10))
+		partials['Re_hull_wave_mom', 'Z_spar'] = np.zeros((10*N_omega_wave,11))
+		partials['Re_hull_wave_mom', 'wave_number'] = np.zeros((10*N_omega_wave,N_omega_wave))
+		partials['Re_hull_wave_mom', 'water_depth'] = np.zeros((10*N_omega_wave,1))
+		
+		partials['Im_hull_wave_mom', 'D_spar'] = np.zeros((10*N_omega_wave,10))
+		partials['Im_hull_wave_mom', 'Z_spar'] = np.zeros((10*N_omega_wave,11))
+		partials['Im_hull_wave_mom', 'wave_number'] = np.zeros((10*N_omega_wave,N_omega_wave))
+		partials['Im_hull_wave_mom', 'water_depth'] = np.zeros((10*N_omega_wave,1))
+
 		N_elem = len(D_spar)
 
 		a = 0.

@@ -20,6 +20,7 @@ class LongTermMyMomInertiaCDF(ExplicitComponent):
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
+		outputs['long_term_My_mom_inertia_CDF'] = 0.
 		for i in xrange(self.N_EC):
 			outputs['long_term_My_mom_inertia_CDF'] += inputs['short_term_My_mom_inertia_CDF%d' % i] * inputs['p%d' % i]
 	

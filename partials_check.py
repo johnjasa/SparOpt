@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from openmdao.api import Problem, IndepVarComp, DirectSolver, NewtonSolver
 from openmdao.utils.visualization import partial_deriv_plot
 
-from max_mooring_offset import MaxMooringOffset
+from prob_max_moor_ten import ProbMaxMoorTen
 
 freqs = {\
 'omega' : np.linspace(0.014361566416410483,6.283185307179586,50), \
@@ -15,17 +15,16 @@ EC = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('z_moor', val=-77.)
-ivc.add_output('water_depth', val=320.)
-ivc.add_output('EA_moor', val=7.3e8)
-ivc.add_output('mass_dens_moor', val=155.)
-ivc.add_output('len_hor_moor', val=848.)
-ivc.add_output('len_tot_moor', val=902.)
+ivc.add_output('v_z_moor_ten', val=np.random.rand())
+ivc.add_output('mean_moor_ten', val=np.random.rand())
+ivc.add_output('stddev_moor_ten', val=np.random.rand())
+ivc.add_output('gamma_F_moor_mean', val=np.random.rand())
+ivc.add_output('gamma_F_moor_dyn', val=np.random.rand())
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-comp = prob.model.add_subsystem('check',  MaxMooringOffset(), promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor'], \
-	promotes_outputs=['moor_tension_max_offset_ww', 'eff_length_max_offset_ww', 'max_moor_offset'])
+comp = prob.model.add_subsystem('check',  ProbMaxMoorTen(), promotes_inputs=['v_z_moor_ten', 'mean_moor_ten', 'stddev_moor_ten', 'gamma_F_moor_mean', 'gamma_F_moor_dyn'], \
+	promotes_outputs=['prob_max_moor_ten'])
 
 prob.setup(force_alloc_complex=True)
 comp.set_check_partial_options(wrt='*', step=1e-8, method='cs')

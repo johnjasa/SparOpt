@@ -29,6 +29,8 @@ class NHull(ExplicitComponent):
 		M_moor = inputs['M_moor']
 		z_moor = inputs['z_moor']
 
+		outputs['N_hull'] = np.zeros(10)
+
 		outputs['N_hull'][0] = 1025. * 9.80665 * Z_spar[0] * np.pi / 4. * D_spar_p[0]**2.
 
 		flag = 0

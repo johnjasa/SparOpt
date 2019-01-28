@@ -23,6 +23,6 @@ class ReturnPeriodMoorTen(ExplicitComponent):
 		m1h = 365.25 * 24. #number of 1h sea states in a year
 		
 		if inputs['long_term_moor_ten_CDF'] == 1.:
-			partials['T_moor_ten', 'long_term_moor_ten_CDF'][i,i] = 0.
+			partials['T_moor_ten', 'long_term_moor_ten_CDF'] = 0.
 		else:
 			partials['T_moor_ten', 'long_term_moor_ten_CDF'] = 1. / ((1. - inputs['long_term_moor_ten_CDF']) * m1h)**2. * m1h

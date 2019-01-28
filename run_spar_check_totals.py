@@ -13,7 +13,7 @@ from aero_group import Aero
 from towerdim_group import Towerdim
 from mean_tower_drag import MeanTowerDrag
 from mooring_group import Mooring
-from substructure_group import Substructure
+from substructure_group_check_totals import Substructure
 from statespace_group import StateSpace
 from wave_spectrum import WaveSpectrum
 from wind_spectrum import WindSpectrum
@@ -131,12 +131,12 @@ substructure_group = Substructure(freqs=freqs)
 
 prob.model.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar_p', 'L_spar', 'wt_spar_p', 'L_tower', 'wt_tower_p', \
 	'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'water_depth', 'z_moor', 'M_moor_zero', 'K_moor', 'M_moor', \
-	'dthrust_dv', 'dmoment_dv', 'struct_damp_ratio', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'D_tower', 'Z_tower'], \
-	promotes_outputs=['M_global', 'A_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'z_sparnode', 'x_sparelem', \
+	'dthrust_dv', 'dmoment_dv', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'D_tower', 'Z_tower'], \
+	promotes_outputs=['M_global', 'A_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'z_sparnode', \
 	'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', 'D_spar', 'wt_spar', 'wt_tower', 'tot_M_spar', 'tot_M_tower', 'B_aero_11', 'B_aero_15', \
 	'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'A_R', 'r_e', 'buoy_spar', 'CoB', 'M_turb', 'CoG_total', 'wave_number', \
-	'x_sparnode', 'M_ball_elem', 'M_tower', 'z_towernode'])
-
+	'M_ball_elem', 'M_tower', 'z_towernode'])
+"""
 statespace_group = StateSpace(freqs=freqs)
 
 prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
@@ -180,6 +180,7 @@ prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_for
 	'stddev_bldpitch', 'stddev_tower_stress', 'stddev_hull_moment', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'v_z_surge', \
 	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage'])
 
+
 hull_buckling_balance = HullBalance()
 
 prob.model.add_subsystem('hull_balance', hull_buckling_balance, promotes_inputs=['D_spar_p', 'wt_spar_p', 'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', \
@@ -221,21 +222,21 @@ cost_group = Cost()
 prob.model.add_subsystem('cost', cost_group, promotes_inputs=['D_spar', 'D_spar_p', 'wt_spar', 'L_spar', 'l_stiff', 'h_stiff', 't_f_stiff', 'A_R', 'r_f', 'r_e', \
 	'tot_M_spar', 'D_tower', 'D_tower_p', 'wt_tower', 'L_tower', 'tot_M_tower', 'len_tot_moor', 'mass_dens_moor'], promotes_outputs=['spar_cost', 'tower_cost', \
 	'mooring_cost', 'total_cost'])
-
-#aero_group.linear_solver = LinearRunOnce()
-#mooring_group.linear_solver = DirectSolver()
-#substructure_group.linear_solver = DirectSolver()
+"""
+aero_group.linear_solver = LinearRunOnce()
+mooring_group.linear_solver = DirectSolver()
+substructure_group.linear_solver = DirectSolver()
 #statespace_group.linear_solver = DirectSolver()
 #viscous_group.linear_solver = LinearBlockGS(maxiter=30)
-viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-5, rtol=1e-5)
+#viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-8, rtol=1e-8)
 #postpro_group.linear_solver = LinearRunOnce()
-hull_buckling_balance.linear_solver = DirectSolver()
-hull_buckling_balance.nonlinear_solver = BroydenSolver(maxiter=50, atol=1e-8)
+#hull_buckling_balance.linear_solver = DirectSolver()
+#hull_buckling_balance.nonlinear_solver = BroydenSolver(maxiter=50, atol=1e-8)
 #hull_buckling_group.linear_solver = LinearRunOnce()
-#prob.model.linear_solver = LinearRunOnce()
+prob.model.linear_solver = LinearRunOnce()
 
-from openmdao.api import ScipyOptimizeDriver#, pyOptSparseDriver
-prob.driver = ScipyOptimizeDriver()
+#from openmdao.api import ScipyOptimizeDriver#, pyOptSparseDriver
+#prob.driver = ScipyOptimizeDriver()
 #prob.driver = pyOptSparseDriver()
 #prob.driver.options['optimizer'] = 'SNOPT'
 #prob.driver.opt_settings['Major iterations limit'] = 200 #SNOPT
@@ -267,7 +268,7 @@ prob.run_model()
 #print prob['col_buckling']
 #print prob['constr_area_ringstiff']
 
-prob.check_totals(['tower_fatigue_damage'],['D_tower_p'])
+prob.check_totals(['M_global'],['z_moor'])
 
 #prob.run_driver()
 

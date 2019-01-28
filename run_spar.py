@@ -195,11 +195,11 @@ prob.model.connect('long_term_moor_ten_cdf.long_term_moor_ten_CDF', 'return_peri
 prob.model.linear_solver = LinearRunOnce()
 
 
-#from openmdao.api import ScipyOptimizeDriver
-from openmdao.api import pyOptSparseDriver
-#driver = prob.driver = ScipyOptimizeDriver()
-driver = prob.driver = pyOptSparseDriver()
-driver.options['optimizer'] = 'SNOPT'
+from openmdao.api import ScipyOptimizeDriver
+#from openmdao.api import pyOptSparseDriver
+driver = prob.driver = ScipyOptimizeDriver()
+#driver = prob.driver = pyOptSparseDriver()
+#driver.options['optimizer'] = 'SNOPT'
 
 driver.recording_options['includes'] = []
 driver.recording_options['record_objectives'] = True
@@ -209,15 +209,15 @@ driver.recording_options['record_desvars'] = True
 recorder = SqliteRecorder("cases.sql")
 driver.add_recorder(recorder)
 
-prob.model.add_design_var('D_spar_p', lower=np.ones(11), upper=30.*np.ones(11))
-prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
+#prob.model.add_design_var('D_spar_p', lower=np.ones(11), upper=30.*np.ones(11))
+#prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
 prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=30.*np.ones(11))
 prob.model.add_design_var('wt_tower_p', lower=0.005*np.ones(11), upper=0.5*np.ones(11))
 
-prob.model.add_design_var('z_moor', lower=-320., upper=0.)
-prob.model.add_design_var('D_moor', lower=0.01, upper=1.)
-prob.model.add_design_var('len_hor_moor', lower=1., upper=3000.)
-prob.model.add_design_var('len_tot_moor', lower=320., upper=4000.)
+#prob.model.add_design_var('z_moor', lower=-320., upper=0.)
+#prob.model.add_design_var('D_moor', lower=0.01, upper=1.)
+#prob.model.add_design_var('len_hor_moor', lower=1., upper=3000.)
+#prob.model.add_design_var('len_tot_moor', lower=320., upper=4000.)
 
 prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 #prob.model.add_constraint('total_hull_fatigue_damage.total_hull_fatigue_damage', upper=np.ones(10))
@@ -225,14 +225,11 @@ prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage
 prob.model.add_constraint('parallel.cond0.substructure.buoy_mass', lower=0.)
 prob.model.add_constraint('parallel.cond0.substructure.lower_bound_z_moor', lower=0.)
 
-prob.model.add_constraint('return_period_surge.T_surge', lower=50.)
-prob.model.add_constraint('return_period_pitch.T_pitch', lower=50.)
-prob.model.add_constraint('return_period_tower_stress.T_tower_stress', lower=50.*np.ones(10))
-#prob.model.add_constraint('return_period_My_shell_buckling.T_My_shell_buckling', lower=50.*np.ones(10))
-#prob.model.add_constraint('return_period_My_hoop_stress.T_My_hoop_stress', lower=50.*np.ones(10))
-#prob.model.add_constraint('return_period_My_mom_inertia.T_My_mom_inertia', lower=50.*np.ones(10))
-prob.model.add_constraint('return_period_fairlead.T_fairlead', lower=50.)
-prob.model.add_constraint('return_period_moor_ten.T_moor_ten', lower=50.)
+#prob.model.add_constraint('return_period_surge.T_surge', lower=50.)
+#prob.model.add_constraint('return_period_pitch.T_pitch', lower=50.)
+#prob.model.add_constraint('return_period_tower_stress.T_tower_stress', lower=50.*np.ones(10))
+#prob.model.add_constraint('return_period_fairlead.T_fairlead', lower=50.)
+#prob.model.add_constraint('return_period_moor_ten.T_moor_ten', lower=50.)
 
 prob.model.add_objective('parallel.cond0.total_cost')
 

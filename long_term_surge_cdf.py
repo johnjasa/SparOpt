@@ -20,6 +20,7 @@ class LongTermSurgeCDF(ExplicitComponent):
 		self.declare_partials('*', '*')
 
 	def compute(self, inputs, outputs):
+		outputs['long_term_surge_CDF'] = 0.
 		for i in xrange(self.N_EC):
 			outputs['long_term_surge_CDF'] += inputs['short_term_surge_CDF%d' % i] * inputs['p%d' % i]
 	

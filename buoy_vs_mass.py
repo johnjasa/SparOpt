@@ -20,7 +20,7 @@ class BuoyVsMass(ExplicitComponent):
 		M_turb = inputs['M_turb']
 		M_moor_zero = inputs['M_moor_zero']
 
-		outputs['buoy_mass'] = buoy_spar / 9.80665 - (tot_M_spar + M_turb + M_moor_zero)
+		outputs['buoy_mass'] = (buoy_spar / 9.80665) / (tot_M_spar + M_turb + M_moor_zero) - 1.
 
 	def compute_partials(self, inputs, partials):
 		buoy_spar = inputs['buoy_spar'][0]
@@ -28,7 +28,7 @@ class BuoyVsMass(ExplicitComponent):
 		M_turb = inputs['M_turb'][0]
 		M_moor_zero = inputs['M_moor_zero'][0]
 
-		partials['buoy_mass', 'buoy_spar'] = 1. / 9.80665
-		partials['buoy_mass', 'tot_M_spar'] = -1.
-		partials['buoy_mass', 'M_turb'] = -1.
-		partials['buoy_mass', 'M_moor_zero'] = -1.
+		partials['buoy_mass', 'buoy_spar'] = (1. / 9.80665) / (tot_M_spar + M_turb + M_moor_zero)
+		partials['buoy_mass', 'tot_M_spar'] = -(buoy_spar / 9.80665) / (tot_M_spar + M_turb + M_moor_zero)**2.
+		partials['buoy_mass', 'M_turb'] = -(buoy_spar / 9.80665) / (tot_M_spar + M_turb + M_moor_zero)**2.
+		partials['buoy_mass', 'M_moor_zero'] = -(buoy_spar / 9.80665) / (tot_M_spar + M_turb + M_moor_zero)**2.
