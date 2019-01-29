@@ -17,6 +17,7 @@ class StdDevResp(ExplicitComponent):
 		self.add_input('resp_bend', val=np.zeros(N_omega), units='m**2*s/rad')
 		self.add_input('resp_rotspeed', val=np.zeros(N_omega), units='rad**2*s/(rad*s)')
 		self.add_input('resp_bldpitch', val=np.zeros(N_omega), units='rad**2*s/rad')
+		self.add_input('windspeed_0', val=0., units='m/s')
 
 		self.add_output('stddev_surge', val=0., units='m')
 		self.add_output('stddev_pitch', val=0., units='rad')
@@ -29,16 +30,24 @@ class StdDevResp(ExplicitComponent):
 	def compute(self, inputs, outputs):
 		omega = self.omega
 
+		windspeed_0 = inputs['windspeed_0']
+
 		outputs['stddev_surge'] = np.sqrt(np.trapz(inputs['resp_surge'], omega))
 		outputs['stddev_pitch'] = np.sqrt(np.trapz(inputs['resp_pitch'], omega))
 		outputs['stddev_bend'] = np.sqrt(np.trapz(inputs['resp_bend'], omega))
 		outputs['stddev_rotspeed'] = np.sqrt(np.trapz(inputs['resp_rotspeed'], omega))
-		outputs['stddev_bldpitch'] = np.sqrt(np.trapz(inputs['resp_bldpitch'], omega))
+
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
+			outputs['stddev_bldpitch'] = np.sqrt(np.trapz(inputs['resp_bldpitch'], omega))
+		else:
+			outputs['stddev_bldpitch'] = 0.
 
 	def compute_partials(self, inputs, partials):
 		omega = self.omega
 		N_omega = len(omega)
 		domega = omega[1] - omega[0]
+
+		windspeed_0 = inputs['windspeed_0']
 
 		partials['stddev_surge', 'resp_surge'] = np.ones((1,N_omega)) * 0.5 / np.sqrt(np.trapz(inputs['resp_surge'], omega)) * domega
 		partials['stddev_surge', 'resp_pitch'] = np.zeros((1,N_omega))
@@ -68,16 +77,24 @@ class StdDevResp(ExplicitComponent):
 		partials['stddev_bldpitch', 'resp_pitch'] = np.zeros((1,N_omega))
 		partials['stddev_bldpitch', 'resp_bend'] = np.zeros((1,N_omega))
 		partials['stddev_bldpitch', 'resp_rotspeed'] = np.zeros((1,N_omega))
-		partials['stddev_bldpitch', 'resp_bldpitch'] = np.ones((1,N_omega)) * 0.5 / np.sqrt(np.trapz(inputs['resp_bldpitch'], omega)) * domega
+
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
+			partials['stddev_bldpitch', 'resp_bldpitch'] = np.ones((1,N_omega)) * 0.5 / np.sqrt(np.trapz(inputs['resp_bldpitch'], omega)) * domega
+		else:
+			partials['stddev_bldpitch', 'resp_bldpitch'] = np.zeros((1,N_omega))
 
 		partials['stddev_surge', 'resp_surge'][0,0] += -0.5 / np.sqrt(np.trapz(inputs['resp_surge'], omega)) * domega / 2.
 		partials['stddev_pitch', 'resp_pitch'][0,0] += -0.5 / np.sqrt(np.trapz(inputs['resp_pitch'], omega)) * domega / 2.
 		partials['stddev_bend', 'resp_bend'][0,0] += -0.5 / np.sqrt(np.trapz(inputs['resp_bend'], omega)) * domega / 2.
 		partials['stddev_rotspeed', 'resp_rotspeed'][0,0] += -0.5 / np.sqrt(np.trapz(inputs['resp_rotspeed'], omega)) * domega / 2.
-		partials['stddev_bldpitch', 'resp_bldpitch'][0,0] += -0.5 / np.sqrt(np.trapz(inputs['resp_bldpitch'], omega)) * domega / 2.
+
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
+			partials['stddev_bldpitch', 'resp_bldpitch'][0,0] += -0.5 / np.sqrt(np.trapz(inputs['resp_bldpitch'], omega)) * domega / 2.
 
 		partials['stddev_surge', 'resp_surge'][0,-1] += -0.5 / np.sqrt(np.trapz(inputs['resp_surge'], omega)) * domega / 2.
 		partials['stddev_pitch', 'resp_pitch'][0,-1] += -0.5 / np.sqrt(np.trapz(inputs['resp_pitch'], omega)) * domega / 2.
 		partials['stddev_bend', 'resp_bend'][0,-1] += -0.5 / np.sqrt(np.trapz(inputs['resp_bend'], omega)) * domega / 2.
 		partials['stddev_rotspeed', 'resp_rotspeed'][0,-1] += -0.5 / np.sqrt(np.trapz(inputs['resp_rotspeed'], omega)) * domega / 2.
-		partials['stddev_bldpitch', 'resp_bldpitch'][0,-1] += -0.5 / np.sqrt(np.trapz(inputs['resp_bldpitch'], omega)) * domega / 2.
+
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
+			partials['stddev_bldpitch', 'resp_bldpitch'][0,-1] += -0.5 / np.sqrt(np.trapz(inputs['resp_bldpitch'], omega)) * domega / 2.
