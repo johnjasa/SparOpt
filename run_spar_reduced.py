@@ -57,9 +57,6 @@ ivc.add_output('len_tot_moor', val=902.2, units='m')
 
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
-#ivc.add_output('windspeed_0', val=21., units='m/s')
-#ivc.add_output('Hs', val=3., units='m')
-#ivc.add_output('Tp', val=10., units='s')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
 ivc.add_output('k_i', val=0.0165, units='rad/rad')
 ivc.add_output('k_t', val=-0., units='rad*s/m')
@@ -92,7 +89,7 @@ prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 from ECs_ext import ECsExt
 #from condition_group_reduced_fat import ConditionFat
 from condition_group_reduced_ext import ConditionExt
-from total_tower_fatigue_damage import TotalTowerFatigueDamage
+#from total_tower_fatigue_damage import TotalTowerFatigueDamage
 
 #prob.model.add_subsystem('ECs_fat', ECsFat(EC=EC_fat), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
 
@@ -158,11 +155,11 @@ driver.add_recorder(recorder)
 
 #prob.model.add_design_var('D_spar_p', lower=np.ones(11), upper=30.*np.ones(11))
 #prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
+#prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 
 #prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=30.*np.ones(11))
 #prob.model.add_design_var('wt_tower_p', lower=0.005*np.ones(11), upper=0.5*np.ones(11))
 
-prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 prob.model.add_design_var('D_moor', lower=0.01, upper=0.5)
 prob.model.add_design_var('len_hor_moor', lower=1., upper=3000.)
 prob.model.add_design_var('len_tot_moor', lower=320., upper=4000.)
@@ -195,14 +192,15 @@ prob.cleanup()
 prob.setup()
 
 prob.run_model()
-
-#print prob['total_tower_fatigue_damage.total_tower_fatigue_damage'] #[0.84150843 0.71742536 0.78139559 0.63796774 0.67922156 0.51527836 0.51941003 0.34625994 0.33857489 0.19130584 0.21402161] [0.20113283 0.1636332  0.1687287  0.12909339 0.12698522 0.08711082 0.07655451 0.04145436 0.02799767 0.00684233 0.00026347]
-print prob['parallel_ext.cond0_ext.constr_50_surge'] #[1.12581472] [10.10193924]
-print prob['parallel_ext.cond0_ext.constr_50_pitch'] #[0.78097484] [7.06654839]
-print prob['parallel_ext.cond0_ext.constr_50_tower_stress'] #[0.95840193 1.12343779 0.91899427 1.11934134 0.90256966 1.16872072 0.94877398 1.36136119 1.18218993 2.03930487] [4.2187535  4.69211873 4.16811865 4.7250744  4.14057684 4.83814728 4.1935415  5.1713398  4.5062743  6.24099886]
-print prob['parallel_ext.cond0_ext.constr_50_moor_ten'] #[0.47595709] [1.29681327]
-print prob['parallel_ext.cond0_ext.constr_50_fairlead'] #[-0.22662359] [3.00152786]
 """
+#print prob['total_tower_fatigue_damage.total_tower_fatigue_damage'] #[0.84150843 0.71742536 0.78139559 0.63796774 0.67922156 0.51527836 0.51941003 0.34625994 0.33857489 0.19130584 0.21402161] [0.20113283 0.1636332  0.1687287  0.12909339 0.12698522 0.08711082 0.07655451 0.04145436 0.02799767 0.00684233 0.00026347]
+#print prob['parallel_ext.cond0_ext.constr_50_surge'] #[1.12581472] [10.10193924]
+#print prob['parallel_ext.cond0_ext.constr_50_pitch'] #[0.78097484] [7.06654839]
+#print prob['parallel_ext.cond0_ext.constr_50_tower_stress'] #[0.95840193 1.12343779 0.91899427 1.11934134 0.90256966 1.16872072 0.94877398 1.36136119 1.18218993 2.03930487] [4.2187535  4.69211873 4.16811865 4.7250744  4.14057684 4.83814728 4.1935415  5.1713398  4.5062743  6.24099886]
+#print prob['parallel_ext.cond0_ext.constr_50_moor_ten'] #[0.47595709] [1.29681327]
+#print prob['parallel_ext.cond0_ext.constr_50_fairlead'] #[-0.22662359] [3.00152786]
+#print prob['parallel_ext.cond0_ext.mooring_cost']
+
 #print prob['stddev_surge']
 #print prob['stddev_pitch']
 #print prob['stddev_bend']

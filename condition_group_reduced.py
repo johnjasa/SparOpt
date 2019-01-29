@@ -88,8 +88,8 @@ class Condition(Group):
 
 		viscous_group = Viscous(freqs=freqs)
 
-		viscous_group.linear_solver = LinearBlockGS(maxiter=30)
-		viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-5, rtol=1e-5)
+		viscous_group.linear_solver = LinearBlockGS(maxiter=50)
+		viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-8, rtol=1e-8)
 
 		self.add_subsystem('viscous', viscous_group, promotes_inputs=['Cd', 'x_sparelem', 'z_sparnode', 'Z_spar', 'D_spar', 'B_aero_11', 'B_aero_15', \
 			'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'M_global', 'A_global', 'CoG_rotor', 'I_d', 'dtorque_dv', 'dtorque_drotspeed', \
@@ -114,7 +114,7 @@ class Condition(Group):
 			'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'D_tower_p', 'wt_tower_p', \
 			'Z_tower', 'dthrust_dv', 'dmoment_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch', 'M_tower', 'M_nacelle', 'M_rotor', 'I_rotor', 'CoG_nacelle', 'CoG_rotor', \
 			'z_towernode', 'x_towerelem', 'x_towernode', 'x_d_towertop', 'moor_offset', 'z_moor', 'K_moor', 'thrust_0', 'buoy_spar', 'CoB', 'M_turb', 'tot_M_spar', \
-			'M_ball', 'CoG_total', 'F0_tower_drag', 'Z0_tower_drag'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', \
+			'M_ball', 'CoG_total', 'F0_tower_drag', 'Z0_tower_drag', 'windspeed_0'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', \
 			'stddev_bldpitch', 'stddev_tower_stress', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'v_z_surge', \
 			'v_z_pitch', 'v_z_tower_stress', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage'])
 
