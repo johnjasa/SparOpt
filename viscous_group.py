@@ -43,7 +43,7 @@ class Viscous(Group):
 		self.add_subsystem('global_damping', GlobalDamping(), promotes_inputs=['B_aero_11', 'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'B_visc_11', 'B_visc_15', 'B_visc_17', 'B_visc_55', 'B_visc_57', 'B_visc_77'], promotes_outputs=['B_global'])
 
 		A_str_damp = AstrDamp()
-		A_str_damp.linear_solver = DirectSolver()
+		A_str_damp.linear_solver = DirectSolver(assemble_jac=True)
 
 		self.add_subsystem('A_str_damp', A_str_damp, promotes_inputs=['M_global', 'A_global', 'B_global'], promotes_outputs=['Astr_damp'])
 

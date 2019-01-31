@@ -61,8 +61,8 @@ ivc.add_output('water_depth', val=320., units='m')
 ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('D_moor', val=0.09, units='m')
 ivc.add_output('gamma_F_moor', val=1.65)
-ivc.add_output('len_hor_moor', val=848.67, units='m')
-ivc.add_output('len_tot_moor', val=902.2, units='m')
+ivc.add_output('len_hor_moor', val=828.67, units='m')
+ivc.add_output('len_tot_moor', val=912.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
 ivc.add_output('windspeed_0', val=50., units='m/s')
@@ -278,6 +278,11 @@ prob.run_model()
 #print prob['v_z_tower_stress']
 #print prob['maxval_tower_stress']
 #print prob['short_term_tower_stress_CDF']
+
+print prob['stddev_fairlead'][0]
+print prob['v_z_fairlead'][0]
+print prob['moor_offset'][0]
+print prob['maxval_fairlead'][0]
 
 #print prob['B_visc_11']
 #print prob['stddev_vel_distr']

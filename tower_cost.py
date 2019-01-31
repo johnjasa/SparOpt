@@ -55,7 +55,7 @@ class TowerCost(ExplicitComponent):
 		C2 = 0.1346 * 10**(-3.) #SAW welding technology, V butt weld
 		a_w = 10. #welding size (mm)
 		V_tot = tot_M_tower / rho_steel
-		Kw2 = C1 * Lam_dw * np.sqrt(kappa * rho_steel * V_tot)
+		Kw2 = k_f * C1 * Lam_dw * np.sqrt(kappa * rho_steel * V_tot)
 		for i in xrange(1,11-1):
 			L_weld = np.pi * D_tower_p[i]
 			Kw2 += k_f * 1.3 * C2 * a_w**2. * L_weld
@@ -85,9 +85,9 @@ class TowerCost(ExplicitComponent):
 		partials['tower_cost', 'tot_M_tower'] = 0.
 		
 		#Material costs
-		k_m = 1.0 #dollar per kg steel
+		k_m = 4.5 #dollar per kg steel
 
-		rho_steel = 7.85 * 10**(-6.) #kg/mm^3
+		rho_steel = 8.5 * 10**(-6.) #kg/mm^3
 
 		partials['tower_cost', 'tot_M_tower'] += k_m
 

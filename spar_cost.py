@@ -49,7 +49,7 @@ class SparCost(ExplicitComponent):
 		Lam_df = 3. #coefficient of complexity
 		mu = 6.8582513 - 4.52721 * wt_spar**(-0.5) + 0.009531996 * D_spar**0.5 #older book suggest only valid for D < 3m
 		Kf = k_f * Lam_df * np.sum(np.exp(mu))
-
+		
 		#welding three curved shells into a segment
 		C1 = 1. #welding technology parameter
 		Lam_dw = 3. #coefficient of complexity
@@ -59,7 +59,7 @@ class SparCost(ExplicitComponent):
 		V_section = np.pi * D_spar * wt_spar * L_spar
 		L_weld = 3. * L_spar
 		Kw1 = k_f * np.sum(C1 * Lam_dw * np.sqrt(kappa * rho_steel * V_section) + 1.3 * C2 * a_w**2. * L_weld)
-
+		
 		#welding ring stiffeners together with two welds
 		C1 = 1. #welding technology parameter
 		Lam_dw = 3. #coefficient of complexity
@@ -132,7 +132,7 @@ class SparCost(ExplicitComponent):
 		partials['spar_cost', 'tot_M_spar'] = 0.
 		
 		#Material costs
-		k_m = 1.0 #dollar per kg steel
+		k_m = 1.5 #dollar per kg steel
 
 		rho_steel = 7.85 * 10**(-6.) #kg/mm^3
 
@@ -147,7 +147,7 @@ class SparCost(ExplicitComponent):
 
 		partials['spar_cost', 'D_spar'] += k_f * Lam_df * np.exp(mu) * 0.5 * 0.009531996 * D_spar**(-0.5) * 1000.
 		partials['spar_cost', 'wt_spar'] += k_f * Lam_df * np.exp(mu) * 0.5 * 4.52721 * wt_spar**(-1.5) * 1000.
-
+		
 		#welding three curved shells into a segment
 		C1 = 1. #welding technology parameter
 		Lam_dw = 3. #coefficient of complexity
@@ -160,19 +160,19 @@ class SparCost(ExplicitComponent):
 		partials['spar_cost', 'D_spar'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_section) * kappa * rho_steel * np.pi * wt_spar * L_spar * 1000.
 		partials['spar_cost', 'wt_spar'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_section) * kappa * rho_steel * np.pi * D_spar * L_spar * 1000.
 		partials['spar_cost', 'L_spar'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_section) * kappa * rho_steel * np.pi * D_spar * wt_spar * 1000. + k_f * 1.3 * C2 * a_w**2. * 3. * 1000. * np.ones(10)
-
+		
 		#welding ring stiffeners together with two welds
 		C1 = 1. #welding technology parameter
 		Lam_dw = 3. #coefficient of complexity
 		kappa = 2. #number of elements to be welded together
 		C2 = 0.2349 * 10**(-3.) #SAW welding technology, fillet weld
 		a_w = 10. #welding size (mm)
-		V_stiffener = A_R * r_e #area ringstiff * radius to centre of area
+		V_stiffener = 2. * np.pi * A_R * r_e #area ringstiff * radius to centre of area * 2 * pi
 		N_stiffener = L_spar / l_stiff
 		L_weld = 2. * np.pi * (r_f + t_f_stiff) * 2. #two fillet welds pr stiffener
 
-		partials['spar_cost', 'A_R'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_stiffener) * N_stiffener * kappa * rho_steel * r_e * 1000.**2.
-		partials['spar_cost', 'r_e'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_stiffener) * N_stiffener * kappa * rho_steel * A_R * 1000.
+		partials['spar_cost', 'A_R'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_stiffener) * N_stiffener * kappa * rho_steel * 2. * np.pi * r_e * 1000.**2.
+		partials['spar_cost', 'r_e'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * V_stiffener) * N_stiffener * kappa * rho_steel * 2. * np.pi * A_R * 1000.
 		partials['spar_cost', 'L_spar'] += k_f * (C1 * Lam_dw * np.sqrt(kappa * rho_steel * V_stiffener) + 1.3 * C2 * a_w**2. * L_weld) / l_stiff * 1000.
 		partials['spar_cost', 'l_stiff'] += -k_f * (C1 * Lam_dw * np.sqrt(kappa * rho_steel * V_stiffener) + 1.3 * C2 * a_w**2. * L_weld) * L_spar / l_stiff**2. * 1000.
 		partials['spar_cost', 'r_f'] += k_f * 1.3 * C2 * a_w**2. *  2. * np.pi * 2. * N_stiffener * 1000.
@@ -183,7 +183,7 @@ class SparCost(ExplicitComponent):
 		Lam_dw = 3. #coefficient of complexity
 		C2 = 0.2349 * 10**(-3.) #SAW welding technology, fillet weld
 		a_w = 10. #welding size (mm)
-		V_stiffener = A_R * r_e #area ringstiff * radius to centre of area
+		V_stiffener = 2. * np.pi * A_R * r_e #area ringstiff * radius to centre of area * 2 * pi
 		N_stiffener = L_spar / l_stiff
 		kappa = N_stiffener #number of elements to be welded together
 		V_section = np.pi * D_spar * wt_spar * L_spar
@@ -193,8 +193,8 @@ class SparCost(ExplicitComponent):
 		partials['spar_cost', 'wt_spar'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * kappa * rho_steel * np.pi * D_spar * L_spar * 1000.
 		partials['spar_cost', 'L_spar'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * (kappa * rho_steel * (V_stiffener / l_stiff + np.pi * D_spar * wt_spar) + 1. / l_stiff * rho_steel * (V_stiffener * N_stiffener + V_section)) * 1000. + k_f * 1.3 * C2 * a_w**2. * L_weld / l_stiff * 1000.
 		partials['spar_cost', 'l_stiff'] += k_f * (-C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * (kappa * rho_steel * V_stiffener * L_spar / l_stiff**2. + L_spar / l_stiff**2. * rho_steel * (V_stiffener * N_stiffener + V_section)) - 1.3 * C2 * a_w**2. * L_weld * L_spar / l_stiff**2.) * 1000.
-		partials['spar_cost', 'A_R'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * kappa * rho_steel * N_stiffener * r_e * 1000.**2.
-		partials['spar_cost', 'r_e'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * kappa * rho_steel * N_stiffener * A_R * 1000.
+		partials['spar_cost', 'A_R'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * kappa * rho_steel * N_stiffener * 2 * np.pi * r_e * 1000.**2.
+		partials['spar_cost', 'r_e'] += k_f * C1 * Lam_dw * 0.5 / np.sqrt(kappa * rho_steel * (V_stiffener * N_stiffener + V_section)) * kappa * rho_steel * N_stiffener * 2 * np.pi * A_R * 1000.
 		partials['spar_cost', 'r_f'] += k_f * 1.3 * C2 * a_w**2. * N_stiffener * 2. * np.pi * 2. * 1000.
 		partials['spar_cost', 't_f_stiff'] += k_f * 1.3 * C2 * a_w**2. * N_stiffener * 2. * np.pi * 2. * 1000.
 		partials['spar_cost', 'h_stiff'] += k_f * 1.3 * C2 * a_w**2. * N_stiffener * 2. * np.pi * 2. * 1000.

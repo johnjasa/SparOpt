@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import root
+from scipy.optimize import root, fsolve
 
 from openmdao.api import ImplicitComponent
 
@@ -35,9 +35,10 @@ class MeanMoorTen(ImplicitComponent):
 		def fun(x):
 			return T_H - EA * np.sqrt((x[0] / EA + 1.)**2. - 2. * mu * 9.80665 * h / EA) + EA
 
-		sol = root(fun, 1.0e6)
+		#sol = root(fun, 1.0e6, tol=1e-5)
+		sol = fsolve(fun, 1.0e6)
 
-		outputs['mean_moor_ten'] = sol.x[0]
+		outputs['mean_moor_ten'] = sol[0]
 
 	def linearize(self, inputs, outputs, partials):
 		T_H = inputs['moor_tension_offset_ww']

@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import root
+from scipy.optimize import root, fsolve
 
 from openmdao.api import ImplicitComponent
 
@@ -58,14 +58,14 @@ class MooringOffset(ImplicitComponent):
 			t_star_lw = x[3] / (mu * 9.80665)
 			return [l_tot - x[0] - l_tot_hor - x[4] + t_star_ww * np.arcsinh(x[0] / t_star_ww) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star_ww * (np.sqrt(1. + (x[0] / t_star_ww)**2.) - 1.), l_tot - x[2] - l_tot_hor + x[4] + t_star_lw * np.arcsinh(x[2] / t_star_lw) + x[3] * x[2] / EA, h - mu * 9.80665 * x[2]**2. / (2. * EA) - t_star_lw * (np.sqrt(1. + (x[2] / t_star_lw)**2.) -1.), x[1] - x[3] - thrust_0 - F0_tower_drag]
 
-		sol = root(fun, [600.0, 1.0e6, 600.0, 1.0e6, 1.]) #TODO: zero tension and eff. length as inital guess?
+		#sol = root(fun, [600.0, 1.0e6, 600.0, 1.0e6, 10.], method='krylov', tol=1e-5) #TODO: zero tension and eff. length as inital guess?
+		sol = fsolve(fun, [600.0, 1.0e6, 600.0, 1.0e6, 10.])
 
-		outputs['eff_length_offset_ww'] = sol.x[0]
-		outputs['moor_tension_offset_ww'] = sol.x[1]
-		outputs['eff_length_offset_lw'] = sol.x[2]
-		outputs['moor_tension_offset_lw'] = sol.x[3]
-		outputs['moor_offset'] = sol.x[4]
-
+		outputs['eff_length_offset_ww'] = sol[0]
+		outputs['moor_tension_offset_ww'] = sol[1]
+		outputs['eff_length_offset_lw'] = sol[2]
+		outputs['moor_tension_offset_lw'] = sol[3]
+		outputs['moor_offset'] = sol[4]
 
 	def linearize(self, inputs, outputs, partials):
 		h = inputs['water_depth'] + inputs['z_moor']
@@ -97,7 +97,7 @@ class MooringOffset(ImplicitComponent):
 		partials['eff_length_offset_ww', 'z_moor'] = 1.
 		partials['eff_length_offset_ww', 'water_depth'] = 1.
 		partials['eff_length_offset_ww', 'EA_moor'] = mu * 9.80665 * l_eff_ww**2. / (2. * EA**2.)
-		partials['eff_length_offset_ww', 'mass_dens_moor'] = 9.80665 * l_eff_ww**2. / (2. * EA) - ((np.sqrt(1. + (l_eff_ww / t_star_ww)**2.) - 1.) + t_star_ww * (0.5 / np.sqrt(1. + (l_eff_ww / t_star_ww)**2.)) * (-2. * l_eff_ww**2. / t_star_ww**3.)) * (-outputs['moor_tension_offset_ww'] / (mu**2. * 9.80665))
+		partials['eff_length_offset_ww', 'mass_dens_moor'] = -9.80665 * l_eff_ww**2. / (2. * EA) - ((np.sqrt(1. + (l_eff_ww / t_star_ww)**2.) - 1.) + t_star_ww * (0.5 / np.sqrt(1. + (l_eff_ww / t_star_ww)**2.)) * (-2. * l_eff_ww**2. / t_star_ww**3.)) * (-outputs['moor_tension_offset_ww'] / (mu**2. * 9.80665))
 		partials['eff_length_offset_ww', 'len_hor_moor'] = 0.
 		partials['eff_length_offset_ww', 'len_tot_moor'] = 0.
 		partials['eff_length_offset_ww', 'moor_tension_offset_ww'] = -((np.sqrt(1. + (l_eff_ww / t_star_ww)**2.) - 1.) + t_star_ww * (0.5 / np.sqrt(1. + (l_eff_ww / t_star_ww)**2.)) * (-2. * l_eff_ww**2. / t_star_ww**3.)) * 1. / (mu * 9.80665)
@@ -123,7 +123,7 @@ class MooringOffset(ImplicitComponent):
 		partials['eff_length_offset_lw', 'z_moor'] = 1.
 		partials['eff_length_offset_lw', 'water_depth'] = 1.
 		partials['eff_length_offset_lw', 'EA_moor'] = mu * 9.80665 * l_eff_lw**2. / (2. * EA**2.)
-		partials['eff_length_offset_lw', 'mass_dens_moor'] = 9.80665 * l_eff_lw**2. / (2. * EA) - ((np.sqrt(1. + (l_eff_lw / t_star_lw)**2.) - 1.) + t_star_lw * (0.5 / np.sqrt(1. + (l_eff_lw / t_star_lw)**2.)) * (-2. * l_eff_lw**2. / t_star_lw**3.)) * (-outputs['moor_tension_offset_lw'] / (mu**2. * 9.80665))
+		partials['eff_length_offset_lw', 'mass_dens_moor'] = -9.80665 * l_eff_lw**2. / (2. * EA) - ((np.sqrt(1. + (l_eff_lw / t_star_lw)**2.) - 1.) + t_star_lw * (0.5 / np.sqrt(1. + (l_eff_lw / t_star_lw)**2.)) * (-2. * l_eff_lw**2. / t_star_lw**3.)) * (-outputs['moor_tension_offset_lw'] / (mu**2. * 9.80665))
 		partials['eff_length_offset_lw', 'len_hor_moor'] = 0.
 		partials['eff_length_offset_lw', 'len_tot_moor'] = 0.
 		partials['eff_length_offset_lw', 'moor_tension_offset_ww'] = 0.

@@ -27,8 +27,8 @@ EC_fat = {\
 'ECfile' : 'prob_bins_fatigue.dat'}
 
 EC_ext = {\
-'N_EC' : 3, \
-'ECfile' : 'prob_bins_extreme.dat'}
+'N_EC' : 1, \
+'ECfile' : 'prob_bins_test.dat'}
 
 prob = Problem()
 ivc = IndepVarComp()
@@ -138,81 +138,26 @@ for i in xrange(EC_ext['N_EC']):
 
 prob.model.linear_solver = LinearRunOnce()
 
+prob.setup()
 
-#from openmdao.api import ScipyOptimizeDriver
-from openmdao.api import pyOptSparseDriver
-#driver = prob.driver = ScipyOptimizeDriver()
-driver = prob.driver = pyOptSparseDriver()
-driver.options['optimizer'] = 'SNOPT'
+prob.run_model()
 
-driver.recording_options['includes'] = []
-driver.recording_options['record_objectives'] = True
-driver.recording_options['record_constraints'] = True
-driver.recording_options['record_desvars'] = True
+prob.check_totals(['parallel_ext.cond0_ext.constr_50_moor_ten', 'parallel_ext.cond0_ext.constr_50_fairlead'],['D_moor', 'len_hor_moor', 'len_tot_moor'])
 
-recorder = SqliteRecorder("cases.sql")
-driver.add_recorder(recorder)
-
-#prob.model.add_design_var('D_spar_p', lower=np.ones(11), upper=20.*np.ones(11))
-#prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
-
-#prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=20.*np.ones(11))
-#prob.model.add_design_var('wt_tower_p', lower=0.005*np.ones(11), upper=0.5*np.ones(11))
-
+"""
 prob.model.add_design_var('D_moor', lower=0.01, upper=0.5)
-prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 prob.model.add_design_var('len_hor_moor', lower=1., upper=3000.)
 prob.model.add_design_var('len_tot_moor', lower=320., upper=4000.)
 
 prob.model.add_constraint('parallel_ext.cond0_ext.substructure.buoy_mass', lower=0.)
 prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moor', lower=0.)
 
-#prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
-#prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
-
-#prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
-#prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_tower_stress', lower=np.zeros(10))
-
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
 prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_moor_ten', lower=0.)
 prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_fairlead', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_pitch', lower=0.)
 prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_moor_ten', lower=0.)
 prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_fairlead', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
 prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_moor_ten', lower=0.)
 prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_fairlead', lower=0.)
 
 prob.model.add_objective('parallel_ext.cond0_ext.mooring_cost')
-
-prob.setup()
-#prob.set_solver_print(0)
-prob.run_driver()
-
-prob.cleanup()
-
 """
-prob.setup()
-
-prob.run_model()
-"""
-#print prob['total_tower_fatigue_damage.total_tower_fatigue_damage'] #[0.84150843 0.71742536 0.78139559 0.63796774 0.67922156 0.51527836 0.51941003 0.34625994 0.33857489 0.19130584 0.21402161] [0.20113283 0.1636332  0.1687287  0.12909339 0.12698522 0.08711082 0.07655451 0.04145436 0.02799767 0.00684233 0.00026347]
-#print prob['parallel_ext.cond0_ext.constr_50_surge'] #[1.12581472] [10.10193924]
-#print prob['parallel_ext.cond0_ext.constr_50_pitch'] #[0.78097484] [7.06654839]
-#print prob['parallel_ext.cond0_ext.constr_50_tower_stress'] #[0.95840193 1.12343779 0.91899427 1.11934134 0.90256966 1.16872072 0.94877398 1.36136119 1.18218993 2.03930487] [4.2187535  4.69211873 4.16811865 4.7250744  4.14057684 4.83814728 4.1935415  5.1713398  4.5062743  6.24099886]
-#print prob['parallel_ext.cond0_ext.constr_50_moor_ten'] #[0.47595709] [1.29681327]
-#print prob['parallel_ext.cond0_ext.constr_50_fairlead'] #[-0.22662359] [3.00152786]
-#print prob['parallel_ext.cond0_ext.mooring_cost']
-
-#print prob['stddev_surge']
-#print prob['stddev_pitch']
-#print prob['stddev_bend']
-#print prob['stddev_rotspeed']
-#print prob['parallel.cond0.tower_fatigue_damage'][0]
-#print prob['parallel.cond1.tower_fatigue_damage'][0]
-#print prob['total_tower_fatigue_damage.total_tower_fatigue_damage']
-#print prob['total_hull_fatigue_damage.total_hull_fatigue_damage']
-#print prob['parallel.cond0.total_cost']

@@ -50,4 +50,4 @@ class ZeroUpcrossingTowerStress(ExplicitComponent):
 			dm0_dresp[-1] += -domega / 2.
 			dm2_dresp[-1] += -omega[-1]**2. * domega / 2.
 		
-			partials['v_z_tower_stress', 'resp_tower_stress'][i,i:10*N_omega:10] += 1. / (2. * np.pi) * 0.5 / np.sqrt(m2 / m0) * (dm2_dresp / m0 - m2 / m0**2. * dm0_dresp)
+			partials['v_z_tower_stress', 'resp_tower_stress'][i,i:11*N_omega:11] += 1. / (2. * np.pi) * 0.5 / np.sqrt(m2 / m0) * (dm2_dresp / m0 - m2 / m0**2. * dm0_dresp)

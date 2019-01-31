@@ -52,14 +52,14 @@ class ConditionFat(Group):
 
 		mooring_group = Mooring()
 
-		mooring_group.linear_solver = DirectSolver()
+		mooring_group.linear_solver = DirectSolver(assemble_jac=True)
 
 		self.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
 			'thrust_0', 'F0_tower_drag'], promotes_outputs=['M_moor_zero', 'K_moor', 'M_moor', 'moor_offset', 'maxval_fairlead', 'mean_moor_ten'])
 
 		substructure_group = Substructure(freqs=freqs)
 
-		substructure_group.linear_solver = DirectSolver()
+		substructure_group.linear_solver = DirectSolver(assemble_jac=True)
 
 		self.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar_p', 'L_spar', 'wt_spar_p', 'L_tower', 'wt_tower_p', \
 			'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'water_depth', 'z_moor', 'M_moor_zero', 'K_moor', 'M_moor', \
@@ -71,7 +71,7 @@ class ConditionFat(Group):
 
 		statespace_group = StateSpace(freqs=freqs)
 
-		statespace_group.linear_solver = DirectSolver()
+		statespace_group.linear_solver = DirectSolver(assemble_jac=True)
 
 		self.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
 			'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'k_i', 'k_p', 'k_t', \
