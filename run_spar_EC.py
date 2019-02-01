@@ -65,9 +65,9 @@ ivc.add_output('len_hor_moor', val=828.67, units='m')
 ivc.add_output('len_tot_moor', val=912.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
-ivc.add_output('windspeed_0', val=50., units='m/s')
-ivc.add_output('Hs', val=15.1, units='m')
-ivc.add_output('Tp', val=16., units='s')
+ivc.add_output('windspeed_0', val=11., units='m/s')
+ivc.add_output('Hs', val=7.5, units='m')
+ivc.add_output('Tp', val=12., units='s')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
 ivc.add_output('k_i', val=0.0165, units='rad/rad')
 ivc.add_output('k_t', val=-0., units='rad*s/m')
@@ -279,11 +279,11 @@ prob.run_model()
 #print prob['maxval_tower_stress']
 #print prob['short_term_tower_stress_CDF']
 
-print prob['stddev_fairlead'][0]
-print prob['v_z_fairlead'][0]
-print prob['moor_offset'][0]
-print prob['maxval_fairlead'][0]
-
+#print prob['stddev_fairlead'][0]
+#print prob['v_z_fairlead'][0]
+#print prob['moor_offset'][0]
+#print prob['maxval_fairlead'][0]
+print prob['substructure.T_heave']
 #print prob['B_visc_11']
 #print prob['stddev_vel_distr']
 print prob['stddev_surge'][0] #[2.31806726]

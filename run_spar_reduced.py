@@ -155,7 +155,7 @@ driver.recording_options['record_desvars'] = True
 recorder = SqliteRecorder("cases.sql")
 driver.add_recorder(recorder)
 
-#prob.model.add_design_var('D_spar_p', lower=np.ones(11), upper=20.*np.ones(11))
+#prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
 #prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
 
 #prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=20.*np.ones(11))
@@ -171,6 +171,11 @@ prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moo
 
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_surge', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_pitch', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
 
 #prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_tower_stress', lower=np.zeros(10))
