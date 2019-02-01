@@ -46,7 +46,7 @@ class MaxMooringOffset(ImplicitComponent):
 			return [l_tot - x[0] - l_tot_hor - x[2] + t_star_ww * np.arcsinh(x[0] / t_star_ww) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star_ww * (np.sqrt(1. + (x[0] / t_star_ww)**2.) - 1.), x[1] / (mu * 9.80665) * np.arcsinh(mu * 9.80665 * x[0] / x[1]) + x[1] * x[0] / EA - l_tot_hor]
 
 		#sol = root(fun, [600.0, 1.0e6, 5.], method='krylov', tol=1e-5)
-		sol = fsolve(fun, [600.0, 1.0e6, 10.])
+		sol = fsolve(fun, [600.0, 1.0e6, 10.], xtol=1e-5)
 
 		outputs['eff_length_max_offset_ww'] = sol[0]
 		outputs['moor_tension_max_offset_ww'] = sol[1]

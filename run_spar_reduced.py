@@ -144,6 +144,8 @@ from openmdao.api import pyOptSparseDriver
 #driver = prob.driver = ScipyOptimizeDriver()
 driver = prob.driver = pyOptSparseDriver()
 driver.options['optimizer'] = 'SNOPT'
+driver.opt_settings['Major feasibility tolerance'] = 1e-3
+driver.opt_settings['Major optimality tolerance'] = 1e-3
 
 driver.recording_options['includes'] = []
 driver.recording_options['record_objectives'] = True

@@ -101,9 +101,9 @@ ivc.add_output('gamma_F_tower', val=1.35)
 ivc.add_output('gamma_F_hull', val=1.35)
 ivc.add_output('maxval_surge', val=30., units='m')
 ivc.add_output('maxval_pitch', val=10.*np.pi/180., units='rad')
-ivc.add_output('windspeed_0', val=19., units='m/s')
-ivc.add_output('Hs', val=4.5, units='m')
-ivc.add_output('Tp', val=15., units='s')
+ivc.add_output('windspeed_0', val=50., units='m/s')
+ivc.add_output('Hs', val=15.1, units='m')
+ivc.add_output('Tp', val=16., units='s')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
@@ -242,7 +242,7 @@ mooring_group.linear_solver = DirectSolver(assemble_jac=True)
 substructure_group.linear_solver = DirectSolver(assemble_jac=True)
 statespace_group.linear_solver = DirectSolver(assemble_jac=True)
 viscous_group.linear_solver = LinearBlockGS(maxiter=50)
-viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-8, rtol=1e-8)
+viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-6, rtol=1e-6)
 
 prob.model.add_design_var('len_hor_moor', lower=-1000, upper=100)
 prob.model.add_design_var('len_tot_moor', lower=-1000, upper=100)
@@ -270,5 +270,6 @@ prob.model.add_objective('total_cost')
 prob.setup()
 
 prob.run_model()
-
-prob.check_totals()
+print prob['moor_offset']
+print prob['maxval_fairlead']
+#prob.check_totals()
