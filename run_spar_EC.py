@@ -61,13 +61,13 @@ ivc.add_output('water_depth', val=320., units='m')
 ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('D_moor', val=0.09, units='m')
 ivc.add_output('gamma_F_moor', val=1.65)
-ivc.add_output('len_hor_moor', val=828.67, units='m')
-ivc.add_output('len_tot_moor', val=912.2, units='m')
+ivc.add_output('len_hor_moor', val=848.67, units='m')
+ivc.add_output('len_tot_moor', val=902.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
-ivc.add_output('windspeed_0', val=11., units='m/s')
-ivc.add_output('Hs', val=7.5, units='m')
-ivc.add_output('Tp', val=12., units='s')
+ivc.add_output('windspeed_0', val=15., units='m/s')
+ivc.add_output('Hs', val=1.5, units='m')
+ivc.add_output('Tp', val=9., units='s')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
 ivc.add_output('k_i', val=0.0165, units='rad/rad')
 ivc.add_output('k_t', val=-0., units='rad*s/m')
@@ -256,6 +256,8 @@ prob.setup()
 
 prob.run_model()
 
+print prob['mean_moor_ten']
+print prob['stddev_moor_ten']
 #print prob['My_shell_buckling']
 #print prob['My_constr_hoop_stress']
 #print prob['My_constr_mom_inertia_ringstiff']

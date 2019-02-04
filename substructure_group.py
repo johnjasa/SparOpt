@@ -4,6 +4,7 @@ from openmdao.api import Group
 
 from spar_diameter import SparDiameter
 from spar_thickness import SparThickness
+from taper_hull import TaperHull
 from tower_thickness import TowerThickness
 from draft import Draft
 from lower_bound_z_moor import LowerBoundZMoor
@@ -81,6 +82,8 @@ class Substructure(Group):
 		self.add_subsystem('spar_diameter', SparDiameter(), promotes_inputs=['D_spar_p'], promotes_outputs=['D_spar'])
 
 		self.add_subsystem('spar_thickness', SparThickness(), promotes_inputs=['wt_spar_p'], promotes_outputs=['wt_spar'])
+
+		self.add_subsystem('taper_hull', TaperHull(), promotes_inputs=['D_spar_p', 'L_spar'], promotes_outputs=['taper_angle_hull'])
 
 		self.add_subsystem('tower_thickness', TowerThickness(), promotes_inputs=['wt_tower_p'], promotes_outputs=['wt_tower'])
 

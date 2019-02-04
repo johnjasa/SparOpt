@@ -7,6 +7,7 @@ from global_damping import GlobalDamping
 from A_str_damp import AstrDamp
 from A_struct import Astruct
 from A_feedbk_nf import Afeedbk
+from poles import Poles
 from transfer_function_pre import TransferFunctionPre
 from transfer_function_pre_inv import TransferFunctionPreInv
 from transfer_function2 import TransferFunction
@@ -50,6 +51,8 @@ class Viscous(Group):
 		self.add_subsystem('A_struct', Astruct(), promotes_inputs=['CoG_rotor', 'I_d', 'dtorque_dv', 'dtorque_drotspeed', 'Astr_stiff', 'Astr_damp', 'Astr_ext'], promotes_outputs=['A_struct'])
 
 		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'BsCc', 'BcCs'], promotes_outputs=['A_feedbk'])
+
+		self.add_subsystem('poles', Poles(), promotes_inputs=['A_feedbk'], promotes_outputs=['poles'])
 
 		self.add_subsystem('transfer_function_pre', TransferFunctionPre(freqs=freqs), promotes_inputs=['A_feedbk'], promotes_outputs=['Re_IA', 'Im_IA'])
 

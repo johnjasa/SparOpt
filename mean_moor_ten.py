@@ -36,7 +36,7 @@ class MeanMoorTen(ImplicitComponent):
 			return T_H - EA * np.sqrt((x[0] / EA + 1.)**2. - 2. * mu * 9.80665 * h / EA) + EA
 
 		#sol = root(fun, 1.0e6, tol=1e-5)
-		sol = fsolve(fun, 1.0e6)
+		sol = fsolve(fun, 1.0e6, xtol=1e-5)
 
 		outputs['mean_moor_ten'] = sol[0]
 

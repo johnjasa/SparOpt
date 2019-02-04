@@ -267,8 +267,11 @@ poles = ctrl.pole(SS)
 
 fr = np.abs(poles)
 
-print poles[6:8]
-print 2. * np.pi / fr[6:8]
+print poles
+print np.linalg.eig(A)[0]
+
+print 2. * np.pi / fr
+
 """
 prob.model.add_design_var('len_hor_moor', lower=-1000, upper=100)
 prob.model.add_design_var('len_tot_moor', lower=-1000, upper=100)
