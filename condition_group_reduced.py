@@ -7,6 +7,8 @@ from steady_rotspeed import SteadyRotSpeed
 from gain_schedule import GainSchedule
 from mooring_chain import MooringChain
 from aero_group import Aero
+from taper_hull import TaperHull
+from taper_tower import TaperTower
 from towerdim_group import Towerdim
 from mean_tower_drag import MeanTowerDrag
 from mooring_group import Mooring
@@ -44,6 +46,10 @@ class Condition(Group):
 		self.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'windspeed_0', 'bldpitch_0', 'rotspeed_0'], promotes_outputs=['thrust_wind', \
 			'moment_wind', 'torque_wind', 'thrust_0', 'torque_0', 'dthrust_dv', 'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', \
 			'dthrust_dbldpitch', 'dtorque_dbldpitch'])
+
+		self.add_subsystem('taper_hull', TaperHull(), promotes_inputs=['D_spar_p'], promotes_outputs=['taper_hull'])
+
+		self.add_subsystem('taper_tower', TaperTower(), promotes_inputs=['D_tower_p'], promotes_outputs=['taper_tower'])
 
 		towerdim_group = Towerdim()
 

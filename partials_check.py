@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from openmdao.api import Problem, IndepVarComp, DirectSolver, NewtonSolver
 from openmdao.utils.visualization import partial_deriv_plot
 
-from heave_period import HeavePeriod
+from taper_tower import TaperTower
 
 freqs = {\
 'omega' : np.linspace(0.014361566416410483,6.283185307179586,50), \
@@ -15,14 +15,11 @@ EC = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('tot_M_spar', val=np.random.rand()*1e6)
-ivc.add_output('M_turb', val=np.random.rand()*1e6)
-ivc.add_output('M_ball', val=np.random.rand()*1e6)
-ivc.add_output('D_spar', val=np.random.rand(10)*1e2)
+ivc.add_output('D_tower_p', val=np.random.rand(11)*1e2)
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-comp = prob.model.add_subsystem('check', HeavePeriod(), promotes_inputs=['tot_M_spar', 'M_turb', 'M_ball', 'D_spar'], promotes_outputs=['T_heave'])
+comp = prob.model.add_subsystem('check', TaperTower(), promotes_inputs=['D_tower_p'], promotes_outputs=['taper_tower'])
 
 prob.setup(force_alloc_complex=True)
 comp.set_check_partial_options(wrt='*', step=1e-8, method='cs')

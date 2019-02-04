@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import root
+from scipy.optimize import root, fsolve
 
 from openmdao.api import ImplicitComponent
 
@@ -57,14 +57,14 @@ class DiffMoorTen(ImplicitComponent):
 			return [-x[0] + 1. + 1. / (mu * 9.80665) * x[1] * np.arcsinh(l_eff_lw * mu * 9.80665 / t_hor_lw) + t_hor_lw / (mu * 9.80665) * 1. / np.sqrt(1. + ((l_eff_lw * mu * 9.80665) / t_hor_lw)**2.) * (mu * 9.80665 / t_hor_lw * x[0] - l_eff_lw * mu * 9.80665 / t_hor_lw**2. * x[1]) + x[1] * l_eff_lw / EA + t_hor_lw / EA * x[0],\
 			-mu * 9.80665 * l_eff_lw / EA * x[0] - 1. / (mu * 9.80665) * x[1] * (np.sqrt(1. + ((l_eff_lw * mu * 9.80665) / t_hor_lw)**2.) - 1.) - t_hor_lw / (mu * 9.80665) * 1. / np.sqrt(1. + ((l_eff_lw * mu * 9.80665) / t_hor_lw)**2.) * (l_eff_lw * mu * 9.80665 / t_hor_lw) * (mu * 9.80665 / t_hor_lw * x[0] - l_eff_lw * mu * 9.80665 / t_hor_lw**2. * x[1])]
 
-		sol_ww = root(fun_ww, [1.0, 1.0e3])
+		sol_ww = fsolve(fun_ww, [1.0, 1.0e3], xtol=1e-5)
 
-		sol_lw = root(fun_lw, [-1.0, -1.0e3])
+		sol_lw = fsolve(fun_lw, [-1.0, -1.0e3], xtol=1e-5)
 
-		outputs['deff_length_ww_dx'] = sol_ww.x[0]
-		outputs['dmoor_tension_ww_dx'] = sol_ww.x[1]
-		outputs['deff_length_lw_dx'] = sol_lw.x[0]
-		outputs['dmoor_tension_lw_dx'] = sol_lw.x[1]
+		outputs['deff_length_ww_dx'] = sol_ww[0]
+		outputs['dmoor_tension_ww_dx'] = sol_ww[1]
+		outputs['deff_length_lw_dx'] = sol_lw[0]
+		outputs['dmoor_tension_lw_dx'] = sol_lw[1]
 
 	def linearize(self, inputs, outputs, partials):
 		EA = inputs['EA_moor']

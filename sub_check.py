@@ -58,7 +58,7 @@ prob = Problem()
 ivc = IndepVarComp()
 ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m')
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
-ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.])*1.1, units='m')
+ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
 ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
 ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
@@ -71,12 +71,12 @@ ivc.add_output('I_rotor', val=7.808e7, units='kg*m**2')
 ivc.add_output('M_rotor', val=2.307e5, units='kg')
 ivc.add_output('water_depth', val=320., units='m')
 ivc.add_output('z_moor', val=-77.2, units='m')
-ivc.add_output('D_moor', val=0.07, units='m')
+ivc.add_output('D_moor', val=0.09, units='m')
 ivc.add_output('gamma_F_moor', val=1.)
 ivc.add_output('gamma_F_moor_mean', val=1.3)
 ivc.add_output('gamma_F_moor_dyn', val=1.75)
 ivc.add_output('len_hor_moor', val=848.67, units='m')
-ivc.add_output('len_tot_moor', val=912.2, units='m')
+ivc.add_output('len_tot_moor', val=902.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
@@ -101,9 +101,9 @@ ivc.add_output('gamma_F_tower', val=1.35)
 ivc.add_output('gamma_F_hull', val=1.35)
 ivc.add_output('maxval_surge', val=30., units='m')
 ivc.add_output('maxval_pitch', val=10.*np.pi/180., units='rad')
-ivc.add_output('windspeed_0', val=50., units='m/s')
-ivc.add_output('Hs', val=15.1, units='m')
-ivc.add_output('Tp', val=16., units='s')
+ivc.add_output('windspeed_0', val=15., units='m/s')
+ivc.add_output('Hs', val=2.5, units='m')
+ivc.add_output('Tp', val=14., units='s')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
@@ -126,6 +126,8 @@ from steady_rotspeed import SteadyRotSpeed
 from gain_schedule import GainSchedule
 from mooring_chain import MooringChain
 from aero_group import Aero
+from taper_hull import TaperHull
+from taper_tower import TaperTower
 from towerdim_group import Towerdim
 from mean_tower_drag import MeanTowerDrag
 from mooring_group import Mooring
@@ -153,6 +155,10 @@ aero_group = Aero(blades=blades, freqs=freqs)
 prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'windspeed_0', 'bldpitch_0', 'rotspeed_0'], promotes_outputs=['thrust_wind', \
 	'moment_wind', 'torque_wind', 'thrust_0', 'torque_0', 'dthrust_dv', 'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', \
 	'dthrust_dbldpitch', 'dtorque_dbldpitch'])
+
+prob.model.add_subsystem('taper_hull', TaperHull(), promotes_inputs=['D_spar_p'], promotes_outputs=['taper_hull'])
+
+prob.model.add_subsystem('taper_tower', TaperTower(), promotes_inputs=['D_tower_p'], promotes_outputs=['taper_tower'])
 
 towerdim_group = Towerdim()
 
@@ -244,6 +250,26 @@ statespace_group.linear_solver = DirectSolver(assemble_jac=True)
 viscous_group.linear_solver = LinearBlockGS(maxiter=50)
 viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-6, rtol=1e-6)
 
+prob.setup()
+
+prob.run_model()
+
+A = prob['A_feedbk']
+B = prob['B_feedbk']
+C = np.identity(11)
+D = np.zeros((11,6))
+
+import control as ctrl
+
+SS = ctrl.ss(A,B,C,D)
+
+poles = ctrl.pole(SS)
+
+fr = np.abs(poles)
+
+print poles[6:8]
+print 2. * np.pi / fr[6:8]
+"""
 prob.model.add_design_var('len_hor_moor', lower=-1000, upper=100)
 prob.model.add_design_var('len_tot_moor', lower=-1000, upper=100)
 prob.model.add_design_var('D_moor', lower=-1000, upper=100)
@@ -273,3 +299,4 @@ prob.run_model()
 print prob['moor_offset']
 print prob['maxval_fairlead']
 #prob.check_totals()
+"""

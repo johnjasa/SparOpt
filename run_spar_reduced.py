@@ -157,12 +157,12 @@ driver.add_recorder(recorder)
 
 #prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
 #prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
+#prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 
 #prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=20.*np.ones(11))
 #prob.model.add_design_var('wt_tower_p', lower=0.005*np.ones(11), upper=0.5*np.ones(11))
 
 prob.model.add_design_var('D_moor', lower=0.01, upper=0.5)
-prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 prob.model.add_design_var('len_hor_moor', lower=1., upper=3000.)
 prob.model.add_design_var('len_tot_moor', lower=320., upper=4000.)
 
@@ -176,9 +176,11 @@ prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moo
 #prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
 #prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
 #prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.taper_hull', lower=0.4*np.ones(10), upper=2.5*np.ones(10))
 
 #prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_tower_stress', lower=np.zeros(10))
+#prob.model.add_constraint('parallel_ext.cond0_ext.taper_tower', lower=0.4*np.ones(10), upper=2.5*np.ones(10))
 
 prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
 prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
