@@ -179,11 +179,12 @@ prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
 prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
 prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moor', lower=0.)
 prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull', lower=-10.*np.pi/180.np.ones(10), upper=10.*np.pi/180.np.ones(10))
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0.01)
 
 #prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_tower_stress', lower=np.zeros(10))
-#prob.model.add_constraint('parallel_ext.cond0_ext.towerdim.taper_angle_tower', lower=-10.*np.pi/180.np.ones(10), upper=10.*np.pi/180.np.ones(10))
+#prob.model.add_constraint('parallel_ext.cond0_ext.towerdim.taper_angle_tower', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
 
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
@@ -204,8 +205,10 @@ prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull'
 #prob.model.add_constraint('parallel_ext.cond0_ext.poles', upper=np.zeros(11))
 
 prob.model.add_objective('parallel_ext.cond0_ext.spar_cost')
-prob.model.add_objective('parallel_ext.cond0_ext.tower_cost')
-prob.model.add_objective('parallel_ext.cond0_ext.mooring_cost')
+
+#prob.model.add_objective('parallel_ext.cond0_ext.tower_cost')
+
+#prob.model.add_objective('parallel_ext.cond0_ext.mooring_cost')
 
 prob.setup()
 #prob.set_solver_print(0)

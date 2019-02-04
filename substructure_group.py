@@ -30,6 +30,7 @@ from ballast_mass import BallastMass
 from ballast_cog import BallastCoG
 from ball_inertia import BallInertia
 from total_cog import TotalCoG
+from CoB_CoG import CoBCoG
 from heave_period import HeavePeriod
 from volume import Volume
 from buoyancy import Buoyancy
@@ -136,6 +137,8 @@ class Substructure(Group):
 	 	self.add_subsystem('ball_inertia', BallInertia(), promotes_inputs=['M_ball', 'CoG_ball'], promotes_outputs=['I_ball'])
 
 	 	self.add_subsystem('total_cog', TotalCoG(), promotes_inputs=['M_turb', 'tot_M_spar', 'M_ball', 'CoG_turb', 'CoG_spar', 'CoG_ball'], promotes_outputs=['CoG_total'])
+
+	 	self.add_subsystem('cob_cog', CoBCoG(), promotes_inputs=['CoB', 'CoG_total'], promotes_outputs=['CoB_CoG'])
 
 	 	self.add_subsystem('heave_period', HeavePeriod(), promotes_inputs=['tot_M_spar', 'M_turb', 'M_ball', 'D_spar'], promotes_outputs=['T_heave'])
 

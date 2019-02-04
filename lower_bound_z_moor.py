@@ -8,7 +8,7 @@ class LowerBoundZMoor(ExplicitComponent):
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('spar_draft', val=0., units='m')
 
-		self.add_output('lower_bound_z_moor', val=0., units='m')
+		self.add_output('lower_bound_z_moor', val=0.)
 
 		self.declare_partials('*', '*')
 
