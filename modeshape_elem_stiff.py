@@ -18,6 +18,8 @@ class ModeshapeElemStiff(ExplicitComponent):
 		L = inputs['L_mode_elem']
 		norm_force = inputs['normforce_mode_elem']
 
+		print L
+
 		N_elem = len(L)
 		N_sparelem = N_elem - len(norm_force)
 
@@ -26,6 +28,10 @@ class ModeshapeElemStiff(ExplicitComponent):
 			ke = np.zeros((4,4))
 			kg = np.zeros((4,4))
 
+			#if L[i] < 0.5:
+			#	L[i] = L[i] + 0.5
+			#	L[i+1] = L[i+1] - 0.5
+
 			ke[0,0] = ke[2,2] = 12. / L[i]**3.
 			ke[0,2] = ke[2,0] = -12. / L[i]**3.
 			ke[0,1] = ke[1,0] = ke[0,3] = ke[3,0] = 6. / L[i]**2.
@@ -33,6 +39,9 @@ class ModeshapeElemStiff(ExplicitComponent):
 			ke[1,1] = ke[3,3] = 4. / L[i]
 			ke[1,3] = ke[3,1] = 2. / L[i]
 			ke = ke * EI[i]
+
+			#if L[i] < 0.5:
+			#	ke = ke / 1000. #prevent large stiffness values for very short elements, which causes the eigenvalue problem to fail
 
 			kg[0,0] = kg[2,2] = 6. / (5. * L[i])
 			kg[0,2] = kg[2,0] = -6. / (5. * L[i])
@@ -75,6 +84,9 @@ class ModeshapeElemStiff(ExplicitComponent):
 			dkel_dLe[1,3] = dkel_dLe[3,1] = -2. / L[i]**2. * EI[i]
 			partials['kel', 'EI_mode_elem'][16*i:16*i+16,i] += ke.flatten()
 
+			if L[i] < 0.5:
+				partials['kel', 'EI_mode_elem'][16*i:16*i+16,i] = partials['kel', 'EI_mode_elem'][16*i:16*i+16,i] / 1000.
+
 			if i >= N_sparelem:
 				kg[0,0] = kg[2,2] = 6. / (5. * L[i])
 				kg[0,2] = kg[2,0] = -6. / (5. * L[i])
@@ -93,3 +105,6 @@ class ModeshapeElemStiff(ExplicitComponent):
 				partials['kel', 'normforce_mode_elem'][16*i:16*i+16,i-N_sparelem] += kg.flatten()
 			
 			partials['kel', 'L_mode_elem'][16*i:16*i+16,i] += dkel_dLe.flatten()
+
+			if L[i] < 0.5:
+				partials['kel', 'L_mode_elem'][16*i:16*i+16,i] = partials['kel', 'L_mode_elem'][16*i:16*i+16,i] / 1000.

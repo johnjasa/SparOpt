@@ -66,6 +66,7 @@ class BendingMass(ExplicitComponent):
 		for i in xrange(N_elem_spar):
 			z = (z_sparnode[i] + z_sparnode[i+1]) / 2
 			dz = z_sparnode[i+1] - z_sparnode[i]
+
 			for j in xrange(len(Z_spar) - 1):
 				if (z < Z_spar[j+1]) and (z >= Z_spar[j]):
 					m = m_elem_spar[j]

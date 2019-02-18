@@ -85,29 +85,23 @@ ivc.add_output('maxval_pitch', val=15.*np.pi/180., units='rad')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-#from ECs_fat import ECsFat
-from ECs_ext import ECsExt
-#from condition_group_reduced_fat import ConditionFat
-from condition_group_reduced_ext import ConditionExt
-#from total_tower_fatigue_damage import TotalTowerFatigueDamage
+from ECs_fat import ECsFat
+#from ECs_ext import ECsExt
+from condition_group_reduced_fat import ConditionFat
+#from condition_group_reduced_ext import ConditionExt
+from total_std_dev_rotspeed import TotalStdDevRotspeed
 
-#prob.model.add_subsystem('ECs_fat', ECsFat(EC=EC_fat), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
+prob.model.add_subsystem('ECs_fat', ECsFat(EC=EC_fat), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
 
-prob.model.add_subsystem('ECs_ext', ECsExt(EC=EC_ext), promotes_outputs=['windspeed_0_ext', 'Hs_ext', 'Tp_ext'])
-"""
+#prob.model.add_subsystem('ECs_ext', ECsExt(EC=EC_ext), promotes_outputs=['windspeed_0_ext', 'Hs_ext', 'Tp_ext'])
+
 parallel_fat = prob.model.add_subsystem('parallel_fat', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
 	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
 	'z_moor', 'D_moor', 'gamma_F_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
 	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', \
 	't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
-"""
-parallel_ext = prob.model.add_subsystem('parallel_ext', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
-	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
-	'z_moor', 'D_moor', 'gamma_F_moor', 'gamma_F_moor_mean', 'gamma_F_moor_dyn', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
-	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', 'f_y', 'gamma_M_tower', 'gamma_F_tower', \
-	'maxval_surge', 'maxval_pitch', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
-"""
-prob.model.add_subsystem('total_tower_fatigue_damage', TotalTowerFatigueDamage(EC=EC_fat))
+
+prob.model.add_subsystem('total_std_dev_rotspeed', TotalStdDevRotspeed(EC=EC_fat))
 
 for i in xrange(EC_fat['N_EC']):
 	parallel_fat.add_subsystem('cond%d_fat' % i, ConditionFat(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
@@ -119,25 +113,11 @@ for i in xrange(EC_fat['N_EC']):
 	prob.model.connect('windspeed_0', 'parallel_fat.cond%d_fat.windspeed_0' % i, src_indices=[i])
 	prob.model.connect('Hs', 'parallel_fat.cond%d_fat.Hs' % i, src_indices=[i])
 	prob.model.connect('Tp', 'parallel_fat.cond%d_fat.Tp' % i, src_indices=[i])
-	
-	prob.model.connect('parallel_fat.cond%d_fat.tower_fatigue_damage' % i, 'total_tower_fatigue_damage.tower_fatigue_damage%d' % i)
-	prob.model.connect('p', 'total_tower_fatigue_damage.p%d' % i, src_indices=[i])
 
-prob.model.connect('DFF_tower', 'total_tower_fatigue_damage.DFF_tower')
-"""
-for i in xrange(EC_ext['N_EC']):
-	parallel_ext.add_subsystem('cond%d_ext' % i, ConditionExt(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
-	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
-	'z_moor', 'D_moor', 'gamma_F_moor', 'gamma_F_moor_mean', 'gamma_F_moor_dyn', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
-	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', 'f_y', 'gamma_M_tower', 'gamma_F_tower', \
-	'maxval_surge', 'maxval_pitch', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
-
-	prob.model.connect('windspeed_0_ext', 'parallel_ext.cond%d_ext.windspeed_0' % i, src_indices=[i])
-	prob.model.connect('Hs_ext', 'parallel_ext.cond%d_ext.Hs' % i, src_indices=[i])
-	prob.model.connect('Tp_ext', 'parallel_ext.cond%d_ext.Tp' % i, src_indices=[i])
+	prob.model.connect('parallel_fat.cond%d_fat.stddev_rotspeed' % i, 'total_std_dev_rotspeed.stddev_rotspeed%d' % i)
+	prob.model.connect('p', 'total_std_dev_rotspeed.p%d' % i, src_indices=[i])
 
 prob.model.linear_solver = LinearRunOnce()
-
 
 #from openmdao.api import ScipyOptimizeDriver
 from openmdao.api import pyOptSparseDriver
@@ -152,12 +132,12 @@ driver.recording_options['record_objectives'] = True
 driver.recording_options['record_constraints'] = True
 driver.recording_options['record_desvars'] = True
 
-recorder = SqliteRecorder("floater.sql")
+recorder = SqliteRecorder("control.sql")
 driver.add_recorder(recorder)
 
-prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
-prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
-prob.model.add_design_var('z_moor', lower=-320., upper=0.)
+#prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
+#prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
+#prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 
 #prob.model.add_design_var('D_tower_p', lower=np.ones(11), upper=20.*np.ones(11))
 #prob.model.add_design_var('wt_tower_p', lower=0.005*np.ones(11), upper=0.5*np.ones(11))
@@ -166,21 +146,21 @@ prob.model.add_design_var('z_moor', lower=-320., upper=0.)
 #prob.model.add_design_var('len_hor_moor', lower=1., upper=3000.)
 #prob.model.add_design_var('len_tot_moor', lower=320., upper=4000.)
 
-#prob.model.add_design_var('k_p', lower=0., upper=5.)
-#prob.model.add_design_var('k_i', lower=0., upper=5.)
+prob.model.add_design_var('k_p', lower=0., upper=5.)
+prob.model.add_design_var('k_i', lower=0., upper=5.)
 
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.buoy_mass', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.buoy_mass', lower=0.)
 
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_pitch', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moor', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0.01)
+#prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_surge', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_pitch', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moor', lower=0.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0.01)
 
 #prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_tower_stress', lower=np.zeros(10))
@@ -199,16 +179,29 @@ prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0
 #prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_moor_ten', lower=0.)
 #prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_fairlead', lower=0.)
 
-#prob.model.add_constraint('parallel_fat.cond0_fat.poles', upper=np.zeros(11))
-#prob.model.add_constraint('parallel_fat.cond1_fat.poles', upper=np.zeros(11))
-#prob.model.add_constraint('parallel_fat.cond2_fat.poles', upper=np.zeros(11))
-#prob.model.add_constraint('parallel_ext.cond0_ext.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond8_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond9_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond10_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond11_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond12_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond13_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond14_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond15_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond16_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond17_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond18_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond19_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond20_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond21_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond22_fat.poles', upper=np.zeros(11))
 
-prob.model.add_objective('parallel_ext.cond0_ext.spar_cost')
+#prob.model.add_objective('parallel_ext.cond0_ext.spar_cost')
 
 #prob.model.add_objective('parallel_ext.cond0_ext.tower_cost')
 
 #prob.model.add_objective('parallel_ext.cond0_ext.mooring_cost')
+
+prob.model.add_objective('total_std_dev_rotspeed.total_stddev_rotspeed')
 
 prob.setup()
 #prob.set_solver_print(0)

@@ -23,6 +23,10 @@ class ModeshapeElemLength(ExplicitComponent):
 
 		for i in xrange(N_sparelem):
 			outputs['L_mode_elem'][i] = z_sparnode[i+1] - z_sparnode[i]
+
+			if (z_sparnode[i+1] - z_sparnode[i]) < 0.5:
+				outputs['L_mode_elem'][i] = outputs['L_mode_elem'][i] + 0.5
+				outputs['L_mode_elem'][i-1] = outputs['L_mode_elem'][i-1] - 0.5
 		
 		for i in xrange(N_towerelem):
 			outputs['L_mode_elem'][N_sparelem+i] = z_towernode[i+1] - z_towernode[i]

@@ -48,6 +48,8 @@ class BendingStiffness(ExplicitComponent):
 		for i in xrange(N_sparelem):
 			dz = z_sparnode[i+1] - z_sparnode[i]
 
+			x_dd_sparelem[i] = 0.
+
 			outputs['K57'] += norm_force[i] * x_d_sparelem[i] * dz
 			outputs['K77'] += dz * EI[i] * x_dd_sparelem[i]**2. + norm_force[i] * x_d_sparelem[i]**2. * dz
 

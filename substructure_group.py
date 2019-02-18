@@ -166,7 +166,7 @@ class Substructure(Group):
 
 		self.add_subsystem('modeshape_eigvector', ModeshapeEigvector(), promotes_inputs=['A_eig', 'struct_damp_ratio'], promotes_outputs=['eig_vector', 'alpha_damp'])
 
-		self.add_subsystem('modeshape_disp', ModeshapeDisp(), promotes_inputs=['eig_vector'], promotes_outputs=['x_sparnode', 'x_towernode'])
+		self.add_subsystem('modeshape_disp', ModeshapeDisp(), promotes_inputs=['eig_vector', 'z_sparnode'], promotes_outputs=['x_sparnode', 'x_towernode'])
 
 	 	self.add_subsystem('tower_node_1_lhs', TowerNode1LHS(), promotes_inputs=['z_towernode'], promotes_outputs=['tower_spline_lhs'])
 
