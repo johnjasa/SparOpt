@@ -73,7 +73,7 @@ ivc.add_output('h_stiff', val=0.6*np.ones(10), units='m')
 ivc.add_output('b_stiff', val=0.8*np.ones(10), units='m')
 ivc.add_output('l_stiff', val=1.0*np.ones(10), units='m')
 
-ivc.add_output('f_y', val=450., units='MPa')
+ivc.add_output('f_y', val=355., units='MPa')
 
 ivc.add_output('gamma_M_tower', val=1.1)
 ivc.add_output('gamma_F_tower', val=1.35)

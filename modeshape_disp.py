@@ -23,7 +23,7 @@ class ModeshapeDisp(ExplicitComponent):
 		x_sparnode = inputs['eig_vector'][0:(N_sparelem+1)*2:2]
 		x_towernode = inputs['eig_vector'][(N_sparelem+1)*2-2:(N_elem+1)*2:2]
 
-		for i in xrange(len(x_sparnode)-2):
+		for i in xrange(len(x_sparnode)-2): #TODO
 			if (inputs['z_sparnode'][i+1] - inputs['z_sparnode'][i]) < 0.5:
 				x_sparnode[i+1] = x_sparnode[i] + (inputs['z_sparnode'][i+1] - inputs['z_sparnode'][i]) * (x_sparnode[i+2] - x_sparnode[i]) / (inputs['z_sparnode'][i+2] - inputs['z_sparnode'][i])
 

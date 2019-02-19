@@ -12,7 +12,7 @@ class TotalStdDevRotspeed(ExplicitComponent):
 		self.N_EC = EC['N_EC']
 		
 		for i in xrange(self.N_EC):
-			self.add_input('stddev_rotspeed%d' % i, val=0.)
+			self.add_input('stddev_rotspeed%d' % i, val=0., units='rad/s')
 			self.add_input('p%d' % i, val=0.)
 
 		self.add_output('total_stddev_rotspeed', val=0.)
@@ -27,4 +27,4 @@ class TotalStdDevRotspeed(ExplicitComponent):
 	def compute_partials(self, inputs, partials):
 		for i in xrange(self.N_EC):
 			partials['total_stddev_rotspeed', 'stddev_rotspeed%d' % i] = inputs['p%d' % i]
-			partials['total_tower_fatigue_damage', 'p%d' % i] = inputs['stddev_rotspeed%d' % i]
+			partials['total_stddev_rotspeed', 'p%d' % i] = inputs['stddev_rotspeed%d' % i]

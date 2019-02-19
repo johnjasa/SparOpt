@@ -52,7 +52,10 @@ class Viscous(Group):
 
 		self.add_subsystem('A_feedbk', Afeedbk(), promotes_inputs=['A_struct', 'A_contrl', 'BsCc', 'BcCs'], promotes_outputs=['A_feedbk'])
 
-		self.add_subsystem('poles', Poles(), promotes_inputs=['A_feedbk'], promotes_outputs=['poles'])
+		poles = Poles()
+		poles.linear_solver = DirectSolver(assemble_jac=True)
+
+		self.add_subsystem('poles', poles, promotes_inputs=['A_feedbk'], promotes_outputs=['poles'])
 
 		self.add_subsystem('transfer_function_pre', TransferFunctionPre(freqs=freqs), promotes_inputs=['A_feedbk'], promotes_outputs=['Re_IA', 'Im_IA'])
 
