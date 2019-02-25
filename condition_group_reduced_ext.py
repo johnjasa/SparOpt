@@ -15,7 +15,7 @@ from statespace_group import StateSpace
 from wave_spectrum import WaveSpectrum
 from wind_spectrum import WindSpectrum
 from interp_wave_forces import InterpWaveForces
-from viscous_group import Viscous
+from viscous_group_ext import Viscous
 from postpro_group_reduced import Postpro
 from tower_buckling_group import TowerBuckling
 from extreme_response_group_reduced import ExtremeResponse

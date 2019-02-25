@@ -24,7 +24,7 @@ class TowerCost(ExplicitComponent):
 		tot_M_tower = inputs['tot_M_tower']
 
 		#Material costs
-		k_m = 4.5 #dollar per kg steel
+		k_m = 3.0 #dollar per kg steel
 
 		Km = k_m * tot_M_tower
 
@@ -85,7 +85,7 @@ class TowerCost(ExplicitComponent):
 		partials['tower_cost', 'tot_M_tower'] = 0.
 		
 		#Material costs
-		k_m = 4.5 #dollar per kg steel
+		k_m = 3.0 #dollar per kg steel
 
 		rho_steel = 8.5 * 10**(-6.) #kg/mm^3
 
