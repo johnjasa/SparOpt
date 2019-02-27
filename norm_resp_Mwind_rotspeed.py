@@ -15,6 +15,7 @@ class NormRespMWindRotspeed(ExplicitComponent):
 		self.add_input('moment_wind', val=np.zeros(N_omega), units='m/s')
 		self.add_input('Re_H_feedbk', val=np.zeros((N_omega,11,6)))
 		self.add_input('Im_H_feedbk', val=np.zeros((N_omega,11,6)))
+		self.add_input('windspeed_0', val=0., units='m/s')
 
 		self.add_output('Re_RAO_Mwind_rotspeed', val=np.zeros(N_omega), units='(rad/s)/(m/s)')
 		self.add_output('Im_RAO_Mwind_rotspeed', val=np.zeros(N_omega), units='(rad/s)/(m/s)')
@@ -28,12 +29,17 @@ class NormRespMWindRotspeed(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
+		N_omega = len(omega)
 
 		moment_wind = inputs['moment_wind']
+		windspeed_0 = inputs['windspeed_0']
 
 		H_feedbk = inputs['Re_H_feedbk'] + 1j * inputs['Im_H_feedbk']
 
-		RAO_Mwind_rotspeed = H_feedbk[:,6,1] * moment_wind
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 4.):
+			RAO_Mwind_rotspeed = H_feedbk[:,6,1] * moment_wind
+		else:
+			RAO_Mwind_rotspeed = np.zeros(N_omega)
 
 		outputs['Re_RAO_Mwind_rotspeed'] = np.real(RAO_Mwind_rotspeed)
 		outputs['Im_RAO_Mwind_rotspeed'] = np.imag(RAO_Mwind_rotspeed)
@@ -42,11 +48,14 @@ class NormRespMWindRotspeed(ExplicitComponent):
 		omega = self.omega
 		N_omega = len(omega)
 
-		partials['Re_RAO_Mwind_rotspeed', 'moment_wind'] = inputs['Re_H_feedbk'][:,6,1]
-		partials['Im_RAO_Mwind_rotspeed', 'moment_wind'] = inputs['Im_H_feedbk'][:,6,1]
+		windspeed_0 = inputs['windspeed_0']
 
-		partials['Re_RAO_Mwind_rotspeed', 'Im_H_feedbk'] = np.zeros(N_omega)
-		partials['Im_RAO_Mwind_rotspeed', 'Re_H_feedbk'] = np.zeros(N_omega)
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 4.):
+			partials['Re_RAO_Mwind_rotspeed', 'moment_wind'] = inputs['Re_H_feedbk'][:,6,1]
+			partials['Im_RAO_Mwind_rotspeed', 'moment_wind'] = inputs['Im_H_feedbk'][:,6,1]
 
-		partials['Re_RAO_Mwind_rotspeed', 'Re_H_feedbk'] = inputs['moment_wind']
-		partials['Im_RAO_Mwind_rotspeed', 'Im_H_feedbk'] = inputs['moment_wind']
+			partials['Re_RAO_Mwind_rotspeed', 'Im_H_feedbk'] = np.zeros(N_omega)
+			partials['Im_RAO_Mwind_rotspeed', 'Re_H_feedbk'] = np.zeros(N_omega)
+
+			partials['Re_RAO_Mwind_rotspeed', 'Re_H_feedbk'] = inputs['moment_wind']
+			partials['Im_RAO_Mwind_rotspeed', 'Im_H_feedbk'] = inputs['moment_wind']

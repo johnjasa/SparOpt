@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from openmdao.api import Problem, IndepVarComp, DirectSolver, NewtonSolver
 from openmdao.utils.visualization import partial_deriv_plot
 
-from taper_hull import TaperHull
+from transfer_function import TransferFunction
 
 freqs = {\
-'omega' : np.linspace(0.014361566416410483,6.283185307179586,50), \
+'omega' : np.linspace(0.014361566416410483,6.283185307179586,70), \
 'omega_wave': np.linspace(0.12,6.28,50)}
 
 EC = {\
@@ -15,15 +15,15 @@ EC = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('D_spar_p', val=np.random.rand(11)*1e2)
-ivc.add_output('L_spar', val=np.random.rand(10)*1e2)
+ivc.add_output('A_feedbk', val=np.random.rand(11,11))
+ivc.add_output('B_feedbk', val=np.random.rand(11,6))
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-comp = prob.model.add_subsystem('check', TaperHull(), promotes_inputs=['D_spar_p', 'L_spar'], promotes_outputs=['taper_angle_hull'])
+comp = prob.model.add_subsystem('check', TransferFunction(freqs=freqs), promotes_inputs=['A_feedbk', 'B_feedbk'], promotes_outputs=['Re_H_feedbk', 'Im_H_feedbk'])
 
 prob.setup(force_alloc_complex=True)
-comp.set_check_partial_options(wrt='*', step=1e-8, method='cs')
+#comp.set_check_partial_options(wrt='*', step=1e-8, method='cs')
 check_partials_data = prob.check_partials(show_only_incorrect=True)
 
 #partial_deriv_plot('stddev_tower_stress', 'resp_tower_stress', check_partials_data, binary=True)

@@ -86,7 +86,7 @@ ivc.add_output('omega_lowpass', val=2.*np.pi/0.8, units='rad/s')
 ivc.add_output('omega_notch', val=10.16, units='rad/s')
 ivc.add_output('bandwidth_notch', val=0.1, units='rad/s')
 ivc.add_output('Cd', val=0.7)
-ivc.add_output('Cd_tower', val=0.01)
+ivc.add_output('Cd_tower', val=0.7)
 ivc.add_output('struct_damp_ratio', val=0.5*0.007*2.*np.pi/2.395)
 ivc.add_output('t_w_stiff', val=0.02*np.ones(10), units='m')
 ivc.add_output('t_f_stiff', val=0.02*np.ones(10), units='m')
@@ -102,8 +102,8 @@ ivc.add_output('gamma_F_hull', val=1.35)
 ivc.add_output('maxval_surge', val=30., units='m')
 ivc.add_output('maxval_pitch', val=10.*np.pi/180., units='rad')
 ivc.add_output('windspeed_0', val=15., units='m/s')
-ivc.add_output('Hs', val=2.5, units='m')
-ivc.add_output('Tp', val=14., units='s')
+ivc.add_output('Hs', val=3.5, units='m')
+ivc.add_output('Tp', val=10.0, units='s')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
@@ -126,8 +126,6 @@ from steady_rotspeed import SteadyRotSpeed
 from gain_schedule import GainSchedule
 from mooring_chain import MooringChain
 from aero_group import Aero
-from taper_hull import TaperHull
-from taper_tower import TaperTower
 from towerdim_group import Towerdim
 from mean_tower_drag import MeanTowerDrag
 from mooring_group import Mooring
@@ -155,10 +153,6 @@ aero_group = Aero(blades=blades, freqs=freqs)
 prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'windspeed_0', 'bldpitch_0', 'rotspeed_0'], promotes_outputs=['thrust_wind', \
 	'moment_wind', 'torque_wind', 'thrust_0', 'torque_0', 'dthrust_dv', 'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', \
 	'dthrust_dbldpitch', 'dtorque_dbldpitch'])
-
-prob.model.add_subsystem('taper_hull', TaperHull(), promotes_inputs=['D_spar_p'], promotes_outputs=['taper_hull'])
-
-prob.model.add_subsystem('taper_tower', TaperTower(), promotes_inputs=['D_tower_p'], promotes_outputs=['taper_tower'])
 
 towerdim_group = Towerdim()
 
@@ -206,7 +200,7 @@ prob.model.add_subsystem('viscous', viscous_group, promotes_inputs=['Cd', 'x_spa
 	'Re_RAO_Mwind_surge', 'Im_RAO_Mwind_surge', 'Re_RAO_Mwind_pitch', 'Im_RAO_Mwind_pitch', 'Re_RAO_Mwind_bend', 'Im_RAO_Mwind_bend', 'Re_RAO_wave_vel_surge', \
 	'Im_RAO_wave_vel_surge', 'Re_RAO_wave_vel_pitch', 'Im_RAO_wave_vel_pitch', 'Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_bend', 'Re_RAO_wind_vel_surge', \
 	'Im_RAO_wind_vel_surge', 'Re_RAO_wind_vel_pitch', 'Im_RAO_wind_vel_pitch', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_bend', 'Re_RAO_Mwind_vel_surge', \
-	'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'B_visc_11', 'stddev_vel_distr'])
+	'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'B_visc_11', 'stddev_vel_distr', 'poles'])
 
 postpro_group = Postpro(freqs=freqs)
 
@@ -247,13 +241,16 @@ prob.model.linear_solver = LinearRunOnce()
 mooring_group.linear_solver = DirectSolver(assemble_jac=True)
 substructure_group.linear_solver = DirectSolver(assemble_jac=True)
 statespace_group.linear_solver = DirectSolver(assemble_jac=True)
-viscous_group.linear_solver = LinearBlockGS(maxiter=50)
+viscous_group.linear_solver = LinearBlockGS(maxiter=50, atol=1e-6, rtol=1e-6)
 viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-6, rtol=1e-6)
 
 prob.setup()
 
 prob.run_model()
 
+prob.check_totals(['poles'],['k_i'])
+
+"""
 A = prob['A_feedbk']
 B = prob['B_feedbk']
 C = np.identity(11)
@@ -271,7 +268,7 @@ print poles
 print np.linalg.eig(A)[0]
 
 print 2. * np.pi / fr
-
+"""
 """
 prob.model.add_design_var('len_hor_moor', lower=-1000, upper=100)
 prob.model.add_design_var('len_tot_moor', lower=-1000, upper=100)

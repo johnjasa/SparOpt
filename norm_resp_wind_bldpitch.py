@@ -45,6 +45,7 @@ class NormRespWindBldpitch(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
+		N_omega = len(omega)
 
 		thrust_wind = inputs['thrust_wind']
 		torque_wind = inputs['torque_wind']
@@ -58,7 +59,7 @@ class NormRespWindBldpitch(ExplicitComponent):
 		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
 			RAO_wind_bldpitch = inputs['gain_corr_factor'] * inputs['k_i'] * RAO_wind_rot_lp + inputs['gain_corr_factor'] * inputs['k_p'] * RAO_wind_rotspeed_lp
 		else:
-			RAO_wind_bldpitch = 0.
+			RAO_wind_bldpitch = np.zeros(N_omega)
 
 		outputs['Re_RAO_wind_bldpitch'] = np.real(RAO_wind_bldpitch)
 		outputs['Im_RAO_wind_bldpitch'] = np.imag(RAO_wind_bldpitch)
@@ -94,19 +95,3 @@ class NormRespWindBldpitch(ExplicitComponent):
 				partials['Im_RAO_wind_bldpitch', 'Im_H_feedbk'][4*i+1] = inputs['gain_corr_factor'] * inputs['k_i'] * inputs['torque_wind'][i]
 				partials['Im_RAO_wind_bldpitch', 'Im_H_feedbk'][4*i+2] = inputs['gain_corr_factor'] * inputs['k_p'] *inputs['thrust_wind'][i]
 				partials['Im_RAO_wind_bldpitch', 'Im_H_feedbk'][4*i+3] = inputs['gain_corr_factor'] * inputs['k_p'] *inputs['torque_wind'][i]
-
-		else:
-			partials['Re_RAO_wind_bldpitch', 'thrust_wind'] = np.zeros(N_omega)
-			partials['Re_RAO_wind_bldpitch', 'torque_wind'] = np.zeros(N_omega)
-			partials['Re_RAO_wind_bldpitch', 'Re_H_feedbk'] = np.zeros(4 * N_omega)
-			partials['Re_RAO_wind_bldpitch', 'Im_H_feedbk'] = np.zeros(4 * N_omega)
-			partials['Im_RAO_wind_bldpitch', 'thrust_wind'] = np.zeros(N_omega)
-			partials['Im_RAO_wind_bldpitch', 'torque_wind'] = np.zeros(N_omega)
-			partials['Im_RAO_wind_bldpitch', 'Re_H_feedbk'] = np.zeros(4 * N_omega)
-			partials['Im_RAO_wind_bldpitch', 'Im_H_feedbk'] = np.zeros(4 * N_omega)
-			partials['Re_RAO_wind_bldpitch', 'k_i'] = np.zeros((N_omega,1))
-			partials['Re_RAO_wind_bldpitch', 'k_p'] = np.zeros((N_omega,1))
-			partials['Re_RAO_wind_bldpitch', 'gain_corr_factor'] = np.zeros((N_omega,1))
-			partials['Im_RAO_wind_bldpitch', 'k_i'] = np.zeros((N_omega,1))
-			partials['Im_RAO_wind_bldpitch', 'k_p'] = np.zeros((N_omega,1))
-			partials['Im_RAO_wind_bldpitch', 'gain_corr_factor'] = np.zeros((N_omega,1))

@@ -42,6 +42,7 @@ class NormRespMWindBldpitch(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
+		N_omega = len(omega)
 
 		moment_wind = inputs['moment_wind']
 		windspeed_0 = inputs['windspeed_0']
@@ -54,7 +55,7 @@ class NormRespMWindBldpitch(ExplicitComponent):
 		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
 			RAO_Mwind_bldpitch = inputs['gain_corr_factor'] * inputs['k_i'] * RAO_Mwind_rot_lp + inputs['gain_corr_factor'] * inputs['k_p'] * RAO_Mwind_rotspeed_lp
 		else:
-			RAO_Mwind_bldpitch = 0.
+			RAO_Mwind_bldpitch = np.zeros(N_omega)
 
 		outputs['Re_RAO_Mwind_bldpitch'] = np.real(RAO_Mwind_bldpitch)
 		outputs['Im_RAO_Mwind_bldpitch'] = np.imag(RAO_Mwind_bldpitch)
@@ -84,17 +85,3 @@ class NormRespMWindBldpitch(ExplicitComponent):
 				partials['Re_RAO_Mwind_bldpitch', 'Re_H_feedbk'][2*i+1] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['moment_wind'][i]
 				partials['Im_RAO_Mwind_bldpitch', 'Im_H_feedbk'][2*i] = inputs['gain_corr_factor'] * inputs['k_i'] * inputs['moment_wind'][i]
 				partials['Im_RAO_Mwind_bldpitch', 'Im_H_feedbk'][2*i+1] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['moment_wind'][i]
-
-		else:
-			partials['Re_RAO_Mwind_bldpitch', 'moment_wind'] = np.zeros(N_omega)
-			partials['Re_RAO_Mwind_bldpitch', 'Re_H_feedbk'] = np.zeros(2 * N_omega)
-			partials['Re_RAO_Mwind_bldpitch', 'Im_H_feedbk'] = np.zeros(2 * N_omega)
-			partials['Im_RAO_Mwind_bldpitch', 'moment_wind'] = np.zeros(N_omega)
-			partials['Im_RAO_Mwind_bldpitch', 'Re_H_feedbk'] = np.zeros(2 * N_omega)
-			partials['Im_RAO_Mwind_bldpitch', 'Im_H_feedbk'] = np.zeros(2 * N_omega)
-			partials['Re_RAO_Mwind_bldpitch', 'k_i'] = np.zeros((N_omega,1))
-			partials['Re_RAO_Mwind_bldpitch', 'k_p'] = np.zeros((N_omega,1))
-			partials['Re_RAO_Mwind_bldpitch', 'gain_corr_factor'] = np.zeros((N_omega,1))
-			partials['Im_RAO_Mwind_bldpitch', 'k_i'] = np.zeros((N_omega,1))
-			partials['Im_RAO_Mwind_bldpitch', 'k_p'] = np.zeros((N_omega,1))
-			partials['Im_RAO_Mwind_bldpitch', 'gain_corr_factor'] = np.zeros((N_omega,1))

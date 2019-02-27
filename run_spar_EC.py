@@ -37,14 +37,14 @@ blades = {\
 'windfolder' : 'Windspeeds/'}
 
 freqs = {\
-'omega' : np.linspace(0.014361566416410483,6.283185307179586,1000), \
-'omega_wave': np.linspace(0.1,6.28,100)}
+'omega' : np.linspace(0.001,4.5,450), \
+'omega_wave': np.linspace(0.1,4.5,50)}
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('D_spar_p', val=np.array([13.3486, 10.5133, 8.0727, 8.084, 9.801, 11.6114, 13.8037, 15.41, 14.5713, 9.6684, 7.3199]), units='m') #[12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]
+ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m') #[12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
-ivc.add_output('L_spar', val=np.array([14.6813, 12.3819, 16.3809, 10.3051, 8.8342, 10.9761, 9.0853, 8.7728, 12.183, 11.7558]), units='m') #[13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]
+ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m') #[13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]
 ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
 ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
@@ -58,10 +58,10 @@ ivc.add_output('M_rotor', val=2.307e5, units='kg')
 ivc.add_output('water_depth', val=320., units='m')
 #ivc.add_output('EA_moor', val=384243000., units='N')
 #ivc.add_output('mass_dens_moor', val=155.41, units='kg/m')
-ivc.add_output('z_moor', val=-42.778, units='m')
+ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('D_moor', val=0.09, units='m')
-ivc.add_output('gamma_F_moor', val=1.65)
-ivc.add_output('len_hor_moor', val=838.67, units='m')
+ivc.add_output('gamma_F_moor', val=1.)
+ivc.add_output('len_hor_moor', val=848.67, units='m')
 ivc.add_output('len_tot_moor', val=902.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
@@ -78,7 +78,7 @@ ivc.add_output('bandwidth_notch', val=0.1, units='rad/s')
 #ivc.add_output('M_moor', val=330000., units='kg')
 #ivc.add_output('gain_corr_factor', val=0.25104)
 ivc.add_output('Cd', val=0.7)
-ivc.add_output('Cd_tower', val=0.01)
+ivc.add_output('Cd_tower', val=0.7)
 ivc.add_output('struct_damp_ratio', val=0.5*0.007*2.*np.pi/2.395)
 
 ivc.add_output('t_w_stiff', val=0.02*np.ones(10), units='m')
@@ -96,8 +96,8 @@ ivc.add_output('gamma_F_tower', val=1.35)
 
 ivc.add_output('gamma_F_hull', val=1.35)
 
-ivc.add_output('maxval_surge', val=30., units='m')
-ivc.add_output('maxval_pitch', val=10.*np.pi/180., units='rad')
+ivc.add_output('maxval_surge', val=32., units='m')
+ivc.add_output('maxval_pitch', val=15.*np.pi/180., units='rad')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
@@ -161,7 +161,7 @@ prob.model.add_subsystem('viscous', viscous_group, promotes_inputs=['Cd', 'x_spa
 	'Re_RAO_Mwind_surge', 'Im_RAO_Mwind_surge', 'Re_RAO_Mwind_pitch', 'Im_RAO_Mwind_pitch', 'Re_RAO_Mwind_bend', 'Im_RAO_Mwind_bend', 'Re_RAO_wave_vel_surge', \
 	'Im_RAO_wave_vel_surge', 'Re_RAO_wave_vel_pitch', 'Im_RAO_wave_vel_pitch', 'Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_bend', 'Re_RAO_wind_vel_surge', \
 	'Im_RAO_wind_vel_surge', 'Re_RAO_wind_vel_pitch', 'Im_RAO_wind_vel_pitch', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_bend', 'Re_RAO_Mwind_vel_surge', \
-	'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'B_visc_11', 'stddev_vel_distr'])
+	'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'B_visc_11', 'stddev_vel_distr', 'poles'])
 
 postpro_group = Postpro(freqs=freqs)
 
@@ -178,7 +178,7 @@ prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_for
 	'thrust_0', 'buoy_spar', 'CoB', 'M_turb', 'tot_M_spar', 'M_ball', 'CoG_total', 'M_spar', 'stddev_vel_distr', 'z_sparnode', 'x_sparnode', 'x_sparelem', 'spar_draft', \
 	'L_ball', 'M_ball_elem', 'F0_tower_drag', 'Z0_tower_drag', 'D_spar_p', 'wt_spar_p', 'windspeed_0'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', \
 	'stddev_bldpitch', 'stddev_tower_stress', 'stddev_hull_moment', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'v_z_surge', \
-	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage'])
+	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage', 'stddev_tower_moment'])
 """
 hull_buckling_balance = HullBalance()
 
@@ -256,48 +256,21 @@ prob.setup()
 
 prob.run_model()
 
-print prob['K77'], prob['M77'], prob['A77'] #[10446407.61456127] [1069280.36811387] [403417.81560477]
-
-print 2. * np.pi / np.sqrt(np.linalg.eig(np.dot(np.linalg.inv(prob['M_global'] + prob['A_global']),prob['K_global']))[0])
-
-#print prob['mean_moor_ten']
-#print prob['stddev_moor_ten']
-#print prob['My_shell_buckling']
-#print prob['My_constr_hoop_stress']
-#print prob['My_constr_mom_inertia_ringstiff']
-#print prob['shell_buckling']
-#print prob['constr_hoop_stress']
-#print prob['constr_mom_inertia_ringstiff']
-#print prob['ring_buckling_1']
-#print prob['ring_buckling_2']
-#print prob['col_buckling']
-#print prob['constr_area_ringstiff']
-
-#prob.check_totals(['tower_fatigue_damage'],['D_tower_p'])
-
 #prob.run_driver()
 
 #prob.record_iteration('final')
 #prob.cleanup()
-#print prob['mean_tower_stress']
-#print prob['stddev_tower_stress']
-#print prob['v_z_tower_stress']
-#print prob['maxval_tower_stress']
-#print prob['short_term_tower_stress_CDF']
-
-#print prob['stddev_fairlead'][0]
-#print prob['v_z_fairlead'][0]
-#print prob['moor_offset'][0]
-#print prob['maxval_fairlead'][0]
-print prob['substructure.T_heave']
-#print prob['B_visc_11']
-#print prob['stddev_vel_distr']
-print prob['stddev_surge'][0] #[2.31806726]
-print prob['stddev_pitch'][0] #[0.02006235]
-print prob['stddev_bend'] #[0.09510153]
-print prob['stddev_rotspeed'][0] #[0.0941907]
-print prob['stddev_bldpitch'][0] #[0.01095254]
-print prob['tower_fatigue_damage'][0] #0.00028
+#print prob['mean_pitch']*180./np.pi
+print prob['stddev_surge'][0]
+#print prob['mean_pitch']
+print prob['stddev_pitch'][0]
+#print prob['stddev_bend'] 
+print prob['stddev_rotspeed'][0]
+print prob['stddev_tower_moment'][0]
+print prob['tower_fatigue_damage'][0]
+print prob['stddev_moor_ten'][0]
+#print prob['stddev_bldpitch'][0]
+#print prob['tower_fatigue_damage'][0]
 #print prob['hull_fatigue_damage'][-1]
 #print prob['total_cost'][0]
 #print prob['spar_cost'][0]/prob['total_cost'][0]

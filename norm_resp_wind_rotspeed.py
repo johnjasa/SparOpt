@@ -16,6 +16,7 @@ class NormRespWindRotspeed(ExplicitComponent):
 		self.add_input('torque_wind', val=np.zeros(N_omega), units='m/s')
 		self.add_input('Re_H_feedbk', val=np.zeros((N_omega,11,6)))
 		self.add_input('Im_H_feedbk', val=np.zeros((N_omega,11,6)))
+		self.add_input('windspeed_0', val=0., units='m/s')
 
 		self.add_output('Re_RAO_wind_rotspeed', val=np.zeros(N_omega), units='(rad/s)/(m/s)')
 		self.add_output('Im_RAO_wind_rotspeed', val=np.zeros(N_omega), units='(rad/s)/(m/s)')
@@ -35,13 +36,18 @@ class NormRespWindRotspeed(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
+		N_omega = len(omega)
 
 		thrust_wind = inputs['thrust_wind']
 		torque_wind = inputs['torque_wind']
+		windspeed_0 = inputs['windspeed_0']
 
 		H_feedbk = inputs['Re_H_feedbk'] + 1j * inputs['Im_H_feedbk']
 
-		RAO_wind_rotspeed = H_feedbk[:,6,0] * thrust_wind + H_feedbk[:,6,2] * torque_wind
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 4.):
+			RAO_wind_rotspeed = H_feedbk[:,6,0] * thrust_wind + H_feedbk[:,6,2] * torque_wind
+		else:
+			RAO_wind_rotspeed = np.zeros(N_omega)
 
 		outputs['Re_RAO_wind_rotspeed'] = np.real(RAO_wind_rotspeed)
 		outputs['Im_RAO_wind_rotspeed'] = np.imag(RAO_wind_rotspeed)
@@ -50,16 +56,19 @@ class NormRespWindRotspeed(ExplicitComponent):
 		omega = self.omega
 		N_omega = len(omega)
 
-		partials['Re_RAO_wind_rotspeed', 'thrust_wind'] = inputs['Re_H_feedbk'][:,6,0]
-		partials['Re_RAO_wind_rotspeed', 'torque_wind'] = inputs['Re_H_feedbk'][:,6,2]
-		partials['Im_RAO_wind_rotspeed', 'thrust_wind'] = inputs['Im_H_feedbk'][:,6,0]
-		partials['Im_RAO_wind_rotspeed', 'torque_wind'] = inputs['Im_H_feedbk'][:,6,2]
+		windspeed_0 = inputs['windspeed_0']
 
-		partials['Re_RAO_wind_rotspeed', 'Im_H_feedbk'] = np.zeros(2*N_omega)
-		partials['Im_RAO_wind_rotspeed', 'Re_H_feedbk'] = np.zeros(2*N_omega)
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 4.):
+			partials['Re_RAO_wind_rotspeed', 'thrust_wind'] = inputs['Re_H_feedbk'][:,6,0]
+			partials['Re_RAO_wind_rotspeed', 'torque_wind'] = inputs['Re_H_feedbk'][:,6,2]
+			partials['Im_RAO_wind_rotspeed', 'thrust_wind'] = inputs['Im_H_feedbk'][:,6,0]
+			partials['Im_RAO_wind_rotspeed', 'torque_wind'] = inputs['Im_H_feedbk'][:,6,2]
 
-		for i in xrange(N_omega):
-			partials['Re_RAO_wind_rotspeed', 'Re_H_feedbk'][2*i] = inputs['thrust_wind'][i]
-			partials['Re_RAO_wind_rotspeed', 'Re_H_feedbk'][2*i+1] = inputs['torque_wind'][i]
-			partials['Im_RAO_wind_rotspeed', 'Im_H_feedbk'][2*i] = inputs['thrust_wind'][i]
-			partials['Im_RAO_wind_rotspeed', 'Im_H_feedbk'][2*i+1] = inputs['torque_wind'][i]
+			partials['Re_RAO_wind_rotspeed', 'Im_H_feedbk'] = np.zeros(2*N_omega)
+			partials['Im_RAO_wind_rotspeed', 'Re_H_feedbk'] = np.zeros(2*N_omega)
+
+			for i in xrange(N_omega):
+				partials['Re_RAO_wind_rotspeed', 'Re_H_feedbk'][2*i] = inputs['thrust_wind'][i]
+				partials['Re_RAO_wind_rotspeed', 'Re_H_feedbk'][2*i+1] = inputs['torque_wind'][i]
+				partials['Im_RAO_wind_rotspeed', 'Im_H_feedbk'][2*i] = inputs['thrust_wind'][i]
+				partials['Im_RAO_wind_rotspeed', 'Im_H_feedbk'][2*i+1] = inputs['torque_wind'][i]

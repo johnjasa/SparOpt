@@ -23,8 +23,8 @@ freqs = {\
 #'ECfile' : 'prob_bins_test.dat'}
 
 EC_fat = {\
-'N_EC' : 1, \
-'ECfile' : 'prob_bins_fatigue.dat'}
+'N_EC' : 2, \
+'ECfile' : 'prob_bins_fatigue_control.dat'}
 
 EC_ext = {\
 'N_EC' : 3, \
@@ -32,9 +32,9 @@ EC_ext = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('D_spar_p', val=np.array([18., 11.61, 7., 7., 7., 9.7868, 13.658, 17.07, 15.734, 10.91, 7.13]), units='m')
+ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m')
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
-ivc.add_output('L_spar', val=np.array([20.62, 14.3347, 10., 9.3, 7.2, 11.65577, 3., 3., 13.786, 10.]), units='m')
+ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
 ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
 ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
@@ -47,7 +47,7 @@ ivc.add_output('I_rotor', val=7.808e7, units='kg*m**2')
 ivc.add_output('M_rotor', val=2.307e5, units='kg')
 ivc.add_output('water_depth', val=320., units='m')
 
-ivc.add_output('z_moor', val=-50.6054, units='m')
+ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('D_moor', val=0.09, units='m')
 ivc.add_output('gamma_F_moor', val=1.)
 ivc.add_output('gamma_F_moor_mean', val=1.3)
@@ -78,9 +78,9 @@ ivc.add_output('f_y', val=355., units='MPa')
 ivc.add_output('gamma_M_tower', val=1.1)
 ivc.add_output('gamma_F_tower', val=1.35)
 
-ivc.add_output('DFF_tower', val=1.)
+ivc.add_output('DFF_tower', val=2.)
 
-ivc.add_output('maxval_surge', val=50., units='m')
+ivc.add_output('maxval_surge', val=32., units='m')
 ivc.add_output('maxval_pitch', val=15.*np.pi/180., units='rad')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
@@ -179,21 +179,8 @@ prob.model.add_design_var('k_i', lower=0., upper=5.)
 #prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_moor_ten', lower=0.)
 #prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_fairlead', lower=0.)
 
-prob.model.add_constraint('parallel_fat.cond8_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond9_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond10_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond11_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond12_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond13_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond14_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond15_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond16_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond17_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond18_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond19_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond20_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond21_fat.poles', upper=np.zeros(11))
-prob.model.add_constraint('parallel_fat.cond22_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond0_fat.poles', upper=np.zeros(11))
+prob.model.add_constraint('parallel_fat.cond1_fat.poles', upper=np.zeros(11))
 
 #prob.model.add_objective('parallel_ext.cond0_ext.spar_cost')
 

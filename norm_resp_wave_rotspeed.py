@@ -20,6 +20,7 @@ class NormRespWaveRotspeed(ExplicitComponent):
 		self.add_input('Im_wave_force_bend', val=np.zeros(N_omega), units='N/m')
 		self.add_input('Re_H_feedbk', val=np.zeros((N_omega,11,6)))
 		self.add_input('Im_H_feedbk', val=np.zeros((N_omega,11,6)))
+		self.add_input('windspeed_0', val=0., units='m/s')
 
 		self.add_output('Re_RAO_wave_rotspeed', val=np.zeros(N_omega), units='(rad/s)/m')
 		self.add_output('Im_RAO_wave_rotspeed', val=np.zeros(N_omega), units='(rad/s)/m')
@@ -47,14 +48,19 @@ class NormRespWaveRotspeed(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
+		N_omega = len(omega)
 
 		wave_force_surge = inputs['Re_wave_force_surge'] + 1j * inputs['Im_wave_force_surge']
 		wave_force_pitch = inputs['Re_wave_force_pitch'] + 1j * inputs['Im_wave_force_pitch']
 		wave_force_bend = inputs['Re_wave_force_bend'] + 1j * inputs['Im_wave_force_bend']
+		windspeed_0 = inputs['windspeed_0']
 
 		H_feedbk = inputs['Re_H_feedbk'] + 1j * inputs['Im_H_feedbk']
 
-		RAO_wave_rotspeed = H_feedbk[:,6,3] * wave_force_surge + H_feedbk[:,6,4] * wave_force_pitch + H_feedbk[:,6,5] * wave_force_bend
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 4.):
+			RAO_wave_rotspeed = H_feedbk[:,6,3] * wave_force_surge + H_feedbk[:,6,4] * wave_force_pitch + H_feedbk[:,6,5] * wave_force_bend
+		else:
+			RAO_wave_rotspeed = np.zeros(N_omega)
 
 		outputs['Re_RAO_wave_rotspeed'] = np.real(RAO_wave_rotspeed)
 		outputs['Im_RAO_wave_rotspeed'] = np.imag(RAO_wave_rotspeed)
@@ -63,29 +69,32 @@ class NormRespWaveRotspeed(ExplicitComponent):
 		omega = self.omega
 		N_omega = len(omega)
 
-		partials['Re_RAO_wave_rotspeed', 'Re_wave_force_surge'] = inputs['Re_H_feedbk'][:,6,3]
-		partials['Re_RAO_wave_rotspeed', 'Im_wave_force_surge'] = -inputs['Im_H_feedbk'][:,6,3]
-		partials['Re_RAO_wave_rotspeed', 'Re_wave_force_pitch'] = inputs['Re_H_feedbk'][:,6,4]
-		partials['Re_RAO_wave_rotspeed', 'Im_wave_force_pitch'] = -inputs['Im_H_feedbk'][:,6,4]
-		partials['Re_RAO_wave_rotspeed', 'Re_wave_force_bend'] = inputs['Re_H_feedbk'][:,6,5]
-		partials['Re_RAO_wave_rotspeed', 'Im_wave_force_bend'] = -inputs['Im_H_feedbk'][:,6,5]
-		partials['Im_RAO_wave_rotspeed', 'Re_wave_force_surge'] = inputs['Im_H_feedbk'][:,6,3]
-		partials['Im_RAO_wave_rotspeed', 'Im_wave_force_surge'] = inputs['Re_H_feedbk'][:,6,3]
-		partials['Im_RAO_wave_rotspeed', 'Re_wave_force_pitch'] = inputs['Im_H_feedbk'][:,6,4]
-		partials['Im_RAO_wave_rotspeed', 'Im_wave_force_pitch'] = inputs['Re_H_feedbk'][:,6,4]
-		partials['Im_RAO_wave_rotspeed', 'Re_wave_force_bend'] = inputs['Im_H_feedbk'][:,6,5]
-		partials['Im_RAO_wave_rotspeed', 'Im_wave_force_bend'] = inputs['Re_H_feedbk'][:,6,5]
+		windspeed_0 = inputs['windspeed_0']
 
-		for i in xrange(N_omega):
-			partials['Re_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i] = inputs['Re_wave_force_surge'][i]
-			partials['Re_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+1] = inputs['Re_wave_force_pitch'][i]
-			partials['Re_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+2] = inputs['Re_wave_force_bend'][i]
-			partials['Re_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i] = -inputs['Im_wave_force_surge'][i]
-			partials['Re_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+1] = -inputs['Im_wave_force_pitch'][i]
-			partials['Re_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+2] = -inputs['Im_wave_force_bend'][i]
-			partials['Im_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i] = inputs['Im_wave_force_surge'][i]
-			partials['Im_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+1] = inputs['Im_wave_force_pitch'][i]
-			partials['Im_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+2] = inputs['Im_wave_force_bend'][i]
-			partials['Im_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i] = inputs['Re_wave_force_surge'][i]
-			partials['Im_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+1] = inputs['Re_wave_force_pitch'][i]
-			partials['Im_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+2] = inputs['Re_wave_force_bend'][i]
+		if (windspeed_0 <= 25.) and (windspeed_0 >= 4.):
+			partials['Re_RAO_wave_rotspeed', 'Re_wave_force_surge'] = inputs['Re_H_feedbk'][:,6,3]
+			partials['Re_RAO_wave_rotspeed', 'Im_wave_force_surge'] = -inputs['Im_H_feedbk'][:,6,3]
+			partials['Re_RAO_wave_rotspeed', 'Re_wave_force_pitch'] = inputs['Re_H_feedbk'][:,6,4]
+			partials['Re_RAO_wave_rotspeed', 'Im_wave_force_pitch'] = -inputs['Im_H_feedbk'][:,6,4]
+			partials['Re_RAO_wave_rotspeed', 'Re_wave_force_bend'] = inputs['Re_H_feedbk'][:,6,5]
+			partials['Re_RAO_wave_rotspeed', 'Im_wave_force_bend'] = -inputs['Im_H_feedbk'][:,6,5]
+			partials['Im_RAO_wave_rotspeed', 'Re_wave_force_surge'] = inputs['Im_H_feedbk'][:,6,3]
+			partials['Im_RAO_wave_rotspeed', 'Im_wave_force_surge'] = inputs['Re_H_feedbk'][:,6,3]
+			partials['Im_RAO_wave_rotspeed', 'Re_wave_force_pitch'] = inputs['Im_H_feedbk'][:,6,4]
+			partials['Im_RAO_wave_rotspeed', 'Im_wave_force_pitch'] = inputs['Re_H_feedbk'][:,6,4]
+			partials['Im_RAO_wave_rotspeed', 'Re_wave_force_bend'] = inputs['Im_H_feedbk'][:,6,5]
+			partials['Im_RAO_wave_rotspeed', 'Im_wave_force_bend'] = inputs['Re_H_feedbk'][:,6,5]
+
+			for i in xrange(N_omega):
+				partials['Re_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i] = inputs['Re_wave_force_surge'][i]
+				partials['Re_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+1] = inputs['Re_wave_force_pitch'][i]
+				partials['Re_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+2] = inputs['Re_wave_force_bend'][i]
+				partials['Re_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i] = -inputs['Im_wave_force_surge'][i]
+				partials['Re_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+1] = -inputs['Im_wave_force_pitch'][i]
+				partials['Re_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+2] = -inputs['Im_wave_force_bend'][i]
+				partials['Im_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i] = inputs['Im_wave_force_surge'][i]
+				partials['Im_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+1] = inputs['Im_wave_force_pitch'][i]
+				partials['Im_RAO_wave_rotspeed', 'Re_H_feedbk'][3*i+2] = inputs['Im_wave_force_bend'][i]
+				partials['Im_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i] = inputs['Re_wave_force_surge'][i]
+				partials['Im_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+1] = inputs['Re_wave_force_pitch'][i]
+				partials['Im_RAO_wave_rotspeed', 'Im_H_feedbk'][3*i+2] = inputs['Re_wave_force_bend'][i]

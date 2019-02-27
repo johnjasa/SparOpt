@@ -15,8 +15,8 @@ blades = {\
 'windfolder' : 'Windspeeds/'}
 
 freqs = {\
-'omega' : np.linspace(0.014361566416410483,6.283185307179586,1000), \
-'omega_wave': np.linspace(0.1,6.28,100)}
+'omega' : np.linspace(0.015,4.5,450), \
+'omega_wave': np.linspace(0.1,4.5,50)}
 
 #EC = {\
 #'N_EC' : 1, \
@@ -32,9 +32,9 @@ EC_ext = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-ivc.add_output('D_spar_p', val=np.array([18., 11.61, 7., 7., 7., 9.7868, 13.658, 17.07, 15.734, 10.91, 7.13]), units='m')
+ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m')
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
-ivc.add_output('L_spar', val=np.array([20.62, 14.3347, 10., 9.3, 7.2, 11.65577, 3., 3., 13.786, 10.]), units='m')
+ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
 ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
 ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
@@ -47,7 +47,7 @@ ivc.add_output('I_rotor', val=7.808e7, units='kg*m**2')
 ivc.add_output('M_rotor', val=2.307e5, units='kg')
 ivc.add_output('water_depth', val=320., units='m')
 
-ivc.add_output('z_moor', val=-50.6054, units='m')
+ivc.add_output('z_moor', val=-77.2, units='m')
 ivc.add_output('D_moor', val=0.09, units='m')
 ivc.add_output('gamma_F_moor', val=1.)
 ivc.add_output('gamma_F_moor_mean', val=1.3)
@@ -78,9 +78,9 @@ ivc.add_output('f_y', val=355., units='MPa')
 ivc.add_output('gamma_M_tower', val=1.1)
 ivc.add_output('gamma_F_tower', val=1.35)
 
-ivc.add_output('DFF_tower', val=1.)
+ivc.add_output('DFF_tower', val=2.)
 
-ivc.add_output('maxval_surge', val=50., units='m')
+ivc.add_output('maxval_surge', val=32., units='m')
 ivc.add_output('maxval_pitch', val=15.*np.pi/180., units='rad')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])

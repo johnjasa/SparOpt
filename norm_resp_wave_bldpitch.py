@@ -57,6 +57,7 @@ class NormRespWaveBldpitch(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 		omega = self.omega
+		N_omega = len(omega)
 
 		wave_force_surge = inputs['Re_wave_force_surge'] + 1j * inputs['Im_wave_force_surge']
 		wave_force_pitch = inputs['Re_wave_force_pitch'] + 1j * inputs['Im_wave_force_pitch']
@@ -71,7 +72,7 @@ class NormRespWaveBldpitch(ExplicitComponent):
 		if (windspeed_0 <= 25.) and (windspeed_0 >= 11.4):
 			RAO_wave_bldpitch = inputs['gain_corr_factor'] * inputs['k_i'] * RAO_wave_rot_lp + inputs['gain_corr_factor'] * inputs['k_p'] * RAO_wave_rotspeed_lp
 		else:
-			RAO_wave_bldpitch = 0.
+			RAO_wave_bldpitch = np.zeros(N_omega)
 
 		outputs['Re_RAO_wave_bldpitch'] = np.real(RAO_wave_bldpitch)
 		outputs['Im_RAO_wave_bldpitch'] = np.imag(RAO_wave_bldpitch)
@@ -137,27 +138,3 @@ class NormRespWaveBldpitch(ExplicitComponent):
 				partials['Im_RAO_wave_bldpitch', 'Im_H_feedbk'][6*i+3] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['Re_wave_force_surge'][i]
 				partials['Im_RAO_wave_bldpitch', 'Im_H_feedbk'][6*i+4] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['Re_wave_force_pitch'][i]
 				partials['Im_RAO_wave_bldpitch', 'Im_H_feedbk'][6*i+5] = inputs['gain_corr_factor'] * inputs['k_p'] * inputs['Re_wave_force_bend'][i]
-
-		else:
-			partials['Re_RAO_wave_bldpitch', 'Re_wave_force_surge'] = np.zeros(N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Im_wave_force_surge'] = np.zeros(N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Re_wave_force_pitch'] = np.zeros(N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Im_wave_force_pitch'] = np.zeros(N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Re_wave_force_bend'] = np.zeros(N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Im_wave_force_bend'] = np.zeros(N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Re_H_feedbk'] = np.zeros(6 * N_omega)
-			partials['Re_RAO_wave_bldpitch', 'Im_H_feedbk'] = np.zeros(6 * N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Re_wave_force_surge'] = np.zeros(N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Im_wave_force_surge'] = np.zeros(N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Re_wave_force_pitch'] = np.zeros(N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Im_wave_force_pitch'] = np.zeros(N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Re_wave_force_bend'] = np.zeros(N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Im_wave_force_bend'] = np.zeros(N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Re_H_feedbk'] = np.zeros(6 * N_omega)
-			partials['Im_RAO_wave_bldpitch', 'Im_H_feedbk'] = np.zeros(6 * N_omega)
-			partials['Re_RAO_wave_bldpitch', 'k_i'] = np.zeros((N_omega,1))
-			partials['Re_RAO_wave_bldpitch', 'k_p'] = np.zeros((N_omega,1))
-			partials['Re_RAO_wave_bldpitch', 'gain_corr_factor'] = np.zeros((N_omega,1))
-			partials['Im_RAO_wave_bldpitch', 'k_i'] = np.zeros((N_omega,1))
-			partials['Im_RAO_wave_bldpitch', 'k_p'] = np.zeros((N_omega,1))
-			partials['Im_RAO_wave_bldpitch', 'gain_corr_factor'] = np.zeros((N_omega,1))

@@ -36,7 +36,7 @@ class SparCost(ExplicitComponent):
 		tot_M_spar = inputs['tot_M_spar']
 
 		#Material costs
-		k_m = 1.5 #dollar per kg steel
+		k_m = 3.0 #dollar per kg steel
 
 		Km = k_m * tot_M_spar
 
@@ -132,7 +132,7 @@ class SparCost(ExplicitComponent):
 		partials['spar_cost', 'tot_M_spar'] = 0.
 		
 		#Material costs
-		k_m = 1.5 #dollar per kg steel
+		k_m = 3.0 #dollar per kg steel
 
 		rho_steel = 7.85 * 10**(-6.) #kg/mm^3
 
