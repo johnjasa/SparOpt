@@ -154,10 +154,10 @@ for i in xrange(EC_ext['N_EC']):
 	prob.model.connect('Hs_ext', 'parallel_ext.cond%d_ext.Hs' % i, src_indices=[i])
 	prob.model.connect('Tp_ext', 'parallel_ext.cond%d_ext.Tp' % i, src_indices=[i])
 
-#prob.model.add_subsystem('multiobj', ExecComp(['y=x1+1e8*x2']))
+prob.model.add_subsystem('multiobj', ExecComp(['y=x1+1.4e7*x2']))
 
-#prob.model.connect('parallel_ext.cond0_ext.total_cost', 'multiobj.x1')
-#prob.model.connect('total_std_dev_rotspeed.total_stddev_rotspeed', 'multiobj.x2')
+prob.model.connect('parallel_ext.cond0_ext.total_cost', 'multiobj.x1')
+prob.model.connect('total_std_dev_rotspeed.total_stddev_rotspeed', 'multiobj.x2')
 
 prob.model.linear_solver = LinearRunOnce()
 
@@ -249,35 +249,11 @@ prob.model.connect('parallel_fat.cond3_fat.poles', 'ks_poles3.g')
 prob.model.add_constraint('ks_poles2.KS', upper=0.)
 prob.model.add_constraint('ks_poles3.KS', upper=0.)
 
-#prob.model.add_objective('parallel_ext.cond0_ext.spar_cost')
-
-#prob.model.add_objective('parallel_ext.cond0_ext.tower_cost')
-
-#prob.model.add_objective('parallel_ext.cond0_ext.mooring_cost')
-
-prob.model.add_objective('parallel_ext.cond0_ext.total_cost')
-#prob.model.add_objective('multiobj.y')
+#prob.model.add_objective('parallel_ext.cond0_ext.total_cost')
+prob.model.add_objective('multiobj.y')
 
 prob.setup()
 #prob.set_solver_print(0)
 prob.run_driver()
 
 #prob.cleanup()
-
-#print prob['total_tower_fatigue_damage.total_tower_fatigue_damage'] #[0.84150843 0.71742536 0.78139559 0.63796774 0.67922156 0.51527836 0.51941003 0.34625994 0.33857489 0.19130584 0.21402161] [0.20113283 0.1636332  0.1687287  0.12909339 0.12698522 0.08711082 0.07655451 0.04145436 0.02799767 0.00684233 0.00026347]
-#print prob['parallel_ext.cond0_ext.constr_50_surge'] #[1.12581472] [10.10193924]
-#print prob['parallel_ext.cond0_ext.constr_50_pitch'] #[0.78097484] [7.06654839]
-#print prob['parallel_ext.cond0_ext.constr_50_tower_stress'] #[0.95840193 1.12343779 0.91899427 1.11934134 0.90256966 1.16872072 0.94877398 1.36136119 1.18218993 2.03930487] [4.2187535  4.69211873 4.16811865 4.7250744  4.14057684 4.83814728 4.1935415  5.1713398  4.5062743  6.24099886]
-#print prob['parallel_ext.cond0_ext.constr_50_moor_ten'] #[0.47595709] [1.29681327]
-#print prob['parallel_ext.cond0_ext.constr_50_fairlead'] #[-0.22662359] [3.00152786]
-#print prob['parallel_ext.cond0_ext.mooring_cost']
-
-#print prob['stddev_surge']
-#print prob['stddev_pitch']
-#print prob['stddev_bend']
-#print prob['stddev_rotspeed']
-#print prob['parallel.cond0.tower_fatigue_damage'][0]
-#print prob['parallel.cond1.tower_fatigue_damage'][0]
-#print prob['total_tower_fatigue_damage.total_tower_fatigue_damage']
-#print prob['total_hull_fatigue_damage.total_hull_fatigue_damage']
-#print prob['parallel.cond0.total_cost']

@@ -186,13 +186,13 @@ prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_for
 	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage', 'stddev_tower_moment', 'stddev_surge_WF', \
 	'Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_fairlead', 'Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead'])
 
-from mooring_dynamic_group import MooringDynamic
+#from mooring_dynamic_group import MooringDynamic
 
-mooring_dynamic_group = MooringDynamic(freqs=freqs)
+#mooring_dynamic_group = MooringDynamic(freqs=freqs)
 
-prob.model.add_subsystem('mooring_dynamic', mooring_dynamic_group, promotes_inputs=['D_moor', 'Cd_moor', 'z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
-	'moor_offset', 'moor_tension_offset_ww', 'eff_length_offset_ww', 'stddev_surge_WF', 'mean_moor_ten', 'Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'Re_RAO_Mwind_fairlead', \
-	'Im_RAO_Mwind_fairlead', 'Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead', 'S_wave', 'S_wind'], promotes_outputs=['stddev_moor_ten_dyn'])
+#prob.model.add_subsystem('mooring_dynamic', mooring_dynamic_group, promotes_inputs=['D_moor', 'Cd_moor', 'z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
+#	'moor_offset', 'moor_tension_offset_ww', 'eff_length_offset_ww', 'stddev_surge_WF', 'mean_moor_ten', 'Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'Re_RAO_Mwind_fairlead', \
+#	'Im_RAO_Mwind_fairlead', 'Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead', 'S_wave', 'S_wind'], promotes_outputs=['stddev_moor_ten_dyn'])
 
 """
 hull_buckling_balance = HullBalance()
@@ -230,13 +230,13 @@ prob.model.add_subsystem('extreme_response', extreme_response_group, promotes_in
 	'stddev_hull_moment', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'moor_offset', 'mean_moor_ten', 'v_z_surge', 'v_z_pitch', 'v_z_tower_stress', \
 	'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten'], promotes_outputs=['short_term_surge_CDF', 'short_term_pitch_CDF', 'short_term_tower_stress_CDF', 'short_term_My_shell_buckling_CDF', \
 	'short_term_My_hoop_stress_CDF', 'short_term_My_mom_inertia_CDF', 'short_term_fairlead_CDF', 'short_term_moor_ten_CDF'])
-
+"""
 cost_group = Cost()
 
 prob.model.add_subsystem('cost', cost_group, promotes_inputs=['D_spar', 'D_spar_p', 'wt_spar', 'L_spar', 'l_stiff', 'h_stiff', 't_f_stiff', 'A_R', 'r_f', 'r_e', \
 	'tot_M_spar', 'D_tower', 'D_tower_p', 'wt_tower', 'L_tower', 'tot_M_tower', 'len_tot_moor', 'mass_dens_moor'], promotes_outputs=['spar_cost', 'tower_cost', \
 	'mooring_cost', 'total_cost'])
-"""
+
 #aero_group.linear_solver = LinearRunOnce()
 #mooring_group.linear_solver = DirectSolver()
 #substructure_group.linear_solver = DirectSolver()
@@ -284,11 +284,11 @@ print prob['stddev_rotspeed'][0]
 print prob['stddev_tower_moment'][0]
 print prob['tower_fatigue_damage'][0]
 print prob['stddev_moor_ten'][0]
-print prob['stddev_moor_ten_dyn'][0]
+#print prob['stddev_moor_ten_dyn'][0]
 #print prob['stddev_bldpitch'][0]
 #print prob['tower_fatigue_damage'][0]
 #print prob['hull_fatigue_damage'][-1]
-#print prob['total_cost'][0]
+print prob['total_cost'][0]
 #print prob['spar_cost'][0]/prob['total_cost'][0]
 #print prob['tower_cost'][0]/prob['total_cost'][0]
 #print prob['mooring_cost'][0]/prob['total_cost'][0]

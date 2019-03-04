@@ -9,6 +9,7 @@ from mooring_chain import MooringChain
 from aero_group import Aero
 from towerdim_group import Towerdim
 from mean_tower_drag import MeanTowerDrag
+from dyn_tower_drag import DynTowerDrag
 from mooring_group import Mooring
 from substructure_group import Substructure
 from statespace_group import StateSpace
@@ -52,6 +53,9 @@ class Condition(Group):
 		self.add_subsystem('mean_tower_drag', MeanTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
 			promotes_outputs=['F0_tower_drag', 'Z0_tower_drag'])
 
+		prob.model.add_subsystem('dyn_tower_drag', DynTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
+			promotes_outputs=['Fdyn_tower_drag', 'Mdyn_tower_drag'])
+
 		mooring_group = Mooring()
 
 		mooring_group.linear_solver = DirectSolver(assemble_jac=True)
@@ -77,7 +81,7 @@ class Condition(Group):
 
 		self.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
 			'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'k_i', 'k_p', 'k_t', \
-			'gain_corr_factor', 'x_d_towertop', 'windspeed_0', 'rotspeed_0'], promotes_outputs=['Astr_stiff', 'Astr_ext', 'A_contrl', 'BsCc', 'BcCs', 'B_feedbk'])
+			'gain_corr_factor', 'x_d_towertop', 'windspeed_0', 'rotspeed_0', 'Fdyn_tower_drag', 'Mdyn_tower_drag'], promotes_outputs=['Astr_stiff', 'Astr_ext', 'A_contrl', 'BsCc', 'BcCs', 'B_feedbk'])
 
 		self.add_subsystem('wave_spectrum', WaveSpectrum(freqs=freqs), promotes_inputs=['Hs', 'Tp'], promotes_outputs=['S_wave'])
 
