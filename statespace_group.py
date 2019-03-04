@@ -43,6 +43,6 @@ class StateSpace(Group):
 
 		self.add_subsystem('Bc_Cs', BcCs(), promotes_inputs=['B_contrl', 'C_struct'], promotes_outputs=['BcCs'])
 
-		self.add_subsystem('B_fb_ext', BfbExt(), promotes_inputs=['M_global', 'A_global', 'CoG_rotor', 'dthrust_dv', 'dmoment_dv', 'x_d_towertop'], promotes_outputs=['Bfb_ext'])
+		self.add_subsystem('B_fb_ext', BfbExt(), promotes_inputs=['M_global', 'A_global', 'CoG_rotor', 'dthrust_dv', 'dmoment_dv', 'x_d_towertop', 'Fdyn_tower_drag', 'Mdyn_tower_drag'], promotes_outputs=['Bfb_ext'])
 
 		self.add_subsystem('B_feedbk', Bfeedbk(), promotes_inputs=['Bfb_ext', 'I_d', 'dtorque_dv'], promotes_outputs=['B_feedbk'])

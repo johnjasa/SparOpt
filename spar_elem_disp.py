@@ -5,11 +5,11 @@ from openmdao.api import ExplicitComponent
 class SparElemDisp(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('x_sparnode', val=np.zeros(14), units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
-		self.add_input('x_d_sparnode', val=np.zeros(14), units='m/m')
+		self.add_input('x_sparnode', val=np.zeros(13), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
+		self.add_input('x_d_sparnode', val=np.zeros(13), units='m/m')
 
-		self.add_output('x_sparelem', val=np.zeros(13), units='m')
+		self.add_output('x_sparelem', val=np.zeros(12), units='m')
 
 		self.declare_partials('*', '*')
 

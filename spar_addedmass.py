@@ -5,7 +5,7 @@ from openmdao.api import ExplicitComponent
 class SparAddedMass(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('D_spar', np.zeros(10), units='m')
 

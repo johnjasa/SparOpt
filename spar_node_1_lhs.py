@@ -5,9 +5,9 @@ from openmdao.api import ExplicitComponent
 class SparNode1LHS(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 
-		self.add_output('spar_spline_lhs', val=np.zeros((14,14)), units='m')
+		self.add_output('spar_spline_lhs', val=np.zeros((13,13)), units='m')
 
 		self.declare_partials('*', '*')
 

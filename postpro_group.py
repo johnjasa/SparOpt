@@ -24,6 +24,7 @@ from norm_moor_ten_wave import NormMoorTenWave
 from norm_moor_ten_wind import NormMoorTenWind
 from norm_moor_ten_Mwind import NormMoorTenMWind
 from resp_spectrum_surge import RespSpectrumSurge
+from resp_spectrum_surge_WF import RespSpectrumSurgeWF
 from resp_spectrum_pitch import RespSpectrumPitch
 from resp_spectrum_bend import RespSpectrumBend
 from resp_spectrum_rotspeed import RespSpectrumRotspeed
@@ -34,6 +35,7 @@ from vel_spectrum_surge import VelSpectrumSurge
 from vel_spectrum_pitch import VelSpectrumPitch
 from vel_spectrum_bend import VelSpectrumBend
 from std_dev_resp import StdDevResp
+from std_dev_surge_WF import StdDevSurgeWF
 from std_dev_fairlead import StdDevFairlead
 from std_dev_moor_ten import StdDevMoorTen
 from tower_moment_gains import TowerMomentGains
@@ -118,6 +120,8 @@ class Postpro(Group):
 
 		self.add_subsystem('resp_spectrum_surge', RespSpectrumSurge(freqs=freqs), promotes_inputs=['Re_RAO_wave_surge', 'Im_RAO_wave_surge', 'Re_RAO_wind_surge', 'Im_RAO_wind_surge', 'Re_RAO_Mwind_surge', 'Im_RAO_Mwind_surge', 'S_wave', 'S_wind'], promotes_outputs=['resp_surge'])
 
+		self.add_subsystem('resp_spectrum_surge_WF', RespSpectrumSurgeWF(freqs=freqs), promotes_inputs=['Re_RAO_wave_surge', 'Im_RAO_wave_surge', 'S_wave'], promotes_outputs=['resp_surge_WF'])
+
 		self.add_subsystem('resp_spectrum_pitch', RespSpectrumPitch(freqs=freqs), promotes_inputs=['Re_RAO_wave_pitch', 'Im_RAO_wave_pitch', 'Re_RAO_wind_pitch', 'Im_RAO_wind_pitch', 'Re_RAO_Mwind_pitch', 'Im_RAO_Mwind_pitch', 'S_wave', 'S_wind'], promotes_outputs=['resp_pitch'])
 
 		self.add_subsystem('resp_spectrum_bend', RespSpectrumBend(freqs=freqs), promotes_inputs=['Re_RAO_wave_bend', 'Im_RAO_wave_bend', 'Re_RAO_wind_bend', 'Im_RAO_wind_bend', 'Re_RAO_Mwind_bend', 'Im_RAO_Mwind_bend', 'S_wave', 'S_wind'], promotes_outputs=['resp_bend'])
@@ -137,6 +141,8 @@ class Postpro(Group):
 	 	self.add_subsystem('vel_spectrum_bend', VelSpectrumBend(freqs=freqs), promotes_inputs=['Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_bend', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_bend', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'S_wave', 'S_wind'], promotes_outputs=['resp_vel_bend'])
 
 	 	self.add_subsystem('std_dev_resp', StdDevResp(freqs=freqs), promotes_inputs=['resp_surge', 'resp_pitch', 'resp_bend', 'resp_rotspeed', 'resp_bldpitch', 'windspeed_0'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', 'stddev_bldpitch'])
+
+	 	self.add_subsystem('std_dev_surge_WF', StdDevSurgeWF(freqs=freqs), promotes_inputs=['resp_surge_WF'], promotes_outputs=['stddev_surge_WF'])
 
 	 	self.add_subsystem('std_dev_fairlead', StdDevFairlead(freqs=freqs), promotes_inputs=['resp_fairlead'], promotes_outputs=['stddev_fairlead'])
 

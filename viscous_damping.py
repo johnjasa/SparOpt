@@ -6,11 +6,11 @@ class ViscousDamping(ExplicitComponent):
 
 	def setup(self):
 		self.add_input('Cd', val=0.)
-		self.add_input('x_sparelem', val=np.zeros(13), units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('x_sparelem', val=np.zeros(12), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('D_spar', np.zeros(10), units='m')
-		self.add_input('stddev_vel_distr', val=np.zeros(13), units='m/s')
+		self.add_input('stddev_vel_distr', val=np.zeros(12), units='m/s')
 
 		self.add_output('B_visc_11', val=0., units='N*s/m')
 		self.add_output('B_visc_15', val=0., units='N*s')
@@ -71,41 +71,41 @@ class ViscousDamping(ExplicitComponent):
 		D = 0.
 
 		partials['B_visc_11', 'Cd'] = 0.
-		partials['B_visc_11', 'x_sparelem'] = np.zeros((1,13))
-		partials['B_visc_11', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_11', 'x_sparelem'] = np.zeros((1,12))
+		partials['B_visc_11', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_visc_11', 'Z_spar'] = np.zeros((1,11))
 		partials['B_visc_11', 'D_spar'] = np.zeros((1,10))
-		partials['B_visc_11', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_11', 'stddev_vel_distr'] = np.zeros((1,12))
 		partials['B_visc_15', 'Cd'] = 0.
-		partials['B_visc_15', 'x_sparelem'] = np.zeros((1,13))
-		partials['B_visc_15', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_15', 'x_sparelem'] = np.zeros((1,12))
+		partials['B_visc_15', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_visc_15', 'Z_spar'] = np.zeros((1,11))
 		partials['B_visc_15', 'D_spar'] = np.zeros((1,10))
-		partials['B_visc_15', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_15', 'stddev_vel_distr'] = np.zeros((1,12))
 		partials['B_visc_17', 'Cd'] = 0.
-		partials['B_visc_17', 'x_sparelem'] = np.zeros((1,13))
-		partials['B_visc_17', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_17', 'x_sparelem'] = np.zeros((1,12))
+		partials['B_visc_17', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_visc_17', 'Z_spar'] = np.zeros((1,11))
 		partials['B_visc_17', 'D_spar'] = np.zeros((1,10))
-		partials['B_visc_17', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_17', 'stddev_vel_distr'] = np.zeros((1,12))
 		partials['B_visc_55', 'Cd'] = 0.
-		partials['B_visc_55', 'x_sparelem'] = np.zeros((1,13))
-		partials['B_visc_55', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_55', 'x_sparelem'] = np.zeros((1,12))
+		partials['B_visc_55', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_visc_55', 'Z_spar'] = np.zeros((1,11))
 		partials['B_visc_55', 'D_spar'] = np.zeros((1,10))
-		partials['B_visc_55', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_55', 'stddev_vel_distr'] = np.zeros((1,12))
 		partials['B_visc_57', 'Cd'] = 0.
-		partials['B_visc_57', 'x_sparelem'] = np.zeros((1,13))
-		partials['B_visc_57', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_57', 'x_sparelem'] = np.zeros((1,12))
+		partials['B_visc_57', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_visc_57', 'Z_spar'] = np.zeros((1,11))
 		partials['B_visc_57', 'D_spar'] = np.zeros((1,10))
-		partials['B_visc_57', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_57', 'stddev_vel_distr'] = np.zeros((1,12))
 		partials['B_visc_77', 'Cd'] = 0.
-		partials['B_visc_77', 'x_sparelem'] = np.zeros((1,13))
-		partials['B_visc_77', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_visc_77', 'x_sparelem'] = np.zeros((1,12))
+		partials['B_visc_77', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_visc_77', 'Z_spar'] = np.zeros((1,11))
 		partials['B_visc_77', 'D_spar'] = np.zeros((1,10))
-		partials['B_visc_77', 'stddev_vel_distr'] = np.zeros((1,13))
+		partials['B_visc_77', 'stddev_vel_distr'] = np.zeros((1,12))
 
 		for i in xrange(N_elem):
 			z = (z_sparnode[i] + z_sparnode[i+1]) / 2

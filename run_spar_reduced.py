@@ -38,7 +38,7 @@ ivc = IndepVarComp()
 #ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m')
 ivc.add_output('D_spar_cp', val=np.array([12., 12., 12., 12., 8.3]), units='m')
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
-#ivc.add_output('L_spar', val=np.array([13.5, 13.5, 8., 14.]), units='m')
+#ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
 ivc.add_output('L_spar_cp', val=np.array([13.5, 13.5, 8., 14.]), units='m')
 #ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
 #ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
@@ -242,8 +242,8 @@ prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_fairlead', lower=0.)
 
 #prob.model.add_constraint('parallel_fat.cond2_fat.poles', upper=np.zeros(11))
 #prob.model.add_constraint('parallel_fat.cond3_fat.poles', upper=np.zeros(11))
-prob.model.add_subsystem('ks_poles2', KSComp(width=11))
-prob.model.add_subsystem('ks_poles3', KSComp(width=11))
+prob.model.add_subsystem('ks_poles2', KSComp(width=11, rho=1000.))
+prob.model.add_subsystem('ks_poles3', KSComp(width=11, rho=1000.))
 prob.model.connect('parallel_fat.cond2_fat.poles', 'ks_poles2.g')
 prob.model.connect('parallel_fat.cond3_fat.poles', 'ks_poles3.g')
 prob.model.add_constraint('ks_poles2.KS', upper=0.)
@@ -260,14 +260,10 @@ prob.model.add_objective('parallel_ext.cond0_ext.total_cost')
 
 prob.setup()
 #prob.set_solver_print(0)
-prob.run_model()
+prob.run_driver()
 
 #prob.cleanup()
-"""
-prob.setup()
 
-prob.run_model()
-"""
 #print prob['total_tower_fatigue_damage.total_tower_fatigue_damage'] #[0.84150843 0.71742536 0.78139559 0.63796774 0.67922156 0.51527836 0.51941003 0.34625994 0.33857489 0.19130584 0.21402161] [0.20113283 0.1636332  0.1687287  0.12909339 0.12698522 0.08711082 0.07655451 0.04145436 0.02799767 0.00684233 0.00026347]
 #print prob['parallel_ext.cond0_ext.constr_50_surge'] #[1.12581472] [10.10193924]
 #print prob['parallel_ext.cond0_ext.constr_50_pitch'] #[0.78097484] [7.06654839]

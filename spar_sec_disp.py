@@ -5,10 +5,10 @@ from openmdao.api import ExplicitComponent
 class SparSecDisp(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
-		self.add_input('x_sparnode', val=np.zeros(14), units='m')
-		self.add_input('x_sparelem', val=np.zeros(13), units='m')
-		self.add_input('stddev_vel_distr', val=np.zeros(13), units='m/s')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
+		self.add_input('x_sparnode', val=np.zeros(13), units='m')
+		self.add_input('x_sparelem', val=np.zeros(12), units='m')
+		self.add_input('stddev_vel_distr', val=np.zeros(12), units='m/s')
 		self.add_input('spar_draft', val=0., units='m')
 		self.add_input('L_ball', val=0., units='m')
 		self.add_input('z_moor', val=0., units='m')
@@ -54,9 +54,9 @@ class SparSecDisp(ExplicitComponent):
 		z_moor = inputs['z_moor']
 		z_SWL = 0.
 
-		partials['X_sparnode', 'x_sparnode'] = np.zeros((11,14))
-		partials['X_sparelem', 'x_sparelem'] = np.zeros((10,13))
-		partials['stddev_vel_X_sparelem', 'stddev_vel_distr'] = np.zeros((10,13))
+		partials['X_sparnode', 'x_sparnode'] = np.zeros((11,13))
+		partials['X_sparelem', 'x_sparelem'] = np.zeros((10,12))
+		partials['stddev_vel_X_sparelem', 'stddev_vel_distr'] = np.zeros((10,12))
 
 		count = 0
 		

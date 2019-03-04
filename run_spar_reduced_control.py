@@ -132,8 +132,8 @@ driver.recording_options['record_objectives'] = True
 driver.recording_options['record_constraints'] = True
 driver.recording_options['record_desvars'] = True
 
-recorder = SqliteRecorder("control.sql")
-driver.add_recorder(recorder)
+#recorder = SqliteRecorder("control.sql")
+#driver.add_recorder(recorder)
 
 #prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
 #prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
@@ -196,6 +196,8 @@ prob.setup()
 
 #prob.cleanup()
 prob.run_model()
+
+prob.check_totals()
 """
 prob.setup()
 

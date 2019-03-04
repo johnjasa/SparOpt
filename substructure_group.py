@@ -142,7 +142,7 @@ class Substructure(Group):
 
 	 	self.add_subsystem('heave_period', HeavePeriod(), promotes_inputs=['tot_M_spar', 'M_turb', 'M_ball', 'D_spar'], promotes_outputs=['T_heave'])
 
-	 	self.add_subsystem('modeshape_spar_nodes', ModeshapeSparNodes(), promotes_inputs=['Z_spar', 'spar_draft', 'L_ball', 'z_moor'], promotes_outputs=['z_sparnode'])
+	 	self.add_subsystem('modeshape_spar_nodes', ModeshapeSparNodes(), promotes_inputs=['Z_spar', 'spar_draft', 'L_ball'], promotes_outputs=['z_sparnode'])
 
 	 	self.add_subsystem('modeshape_tower_nodes', ModeshapeTowerNodes(), promotes_inputs=['Z_tower'], promotes_outputs=['z_towernode'])
 

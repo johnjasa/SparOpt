@@ -7,8 +7,8 @@ from openmdao.api import ExplicitComponent
 class BendingAddedMass(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('x_sparelem', val=np.zeros(13), units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('x_sparelem', val=np.zeros(12), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('D_spar', np.zeros(10), units='m')
 
@@ -58,16 +58,16 @@ class BendingAddedMass(ExplicitComponent):
 
 		D = 0.
 
-		partials['A17', 'x_sparelem'] = np.zeros((1,13))
-		partials['A17', 'z_sparnode'] = np.zeros((1,14))
+		partials['A17', 'x_sparelem'] = np.zeros((1,12))
+		partials['A17', 'z_sparnode'] = np.zeros((1,13))
 		partials['A17', 'D_spar'] = np.zeros((1,10))
 
-		partials['A57', 'x_sparelem'] = np.zeros((1,13))
-		partials['A57', 'z_sparnode'] = np.zeros((1,14))
+		partials['A57', 'x_sparelem'] = np.zeros((1,12))
+		partials['A57', 'z_sparnode'] = np.zeros((1,13))
 		partials['A57', 'D_spar'] = np.zeros((1,10))
 
-		partials['A77', 'x_sparelem'] = np.zeros((1,13))
-		partials['A77', 'z_sparnode'] = np.zeros((1,14))
+		partials['A77', 'x_sparelem'] = np.zeros((1,12))
+		partials['A77', 'z_sparnode'] = np.zeros((1,13))
 		partials['A77', 'D_spar'] = np.zeros((1,10))
 
 		for i in xrange(N_elem):

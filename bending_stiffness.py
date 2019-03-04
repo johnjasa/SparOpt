@@ -10,14 +10,14 @@ class BendingStiffness(ExplicitComponent):
 		self.add_input('K_moor', val=0., units='N/m')
 		self.add_input('z_moor', val=0., units='m')
 		self.add_input('x_moor', val=0., units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('z_towernode', val=np.zeros(11), units='m')
-		self.add_input('x_d_sparelem', val=np.zeros(13), units='m/m')
-		self.add_input('x_dd_sparelem', val=np.zeros(13), units='1/m')
+		self.add_input('x_d_sparelem', val=np.zeros(12), units='m/m')
+		self.add_input('x_dd_sparelem', val=np.zeros(12), units='1/m')
 		self.add_input('x_d_towerelem', val=np.zeros(10), units='m/m')
 		self.add_input('x_dd_towerelem', val=np.zeros(10), units='1/m')
-		self.add_input('normforce_mode_elem', val=np.zeros(23), units='N')
-		self.add_input('EI_mode_elem', val=np.zeros(23), units='N*m**2')
+		self.add_input('normforce_mode_elem', val=np.zeros(22), units='N')
+		self.add_input('EI_mode_elem', val=np.zeros(22), units='N*m**2')
 
 		self.add_output('K17', val=0., units='N/m')
 		self.add_output('K57', val=0., units='N*m/m')
@@ -47,8 +47,6 @@ class BendingStiffness(ExplicitComponent):
 
 		for i in xrange(N_sparelem):
 			dz = z_sparnode[i+1] - z_sparnode[i]
-
-			x_dd_sparelem[i] = 0. #TODO
 
 			outputs['K57'] += norm_force[i] * x_d_sparelem[i] * dz
 			outputs['K77'] += dz * EI[i] * x_dd_sparelem[i]**2. + norm_force[i] * x_d_sparelem[i]**2. * dz
@@ -82,20 +80,20 @@ class BendingStiffness(ExplicitComponent):
 		partials['K77', 'x_moor'] = 2. * K_moor * x_moor
 		partials['K77', 'K_moor'] = x_moor**2.
 
-		partials['K57', 'z_sparnode'] = np.zeros((1,14))
-		partials['K57', 'x_d_sparelem'] = np.zeros((1,13))
+		partials['K57', 'z_sparnode'] = np.zeros((1,13))
+		partials['K57', 'x_d_sparelem'] = np.zeros((1,12))
 		partials['K57', 'z_towernode'] = np.zeros((1,11))
 		partials['K57', 'x_d_towerelem'] = np.zeros((1,10))
-		partials['K57', 'normforce_mode_elem'] = np.zeros((1,23))
+		partials['K57', 'normforce_mode_elem'] = np.zeros((1,22))
 
-		partials['K77', 'z_sparnode'] = np.zeros((1,14))
-		partials['K77', 'x_d_sparelem'] = np.zeros((1,13))
-		partials['K77', 'x_dd_sparelem'] = np.zeros((1,13))
+		partials['K77', 'z_sparnode'] = np.zeros((1,13))
+		partials['K77', 'x_d_sparelem'] = np.zeros((1,12))
+		partials['K77', 'x_dd_sparelem'] = np.zeros((1,12))
 		partials['K77', 'z_towernode'] = np.zeros((1,11))
 		partials['K77', 'x_d_towerelem'] = np.zeros((1,10))
 		partials['K77', 'x_dd_towerelem'] = np.zeros((1,10))
-		partials['K77', 'normforce_mode_elem'] = np.zeros((1,23))
-		partials['K77', 'EI_mode_elem'] = np.zeros((1,23))
+		partials['K77', 'normforce_mode_elem'] = np.zeros((1,22))
+		partials['K77', 'EI_mode_elem'] = np.zeros((1,22))
 
 		N_sparelem = len(x_d_sparelem)
 		N_towerelem = len(x_d_towerelem)

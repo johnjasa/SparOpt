@@ -90,8 +90,8 @@ class Condition(Group):
 
 		viscous_group = Viscous(freqs=freqs)
 
-		viscous_group.linear_solver = LinearBlockGS(maxiter=50)
-		viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-8, rtol=1e-8)
+		viscous_group.linear_solver = DirectSolver(assemble_jac=True)
+		viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=100, atol=1e-6, rtol=1e-6, use_aitken=True)
 
 		self.add_subsystem('viscous', viscous_group, promotes_inputs=['Cd', 'x_sparelem', 'z_sparnode', 'Z_spar', 'D_spar', 'B_aero_11', 'B_aero_15', \
 			'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'M_global', 'A_global', 'CoG_rotor', 'I_d', 'dtorque_dv', 'dtorque_drotspeed', \

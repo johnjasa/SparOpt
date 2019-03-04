@@ -40,7 +40,7 @@ class MoorTenSigSurge(ImplicitComponent):
 
 		outputs['moor_ten_sig_surge_tot'] = sol[0]
 
-	def linearize(self, inputs, outputs, partials):
+	def linearize(self, inputs, outputs, partials): #TODO check
 		T_H = inputs['moor_tension_sig_surge_offset']
 		h = inputs['water_depth'][0] + inputs['z_moor'][0]
 		EA = inputs['EA_moor'][0]

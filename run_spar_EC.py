@@ -12,6 +12,7 @@ from mooring_chain import MooringChain
 from aero_group import Aero
 from towerdim_group import Towerdim
 from mean_tower_drag import MeanTowerDrag
+from dyn_tower_drag import DynTowerDrag
 from mooring_group import Mooring
 from substructure_group import Substructure
 from statespace_group import StateSpace
@@ -38,7 +39,7 @@ blades = {\
 
 freqs = {\
 'omega' : np.linspace(0.001,4.5,450), \
-'omega_wave': np.linspace(0.1,4.5,50)}
+'omega_wave': np.linspace(0.05,4.5,100)}
 
 prob = Problem()
 ivc = IndepVarComp()
@@ -65,9 +66,9 @@ ivc.add_output('len_hor_moor', val=848.67, units='m')
 ivc.add_output('len_tot_moor', val=902.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
-ivc.add_output('windspeed_0', val=50., units='m/s')
-ivc.add_output('Hs', val=15.1, units='m')
-ivc.add_output('Tp', val=16., units='s')
+ivc.add_output('windspeed_0', val=21., units='m/s')
+ivc.add_output('Hs', val=9.9, units='m')
+ivc.add_output('Tp', val=14., units='s')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
 ivc.add_output('k_i', val=0.0165, units='rad/rad')
 ivc.add_output('k_t', val=-0., units='rad*s/m')
@@ -79,6 +80,7 @@ ivc.add_output('bandwidth_notch', val=0.1, units='rad/s')
 #ivc.add_output('gain_corr_factor', val=0.25104)
 ivc.add_output('Cd', val=0.7)
 ivc.add_output('Cd_tower', val=0.7)
+ivc.add_output('Cd_moor', val=1.0)
 ivc.add_output('struct_damp_ratio', val=0.5*0.007*2.*np.pi/2.395)
 
 ivc.add_output('t_w_stiff', val=0.02*np.ones(10), units='m')
@@ -122,10 +124,13 @@ prob.model.add_subsystem('towerdim', towerdim_group, promotes_inputs=['D_tower_p
 prob.model.add_subsystem('mean_tower_drag', MeanTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
 	promotes_outputs=['F0_tower_drag', 'Z0_tower_drag'])
 
+prob.model.add_subsystem('dyn_tower_drag', DynTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
+	promotes_outputs=['Fdyn_tower_drag', 'Mdyn_tower_drag'])
+
 mooring_group = Mooring()
 
 prob.model.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
-'thrust_0', 'F0_tower_drag'], promotes_outputs=['M_moor_zero', 'K_moor', 'M_moor', 'moor_offset', 'maxval_fairlead', 'mean_moor_ten'])
+'thrust_0', 'F0_tower_drag'], promotes_outputs=['M_moor_zero', 'K_moor', 'M_moor', 'moor_offset', 'maxval_fairlead', 'mean_moor_ten', 'moor_tension_offset_ww', 'eff_length_offset_ww'])
 
 substructure_group = Substructure(freqs=freqs)
 
@@ -141,7 +146,7 @@ statespace_group = StateSpace(freqs=freqs)
 
 prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_global', 'A_global', 'K_global', 'CoG_rotor', 'I_d', 'dthrust_dv', \
 	'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dthrust_dbldpitch', 'dtorque_dbldpitch', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'k_i', 'k_p', 'k_t', \
-	'gain_corr_factor', 'x_d_towertop', 'windspeed_0', 'rotspeed_0'], promotes_outputs=['Astr_stiff', 'Astr_ext', 'A_contrl', 'BsCc', 'BcCs', 'B_feedbk'])
+	'gain_corr_factor', 'x_d_towertop', 'windspeed_0', 'rotspeed_0', 'Fdyn_tower_drag', 'Mdyn_tower_drag'], promotes_outputs=['Astr_stiff', 'Astr_ext', 'A_contrl', 'BsCc', 'BcCs', 'B_feedbk'])
 
 prob.model.add_subsystem('wave_spectrum', WaveSpectrum(freqs=freqs), promotes_inputs=['Hs', 'Tp'], promotes_outputs=['S_wave'])
 
@@ -161,7 +166,7 @@ prob.model.add_subsystem('viscous', viscous_group, promotes_inputs=['Cd', 'x_spa
 	'Re_RAO_Mwind_surge', 'Im_RAO_Mwind_surge', 'Re_RAO_Mwind_pitch', 'Im_RAO_Mwind_pitch', 'Re_RAO_Mwind_bend', 'Im_RAO_Mwind_bend', 'Re_RAO_wave_vel_surge', \
 	'Im_RAO_wave_vel_surge', 'Re_RAO_wave_vel_pitch', 'Im_RAO_wave_vel_pitch', 'Re_RAO_wave_vel_bend', 'Im_RAO_wave_vel_bend', 'Re_RAO_wind_vel_surge', \
 	'Im_RAO_wind_vel_surge', 'Re_RAO_wind_vel_pitch', 'Im_RAO_wind_vel_pitch', 'Re_RAO_wind_vel_bend', 'Im_RAO_wind_vel_bend', 'Re_RAO_Mwind_vel_surge', \
-	'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'B_visc_11', 'stddev_vel_distr', 'poles'])
+	'Im_RAO_Mwind_vel_surge', 'Re_RAO_Mwind_vel_pitch', 'Im_RAO_Mwind_vel_pitch', 'Re_RAO_Mwind_vel_bend', 'Im_RAO_Mwind_vel_bend', 'B_visc_11', 'stddev_vel_distr'])
 
 postpro_group = Postpro(freqs=freqs)
 
@@ -178,7 +183,17 @@ prob.model.add_subsystem('postpro', postpro_group, promotes_inputs=['Re_wave_for
 	'thrust_0', 'buoy_spar', 'CoB', 'M_turb', 'tot_M_spar', 'M_ball', 'CoG_total', 'M_spar', 'stddev_vel_distr', 'z_sparnode', 'x_sparnode', 'x_sparelem', 'spar_draft', \
 	'L_ball', 'M_ball_elem', 'F0_tower_drag', 'Z0_tower_drag', 'D_spar_p', 'wt_spar_p', 'windspeed_0'], promotes_outputs=['stddev_surge', 'stddev_pitch', 'stddev_bend', 'stddev_rotspeed', \
 	'stddev_bldpitch', 'stddev_tower_stress', 'stddev_hull_moment', 'stddev_fairlead', 'stddev_moor_ten', 'mean_surge', 'mean_pitch', 'mean_tower_stress', 'mean_hull_moment', 'v_z_surge', \
-	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage', 'stddev_tower_moment'])
+	'v_z_pitch', 'v_z_tower_stress', 'v_z_hull_moment', 'v_z_fairlead', 'v_z_moor_ten', 'tower_fatigue_damage', 'hull_fatigue_damage', 'stddev_tower_moment', 'stddev_surge_WF', \
+	'Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_fairlead', 'Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead'])
+
+from mooring_dynamic_group import MooringDynamic
+
+mooring_dynamic_group = MooringDynamic(freqs=freqs)
+
+prob.model.add_subsystem('mooring_dynamic', mooring_dynamic_group, promotes_inputs=['D_moor', 'Cd_moor', 'z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
+	'moor_offset', 'moor_tension_offset_ww', 'eff_length_offset_ww', 'stddev_surge_WF', 'mean_moor_ten', 'Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'Re_RAO_Mwind_fairlead', \
+	'Im_RAO_Mwind_fairlead', 'Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead', 'S_wave', 'S_wind'], promotes_outputs=['stddev_moor_ten_dyn'])
+
 """
 hull_buckling_balance = HullBalance()
 
@@ -269,6 +284,7 @@ print prob['stddev_rotspeed'][0]
 print prob['stddev_tower_moment'][0]
 print prob['tower_fatigue_damage'][0]
 print prob['stddev_moor_ten'][0]
+print prob['stddev_moor_ten_dyn'][0]
 #print prob['stddev_bldpitch'][0]
 #print prob['tower_fatigue_damage'][0]
 #print prob['hull_fatigue_damage'][-1]

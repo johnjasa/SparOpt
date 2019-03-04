@@ -1,4 +1,6 @@
 *.pyc
 *.html
 *.sql
+*.raw
+*.out
 pyoptsparse/

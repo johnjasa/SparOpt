@@ -13,8 +13,8 @@ class WaveLoads(ExplicitComponent):
 		self.omega_wave = freqs['omega_wave']
 		N_omega_wave = len(self.omega_wave)
 
-		self.add_input('x_sparelem', val=np.zeros(13), units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('x_sparelem', val=np.zeros(12), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('D_spar', val=np.zeros(10), units='m')
 		self.add_input('Z_spar', val=np.zeros(11), units='m')
 		self.add_input('wave_number', val=np.zeros(N_omega_wave), units='1/m')
@@ -84,8 +84,8 @@ class WaveLoads(ExplicitComponent):
 		wave_number = inputs['wave_number']
 		h = inputs['water_depth'][0]
 
-		dwave_forces_dx_sparelem = np.zeros((3 * N_omega_wave,13), dtype=complex)
-		dwave_forces_dz_sparnode = np.zeros((3 * N_omega_wave,14), dtype=complex)
+		dwave_forces_dx_sparelem = np.zeros((3 * N_omega_wave,12), dtype=complex)
+		dwave_forces_dz_sparnode = np.zeros((3 * N_omega_wave,13), dtype=complex)
 		dwave_forces_dD_spar = np.zeros((3 * N_omega_wave,10), dtype=complex)
 		dwave_forces_dwave_number = np.zeros((3 * N_omega_wave,N_omega_wave), dtype=complex)
 		dwave_forces_dwater_depth = np.zeros((3 * N_omega_wave,1), dtype=complex)

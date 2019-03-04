@@ -5,7 +5,7 @@ from openmdao.api import ExplicitComponent
 class MooringAngles(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('mass_dens_moor', val=0., units='m')
+		self.add_input('mass_dens_moor', val=0., units='kg/m')
 		self.add_input('moor_tension_offset_ww', val=0., units='N')
 		self.add_input('eff_length_offset_ww', val=0., units='m')
 

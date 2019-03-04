@@ -15,10 +15,10 @@ class ModeshapeElemMass(ExplicitComponent):
 		self.add_input('M_ball_elem', val=np.zeros(10), units='kg')
 		self.add_input('L_ball_elem', val=np.zeros(10), units='m')
 		self.add_input('L_ball', val=0., units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
-		self.add_input('L_mode_elem', val=np.zeros(23), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
+		self.add_input('L_mode_elem', val=np.zeros(22), units='m')
 
-		self.add_output('mel', val=np.zeros((23,4,4)), units='kg')
+		self.add_output('mel', val=np.zeros((22,4,4)), units='kg')
 
 		self.declare_partials('*', '*')
 
@@ -85,17 +85,17 @@ class ModeshapeElemMass(ExplicitComponent):
 		z_sparnode = inputs['z_sparnode']
 		L = inputs['L_mode_elem']
 
-		partials['mel', 'D_spar'] = np.zeros((368,10))
-		partials['mel', 'L_spar'] = np.zeros((368,10))
-		partials['mel', 'M_spar'] = np.zeros((368,10))
-		partials['mel', 'L_tower'] = np.zeros((368,10))
-		partials['mel', 'M_tower'] = np.zeros((368,10))
-		partials['mel', 'spar_draft'] = np.zeros(368)
-		partials['mel', 'M_ball_elem'] = np.zeros((368,10))
-		partials['mel', 'L_ball_elem'] = np.zeros((368,10))
-		partials['mel', 'L_ball'] = np.zeros(368)
-		partials['mel', 'z_sparnode'] = np.zeros((368,14))
-		partials['mel', 'L_mode_elem'] = np.zeros((368,23))
+		partials['mel', 'D_spar'] = np.zeros((352,10))
+		partials['mel', 'L_spar'] = np.zeros((352,10))
+		partials['mel', 'M_spar'] = np.zeros((352,10))
+		partials['mel', 'L_tower'] = np.zeros((352,10))
+		partials['mel', 'M_tower'] = np.zeros((352,10))
+		partials['mel', 'spar_draft'] = np.zeros(352)
+		partials['mel', 'M_ball_elem'] = np.zeros((352,10))
+		partials['mel', 'L_ball_elem'] = np.zeros((352,10))
+		partials['mel', 'L_ball'] = np.zeros(352)
+		partials['mel', 'z_sparnode'] = np.zeros((352,13))
+		partials['mel', 'L_mode_elem'] = np.zeros((352,22))
 
 		N_sparelem = len(z_sparnode) - 1
 		N_towerelem = len(M_tower)

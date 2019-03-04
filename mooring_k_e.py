@@ -8,7 +8,7 @@ class MooringKe(ExplicitComponent):
 		self.add_input('EA_moor', val=0., units='N')
 		self.add_input('eff_length_offset_ww', val=0., units='m')
 
-		self.add_output('ke_moor', val=0., units='N/m')
+		self.add_output('k_e_moor', val=0., units='N/m')
 
 		self.declare_partials('*', '*')
 
@@ -16,11 +16,11 @@ class MooringKe(ExplicitComponent):
 		EA = inputs['EA_moor']
 		L = inputs['eff_length_offset_ww']
 
-		outputs['ke_moor'] = EA / L
+		outputs['k_e_moor'] = EA / L
 
-	def compute_partials(self, inputs, partials): #TODO
+	def compute_partials(self, inputs, partials): #TODO check
 		EA = inputs['EA_moor']
 		L = inputs['eff_length_offset_ww']
 
-		partials['ke_moor', 'EA_moor'] = 1. / L
-		partials['ke_moor', 'eff_length_offset_ww'] = -EA / L**2.
+		partials['k_e_moor', 'EA_moor'] = 1. / L
+		partials['k_e_moor', 'eff_length_offset_ww'] = -EA / L**2.

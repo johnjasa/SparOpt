@@ -101,7 +101,7 @@ ivc.add_output('gamma_F_tower', val=1.35)
 ivc.add_output('gamma_F_hull', val=1.35)
 ivc.add_output('maxval_surge', val=30., units='m')
 ivc.add_output('maxval_pitch', val=10.*np.pi/180., units='rad')
-ivc.add_output('windspeed_0', val=15., units='m/s')
+ivc.add_output('windspeed_0', val=50., units='m/s')
 ivc.add_output('Hs', val=3.5, units='m')
 ivc.add_output('Tp', val=10.0, units='s')
 
@@ -118,7 +118,7 @@ blades = {\
 'windfolder' : 'Windspeeds/'}
 
 freqs = {\
-'omega' : np.linspace(0.014361566416410483,6.283185307179586,100), \
+'omega' : np.linspace(0.001,4.5,450), \
 'omega_wave': np.linspace(0.12,6.28,50)}
 
 from steady_bldpitch import SteadyBladePitch
@@ -153,7 +153,7 @@ aero_group = Aero(blades=blades, freqs=freqs)
 prob.model.add_subsystem('aero', aero_group, promotes_inputs=['rho_wind', 'windspeed_0', 'bldpitch_0', 'rotspeed_0'], promotes_outputs=['thrust_wind', \
 	'moment_wind', 'torque_wind', 'thrust_0', 'torque_0', 'dthrust_dv', 'dmoment_dv', 'dtorque_dv', 'dthrust_drotspeed', 'dtorque_drotspeed', \
 	'dthrust_dbldpitch', 'dtorque_dbldpitch'])
-
+"""
 towerdim_group = Towerdim()
 
 prob.model.add_subsystem('towerdim', towerdim_group, promotes_inputs=['D_tower_p', 'L_tower'], promotes_outputs=['D_tower', 'Z_tower'])
@@ -183,9 +183,9 @@ prob.model.add_subsystem('statespace', statespace_group, promotes_inputs=['M_glo
 	'gain_corr_factor', 'x_d_towertop', 'windspeed_0', 'rotspeed_0'], promotes_outputs=['Astr_stiff', 'Astr_ext', 'A_contrl', 'BsCc', 'BcCs', 'B_feedbk'])
 
 prob.model.add_subsystem('wave_spectrum', WaveSpectrum(freqs=freqs), promotes_inputs=['Hs', 'Tp'], promotes_outputs=['S_wave'])
-
+"""
 prob.model.add_subsystem('wind_spectrum', WindSpectrum(freqs=freqs), promotes_inputs=['windspeed_0'], promotes_outputs=['S_wind'])
-
+"""
 prob.model.add_subsystem('interp_wave_forces', InterpWaveForces(freqs=freqs), promotes_inputs=['Re_wave_forces', 'Im_wave_forces'], promotes_outputs=[\
 	'Re_wave_force_surge', 'Im_wave_force_surge', 'Re_wave_force_pitch', 'Im_wave_force_pitch', 'Re_wave_force_bend', 'Im_wave_force_bend'])
 
@@ -243,12 +243,73 @@ substructure_group.linear_solver = DirectSolver(assemble_jac=True)
 statespace_group.linear_solver = DirectSolver(assemble_jac=True)
 viscous_group.linear_solver = LinearBlockGS(maxiter=50, atol=1e-6, rtol=1e-6)
 viscous_group.nonlinear_solver = NonlinearBlockGS(maxiter=50, atol=1e-6, rtol=1e-6)
-
+"""
 prob.setup()
 
 prob.run_model()
 
-prob.check_totals(['poles'],['k_i'])
+import h5py
+import scipy.signal as ss
+
+def cut_transients(arr,time,dt):
+	cut_idx = np.linspace(0,time/dt-1,time/dt)
+	arr = np.delete(arr,cut_idx)
+
+	return arr
+
+def mov_avg(arr,n):
+	arr_smooth = arr
+
+	for i in xrange((n-1)/2,len(arr)-(n-1)/2):
+		arr_smooth[i] = np.mean(arr[i-(n-1)/2:i+(n-1)/2+1])
+
+	return arr_smooth
+
+def readfile(file):
+	f = h5py.File(file, 'r')
+
+	model = f.keys()[0]
+	condSet = f[model].keys()[0]
+
+	Ft= np.array(f[model+'/'+condSet+'/Dynamic/Wind Turbine/Aero force X-dir in shaft system'])
+
+	return Ft
+
+SIMAfile = r'C:\Code\Fixed_turb_50.h5'
+Ft = readfile(SIMAfile)
+
+Ft = cut_transients(Ft, 200., 0.05)
+
+Ft_fft = np.fft.fft(ss.detrend(Ft, type='constant'))
+dt = 0.05
+freqs = np.fft.fftfreq(Ft_fft.size, dt)
+NFFT = len(freqs)
+freqs = 2. * np.pi*freqs
+Ft_fft = abs(Ft_fft)**2. * (dt / NFFT) / (2. * np.pi)
+freqs = freqs[0:NFFT/2]
+Ft_fft = 2. * Ft_fft[0:NFFT/2]
+
+lim1 = 0
+lim2 = 0
+
+for i in xrange(len(freqs)):
+	if freqs[i] > (2.*np.pi): #neglect frequencies higher than 1 Hz
+		lim2 = i
+		break
+for i in xrange(len(freqs)):
+	if freqs[i] > (2.*np.pi / 5000.): #neglect frequencies lower than 1/200 Hz
+		lim1 = i
+		break
+
+freqs = freqs[lim1:lim2]
+Ft_fft = Ft_fft[lim1:lim2]
+Ft_fft = mov_avg(Ft_fft,15)
+
+plt.plot(freqs, Ft_fft)
+plt.plot(np.linspace(0.001,4.5,450), (prob['dthrust_dv']*prob['thrust_wind'])**2. * prob['S_wind'])
+plt.show()
+
+#prob.check_totals(['poles'],['k_i'])
 
 """
 A = prob['A_feedbk']

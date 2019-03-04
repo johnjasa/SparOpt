@@ -7,10 +7,10 @@ from openmdao.api import ExplicitComponent
 class BendingDamping(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('x_dd_sparelem', val=np.zeros(13), units='1/m')
+		self.add_input('x_dd_sparelem', val=np.zeros(12), units='1/m')
 		self.add_input('x_dd_towerelem', val=np.zeros(10), units='1/m')
-		self.add_input('EI_mode_elem', val=np.zeros(23), units='N*m**2')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('EI_mode_elem', val=np.zeros(22), units='N*m**2')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('z_towernode', val=np.zeros(11), units='m')
 		self.add_input('alpha_damp', val=0., units='s')
 
@@ -51,11 +51,11 @@ class BendingDamping(ExplicitComponent):
 		EI = inputs['EI_mode_elem']
 		alpha = inputs['alpha_damp']
 
-		partials['B_struct_77', 'z_sparnode'] = np.zeros((1,14))
+		partials['B_struct_77', 'z_sparnode'] = np.zeros((1,13))
 		partials['B_struct_77', 'z_towernode'] = np.zeros((1,11))
-		partials['B_struct_77', 'x_dd_sparelem'] = np.zeros((1,13))
+		partials['B_struct_77', 'x_dd_sparelem'] = np.zeros((1,12))
 		partials['B_struct_77', 'x_dd_towerelem'] = np.zeros((1,10))
-		partials['B_struct_77', 'EI_mode_elem'] = np.zeros((1,23))
+		partials['B_struct_77', 'EI_mode_elem'] = np.zeros((1,22))
 		partials['B_struct_77', 'alpha_damp'] = 0.
 
 		N_sparelem = len(x_dd_sparelem)

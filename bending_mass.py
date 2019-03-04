@@ -6,8 +6,8 @@ from openmdao.api import ExplicitComponent
 class BendingMass(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
-		self.add_input('x_sparelem', val=np.zeros(13), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
+		self.add_input('x_sparelem', val=np.zeros(12), units='m')
 		self.add_input('z_towernode', val=np.zeros(11), units='m')
 		self.add_input('x_towerelem', val=np.zeros(10), units='m')
 		self.add_input('x_d_towertop', val=0., units='m/m')
@@ -112,8 +112,8 @@ class BendingMass(ExplicitComponent):
 		m_elem_tower = M_tower / L_tower
 		m_elem_spar = M_spar / L_spar
 
-		partials['M17', 'z_sparnode'] = np.zeros((1,14))
-		partials['M17', 'x_sparelem'] = np.zeros((1,13))
+		partials['M17', 'z_sparnode'] = np.zeros((1,13))
+		partials['M17', 'x_sparelem'] = np.zeros((1,12))
 		partials['M17', 'z_towernode'] = np.zeros((1,11))
 		partials['M17', 'x_towerelem'] = np.zeros((1,10))
 		partials['M17', 'x_d_towertop'] = 0.
@@ -128,8 +128,8 @@ class BendingMass(ExplicitComponent):
 		partials['M17', 'M_nacelle'] = 1.
 		partials['M17', 'I_rotor'] = 0.
 
-		partials['M57', 'z_sparnode'] = np.zeros((1,14))
-		partials['M57', 'x_sparelem'] = np.zeros((1,13))
+		partials['M57', 'z_sparnode'] = np.zeros((1,13))
+		partials['M57', 'x_sparelem'] = np.zeros((1,12))
 		partials['M57', 'z_towernode'] = np.zeros((1,11))
 		partials['M57', 'z_towernode'][0,-1] += M_rotor + M_nacelle
 		partials['M57', 'x_towerelem'] = np.zeros((1,10))
@@ -145,8 +145,8 @@ class BendingMass(ExplicitComponent):
 		partials['M57', 'M_nacelle'] = z_towernode[-1]
 		partials['M57', 'I_rotor'] = x_d_towertop
 
-		partials['M77', 'z_sparnode'] = np.zeros((1,14))
-		partials['M77', 'x_sparelem'] = np.zeros((1,13))
+		partials['M77', 'z_sparnode'] = np.zeros((1,13))
+		partials['M77', 'x_sparelem'] = np.zeros((1,12))
 		partials['M77', 'z_towernode'] = np.zeros((1,11))
 		partials['M77', 'x_towerelem'] = np.zeros((1,10))
 		partials['M77', 'x_d_towertop'] = 2. * I_rotor * x_d_towertop

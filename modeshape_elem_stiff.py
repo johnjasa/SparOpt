@@ -5,11 +5,11 @@ from openmdao.api import ExplicitComponent
 class ModeshapeElemStiff(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('EI_mode_elem', val=np.zeros(23), units='N*m**2')
-		self.add_input('L_mode_elem', val=np.zeros(23), units='m')
-		self.add_input('normforce_mode_elem', val=np.zeros(23), units='N')
+		self.add_input('EI_mode_elem', val=np.zeros(22), units='N*m**2')
+		self.add_input('L_mode_elem', val=np.zeros(22), units='m')
+		self.add_input('normforce_mode_elem', val=np.zeros(22), units='N')
 
-		self.add_output('kel', val=np.zeros((23,4,4)), units='N/m')
+		self.add_output('kel', val=np.zeros((22,4,4)), units='N/m')
 
 		self.declare_partials('*', '*')
 
@@ -49,9 +49,9 @@ class ModeshapeElemStiff(ExplicitComponent):
 		L = inputs['L_mode_elem']
 		norm_force = inputs['normforce_mode_elem']
 
-		partials['kel', 'EI_mode_elem'] = np.zeros((368,23))
-		partials['kel', 'L_mode_elem'] = np.zeros((368,23))
-		partials['kel', 'normforce_mode_elem'] = np.zeros((368,23))
+		partials['kel', 'EI_mode_elem'] = np.zeros((352,22))
+		partials['kel', 'L_mode_elem'] = np.zeros((352,22))
+		partials['kel', 'normforce_mode_elem'] = np.zeros((352,22))
 
 		N_elem = len(L)
 		N_sparelem = N_elem - len(norm_force)

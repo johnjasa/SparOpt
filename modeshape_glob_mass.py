@@ -8,9 +8,9 @@ class ModeshapeGlobMass(ExplicitComponent):
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('M_rotor', val=0., units='kg')
 		self.add_input('I_rotor', val=0., units='kg*m**2')
-		self.add_input('mel', val=np.zeros((23,4,4)), units='kg')
+		self.add_input('mel', val=np.zeros((22,4,4)), units='kg')
 
-		self.add_output('M_mode', val=np.zeros((48,48)), units='kg')
+		self.add_output('M_mode', val=np.zeros((46,46)), units='kg')
 
 		self.declare_partials('*', '*')
 
@@ -48,10 +48,10 @@ class ModeshapeGlobMass(ExplicitComponent):
 		mel = inputs['mel']
 		N_elem = len(mel)
 
-		partials['M_mode', 'M_nacelle'] = np.zeros(2304)
-		partials['M_mode', 'M_rotor'] = np.zeros(2304)
-		partials['M_mode', 'I_rotor'] = np.zeros(2304)
-		partials['M_mode', 'mel'] = np.zeros((2304,368))
+		partials['M_mode', 'M_nacelle'] = np.zeros(2116)
+		partials['M_mode', 'M_rotor'] = np.zeros(2116)
+		partials['M_mode', 'I_rotor'] = np.zeros(2116)
+		partials['M_mode', 'mel'] = np.zeros((2116,352))
 
 		LD = np.zeros((N_elem,4))
 
@@ -66,8 +66,8 @@ class ModeshapeGlobMass(ExplicitComponent):
 					for p in xrange(4):
 						col = int(LD[i][p])
 						if col > -1:
-							partials['M_mode', 'mel'][48*row+col][16*i+4*j+p] += 1.
+							partials['M_mode', 'mel'][46*row+col][16*i+4*j+p] += 1.
 
-		partials['M_mode', 'M_nacelle'][-50] = 1.
-		partials['M_mode', 'M_rotor'][-50] = 1.
+		partials['M_mode', 'M_nacelle'][-48] = 1.
+		partials['M_mode', 'M_rotor'][-48] = 1.
 		partials['M_mode', 'I_rotor'][-1] = 1.

@@ -14,14 +14,14 @@ class ModeshapeElemNormforce(ExplicitComponent):
 		self.add_input('M_ball_elem', val=np.zeros(10), units='kg')
 		self.add_input('M_moor', val=0., units='kg')
 		self.add_input('z_moor', val=0., units='m')
-		self.add_input('z_sparnode', val=np.zeros(14), units='m')
+		self.add_input('z_sparnode', val=np.zeros(13), units='m')
 		self.add_input('spar_draft', val=0., units='m')
 		self.add_input('M_tower', val=np.zeros(10), units='kg')
 		self.add_input('M_nacelle', val=0., units='kg')
 		self.add_input('M_rotor', val=0., units='kg')
 		self.add_input('tot_M_tower', val=0., units='kg')
 
-		self.add_output('normforce_mode_elem', val=np.zeros(23), units='N')
+		self.add_output('normforce_mode_elem', val=np.zeros(22), units='N')
 
 		self.declare_partials('*', '*')
 
@@ -84,17 +84,17 @@ class ModeshapeElemNormforce(ExplicitComponent):
 		N_sparelem = len(z_sparnode) - 1
 		N_towerelem = len(M_tower)
 
-		partials['normforce_mode_elem', 'D_spar'] = np.zeros((23,10))
-		partials['normforce_mode_elem', 'L_spar'] = np.zeros((23,10))
-		partials['normforce_mode_elem', 'Z_spar'] = np.zeros((23,11))
-		partials['normforce_mode_elem', 'M_spar'] = np.zeros((23,10))
-		partials['normforce_mode_elem', 'L_ball'] = np.zeros(23)
-		partials['normforce_mode_elem', 'M_ball'] = np.zeros(23)
-		partials['normforce_mode_elem', 'M_ball_elem'] = np.zeros((23,10))
-		partials['normforce_mode_elem', 'spar_draft'] = np.zeros(23)
-		partials['normforce_mode_elem', 'M_moor'] = np.zeros(23)
-		partials['normforce_mode_elem', 'z_moor'] = np.zeros(23)
-		partials['normforce_mode_elem', 'z_sparnode'] = np.zeros((23,14))
+		partials['normforce_mode_elem', 'D_spar'] = np.zeros((22,10))
+		partials['normforce_mode_elem', 'L_spar'] = np.zeros((22,10))
+		partials['normforce_mode_elem', 'Z_spar'] = np.zeros((22,11))
+		partials['normforce_mode_elem', 'M_spar'] = np.zeros((22,10))
+		partials['normforce_mode_elem', 'L_ball'] = np.zeros(22)
+		partials['normforce_mode_elem', 'M_ball'] = np.zeros(22)
+		partials['normforce_mode_elem', 'M_ball_elem'] = np.zeros((22,10))
+		partials['normforce_mode_elem', 'spar_draft'] = np.zeros(22)
+		partials['normforce_mode_elem', 'M_moor'] = np.zeros(22)
+		partials['normforce_mode_elem', 'z_moor'] = np.zeros(22)
+		partials['normforce_mode_elem', 'z_sparnode'] = np.zeros((22,13))
 
 		for i in xrange(N_sparelem):
 			for j in xrange(len(D_spar)):
@@ -120,10 +120,10 @@ class ModeshapeElemNormforce(ExplicitComponent):
 			if z_sparnode[i] >= z_moor:
 				partials['normforce_mode_elem', 'M_moor'][i] += 9.80665
 		
-		partials['normforce_mode_elem', 'M_tower'] = np.zeros((23,10))
-		partials['normforce_mode_elem', 'M_nacelle'] = np.zeros(23)
-		partials['normforce_mode_elem', 'M_rotor'] = np.zeros(23)
-		partials['normforce_mode_elem', 'tot_M_tower'] = np.zeros(23)
+		partials['normforce_mode_elem', 'M_tower'] = np.zeros((22,10))
+		partials['normforce_mode_elem', 'M_nacelle'] = np.zeros(22)
+		partials['normforce_mode_elem', 'M_rotor'] = np.zeros(22)
+		partials['normforce_mode_elem', 'tot_M_tower'] = np.zeros(22)
 
 		for i in xrange(N_towerelem):
 			partials['normforce_mode_elem', 'M_nacelle'][N_sparelem+i] = -9.80665

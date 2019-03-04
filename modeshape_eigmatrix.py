@@ -5,10 +5,10 @@ from openmdao.api import ExplicitComponent
 class ModeshapeEigmatrix(ExplicitComponent):
 
 	def setup(self):
-		self.add_input('K_mode', val=np.zeros((48,48)), units='N/m')
-		self.add_input('M_mode_inv', val=np.zeros((48,48)), units='1/kg')
+		self.add_input('K_mode', val=np.zeros((46,46)), units='N/m')
+		self.add_input('M_mode_inv', val=np.zeros((46,46)), units='1/kg')
 
-		self.add_output('A_eig', val=np.zeros((48,48)))
+		self.add_output('A_eig', val=np.zeros((46,46)))
 
 		self.declare_partials('*', '*')
 
