@@ -17,7 +17,7 @@ blades = {\
 'windfolder' : 'Windspeeds/'}
 
 freqs = {\
-'omega' : np.linspace(0.015,4.5,450), \
+'omega' : np.linspace(0.001,4.5,450), \
 'omega_wave': np.linspace(0.1,4.5,50)}
 
 #EC = {\
@@ -242,8 +242,8 @@ prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_fairlead', lower=0.)
 
 #prob.model.add_constraint('parallel_fat.cond2_fat.poles', upper=np.zeros(11))
 #prob.model.add_constraint('parallel_fat.cond3_fat.poles', upper=np.zeros(11))
-prob.model.add_subsystem('ks_poles2', KSComp(width=11, rho=1000.))
-prob.model.add_subsystem('ks_poles3', KSComp(width=11, rho=1000.))
+prob.model.add_subsystem('ks_poles2', KSComp(width=11, rho=10000.))
+prob.model.add_subsystem('ks_poles3', KSComp(width=11, rho=10000.))
 prob.model.connect('parallel_fat.cond2_fat.poles', 'ks_poles2.g')
 prob.model.connect('parallel_fat.cond3_fat.poles', 'ks_poles3.g')
 prob.model.add_constraint('ks_poles2.KS', upper=0.)

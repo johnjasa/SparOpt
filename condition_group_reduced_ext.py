@@ -53,7 +53,7 @@ class ConditionExt(Group):
 		self.add_subsystem('mean_tower_drag', MeanTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
 			promotes_outputs=['F0_tower_drag', 'Z0_tower_drag'])
 
-		prob.model.add_subsystem('dyn_tower_drag', DynTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
+		self.add_subsystem('dyn_tower_drag', DynTowerDrag(), promotes_inputs=['D_tower', 'Z_tower', 'L_tower', 'windspeed_0', 'Cd_tower', 'CoG_rotor', 'rho_wind'], \
 			promotes_outputs=['Fdyn_tower_drag', 'Mdyn_tower_drag'])
 
 		mooring_group = Mooring()
@@ -72,7 +72,7 @@ class ConditionExt(Group):
 			'dthrust_dv', 'dmoment_dv', 'struct_damp_ratio', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'D_tower', 'Z_tower'], \
 			promotes_outputs=['M_global', 'A_global', 'K_global', 'Re_wave_forces', 'Im_wave_forces', 'x_d_towertop', 'z_sparnode', 'x_sparelem', \
 			'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', 'D_spar', 'wt_spar', 'wt_tower', 'tot_M_spar', 'tot_M_tower', 'B_aero_11', \
-			'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'A_R', 'r_e', 'buoy_spar', 'CoB', 'M_turb', 'CoG_total', \
+			'B_aero_15', 'B_aero_17', 'B_aero_55', 'B_aero_57', 'B_aero_77', 'B_struct_77', 'A_R', 'r_e', 'r_f', 'buoy_spar', 'CoB', 'M_turb', 'CoG_total', \
 			'wave_number', 'x_sparnode', 'M_ball_elem', 'M_tower', 'z_towernode'])
 
 		statespace_group = StateSpace(freqs=freqs)

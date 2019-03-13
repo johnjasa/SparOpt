@@ -14,14 +14,14 @@ class MooringCost(ExplicitComponent):
 
 	def compute(self, inputs, outputs):
 
-		k_m = 4. * 1.15 #3-4.5 euro per kg (ref. email Kjell Larsen) times dollar per euro
+		k_m = 3.5 * 1.15 #3-4.5 euro per kg (ref. email Kjell Larsen) times dollar per euro
 
 		outputs['mooring_cost'] = 3. * k_m * inputs['len_tot_moor'] * inputs['mass_dens_moor'] #total for three mooring lines
 
 
 	def compute_partials(self, inputs, partials):
 
-		k_m = 4. * 1.15 #3-4.5 euro per kg (ref. email Kjell Larsen) times dollar per euro
+		k_m = 3.5 * 1.15 #3-4.5 euro per kg (ref. email Kjell Larsen) times dollar per euro
 
 		partials['mooring_cost', 'len_tot_moor'] = 3. * k_m * inputs['mass_dens_moor']
 		partials['mooring_cost', 'mass_dens_moor'] = 3. * k_m * inputs['len_tot_moor']

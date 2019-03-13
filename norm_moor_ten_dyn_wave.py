@@ -35,8 +35,8 @@ class NormMoorTenDynWave(ExplicitComponent):
 		phi = inputs['phi_upper_end']
 		k_e = inputs['k_e_moor']
 		k_g = inputs['k_g_moor']
-		m = 0.#inputs['gen_m_moor']
-		c = 0.#inputs['gen_c_moor']
+		m = inputs['gen_m_moor']
+		c = inputs['gen_c_moor']
 
 		RAO_wave_moor_ten = np.cos(phi) * k_e * (-omega**2. * m + 1j * omega * c + k_g) / (-omega**2. * m + 1j * omega * c + k_g + k_e) * RAO_wave_fairlead
 

@@ -15,8 +15,8 @@ blades = {\
 'windfolder' : 'Windspeeds/'}
 
 freqs = {\
-'omega' : np.linspace(0.014361566416410483,6.283185307179586,1000), \
-'omega_wave': np.linspace(0.1,6.28,100)}
+'omega' : np.linspace(0.001,4.5,450), \
+'omega_wave': np.linspace(0.1,4.5,50)}
 
 #EC = {\
 #'N_EC' : 1, \

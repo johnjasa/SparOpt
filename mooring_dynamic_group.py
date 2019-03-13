@@ -21,6 +21,12 @@ from norm_moor_ten_dyn_wind import NormMoorTenDynWind
 from norm_moor_ten_dyn_Mwind import NormMoorTenDynMWind
 from moor_ten_dyn_spectrum import MoorTenDynSpectrum
 from std_dev_moor_ten_dyn import StdDevMoorTenDyn
+from norm_moor_tan_vel_wave import NormMoorTanVelWave
+from norm_moor_tan_vel_wind import NormMoorTanVelWind
+from norm_moor_tan_vel_Mwind import NormMoorTanVelMWind
+from moor_tan_vel_spectrum import MoorTanVelSpectrum
+from std_dev_moor_tan_vel import StdDevMoorTanVel
+from mooring_gen_damp_Q import MooringGenDampQ
 
 class MooringDynamic(Group):
 
@@ -54,7 +60,7 @@ class MooringDynamic(Group):
 
 		self.add_subsystem('mooring_k_e', MooringKe(), promotes_inputs=['EA_moor', 'eff_length_offset_ww'], promotes_outputs=['k_e_moor'])
 
-		self.add_subsystem('mooring_k_g', MooringKg(), promotes_inputs=['mean_moor_ten', 'moor_ten_sig_surge_tot', 'sig_tan_motion'], promotes_outputs=['k_g_moor'])
+		self.add_subsystem('mooring_k_g', MooringKg(), promotes_inputs=['sig_tan_motion', 'mass_dens_moor', 'moor_tension_offset_ww', 'eff_length_offset_ww', 'moor_tension_sig_surge_offset', 'eff_length_sig_surge_offset'], promotes_outputs=['k_g_moor'])
 
 		#self.add_subsystem('mooring_surge_damp', MooringSurgeDamp(), promotes_inputs=['k_e_moor', 'k_g_moor', 'gen_c_moor', 'stddev_surge_vel_WF', 'phi_upper_end'], promotes_outputs=['moor_surge_damp'])
 
@@ -67,3 +73,15 @@ class MooringDynamic(Group):
 	 	self.add_subsystem('moor_ten_dyn_spectrum', MoorTenDynSpectrum(freqs=freqs), promotes_inputs=['Re_RAO_wave_moor_ten_dyn', 'Im_RAO_wave_moor_ten_dyn', 'Re_RAO_wind_moor_ten_dyn', 'Im_RAO_wind_moor_ten_dyn', 'Re_RAO_Mwind_moor_ten_dyn', 'Im_RAO_Mwind_moor_ten_dyn', 'S_wave', 'S_wind'], promotes_outputs=['resp_moor_ten_dyn'])
 
 	 	self.add_subsystem('std_dev_moor_ten_dyn', StdDevMoorTenDyn(freqs=freqs), promotes_inputs=['resp_moor_ten_dyn'], promotes_outputs=['stddev_moor_ten_dyn'])
+
+	 	self.add_subsystem('norm_moor_tan_vel_wave', NormMoorTanVelWave(freqs=freqs), promotes_inputs=['Re_RAO_wave_fairlead', 'Im_RAO_wave_fairlead', 'phi_upper_end', 'k_e_moor', 'k_g_moor', 'gen_m_moor', 'gen_c_moor'], promotes_outputs=['Re_RAO_wave_moor_tan_vel', 'Im_RAO_wave_moor_tan_vel'])
+
+	 	self.add_subsystem('norm_moor_tan_vel_wind', NormMoorTanVelWind(freqs=freqs), promotes_inputs=['Re_RAO_wind_fairlead', 'Im_RAO_wind_fairlead', 'phi_upper_end', 'k_e_moor', 'k_g_moor', 'gen_m_moor', 'gen_c_moor'], promotes_outputs=['Re_RAO_wind_moor_tan_vel', 'Im_RAO_wind_moor_tan_vel'])
+
+		self.add_subsystem('norm_moor_tan_vel_Mwind', NormMoorTanVelMWind(freqs=freqs), promotes_inputs=['Re_RAO_Mwind_fairlead', 'Im_RAO_Mwind_fairlead', 'phi_upper_end', 'k_e_moor', 'k_g_moor', 'gen_m_moor', 'gen_c_moor'], promotes_outputs=['Re_RAO_Mwind_moor_tan_vel', 'Im_RAO_Mwind_moor_tan_vel'])
+
+	 	self.add_subsystem('moor_tan_vel_spectrum', MoorTanVelSpectrum(freqs=freqs), promotes_inputs=['Re_RAO_wave_moor_tan_vel', 'Im_RAO_wave_moor_tan_vel', 'Re_RAO_wind_moor_tan_vel', 'Im_RAO_wind_moor_tan_vel', 'Re_RAO_Mwind_moor_tan_vel', 'Im_RAO_Mwind_moor_tan_vel', 'S_wave', 'S_wind'], promotes_outputs=['resp_moor_tan_vel'])
+
+	 	self.add_subsystem('std_dev_moor_tan_vel', StdDevMoorTanVel(freqs=freqs), promotes_inputs=['resp_moor_tan_vel'], promotes_outputs=['stddev_moor_tan_vel'])
+
+	 	self.add_subsystem('mooring_gen_damp_Q', MooringGenDampQ(), promotes_inputs=['gen_c_moor', 'stddev_moor_tan_vel'], promotes_outputs=['gen_c_moor_Q'])
