@@ -56,9 +56,9 @@ class HullBuckling(Group):
 		
 		#self.add_subsystem('MyMz_hull', MyMzHull(), promotes_inputs=['dthrust_dv'], promotes_outputs=['My_hull', 'Mz_hull'])
 		
-		self.add_subsystem('QyQz_hull', QyQzHull(), promotes_inputs=['dthrust_dv'], promotes_outputs=['Qy_hull', 'Qz_hull'])
+		#self.add_subsystem('QyQz_hull', QyQzHull(), promotes_inputs=['dthrust_dv'], promotes_outputs=['Qy_hull', 'Qz_hull'])
 		
-		self.add_subsystem('T_hull', THull(), promotes_inputs=['dmoment_dv'], promotes_outputs=['T_hull'])
+		#self.add_subsystem('T_hull', THull(), promotes_inputs=['dmoment_dv'], promotes_outputs=['T_hull'])
 		
 		self.add_subsystem('hull_r_hull', HullRHull(), promotes_inputs=['D_spar_p', 'wt_spar_p'], promotes_outputs=['r_hull'])
 		
@@ -90,9 +90,11 @@ class HullBuckling(Group):
 		
 		self.add_subsystem('hull_sigma_0', HullSigma0(), promotes_inputs=['sigma_a', 'sigma_m', 'sigma_h'], promotes_outputs=['sigma_a0', 'sigma_m0', 'sigma_h0'])
 		
-		self.add_subsystem('hull_mises_stress', HullMisesStress(), promotes_inputs=['sigma_a', 'sigma_m', 'sigma_h', 'tau'], promotes_outputs=['sigma_j'])
+		#self.add_subsystem('hull_mises_stress', HullMisesStress(), promotes_inputs=['sigma_a', 'sigma_m', 'sigma_h', 'tau'], promotes_outputs=['sigma_j'])
+		self.add_subsystem('hull_mises_stress', HullMisesStress(), promotes_inputs=['sigma_a', 'sigma_m', 'sigma_h'], promotes_outputs=['sigma_j'])
 		
-		self.add_subsystem('hull_lambda_s', HullLambdaS(), promotes_inputs=['f_y', 'sigma_j', 'sigma_a0', 'sigma_m0', 'sigma_h0', 'tau', 'f_Ea', 'f_Em', 'f_Eh', 'f_Etau'], promotes_outputs=['lambda_s'])
+		#self.add_subsystem('hull_lambda_s', HullLambdaS(), promotes_inputs=['f_y', 'sigma_j', 'sigma_a0', 'sigma_m0', 'sigma_h0', 'tau', 'f_Ea', 'f_Em', 'f_Eh', 'f_Etau'], promotes_outputs=['lambda_s'])
+		self.add_subsystem('hull_lambda_s', HullLambdaS(), promotes_inputs=['f_y', 'sigma_j', 'sigma_a0', 'sigma_m0', 'sigma_h0', 'f_Ea', 'f_Em', 'f_Eh'], promotes_outputs=['lambda_s'])
 		
 		self.add_subsystem('hull_f_ks', HullFKs(), promotes_inputs=['f_y', 'lambda_s'], promotes_outputs=['f_ks'])
 		
@@ -106,11 +108,12 @@ class HullBuckling(Group):
 		
 		self.add_subsystem('hull_I_x', HullIX(), promotes_inputs=['sigma_a', 'sigma_m', 'wt_spar_p', 'r_0', 'l_stiff'], promotes_outputs=['I_x'])
 		
-		self.add_subsystem('hull_I_xh', HullIXh(), promotes_inputs=['tau', 'r_0', 'spar_draft', 'wt_spar_p', 'l_stiff'], promotes_outputs=['I_xh'])
+		#self.add_subsystem('hull_I_xh', HullIXh(), promotes_inputs=['tau', 'r_0', 'spar_draft', 'wt_spar_p', 'l_stiff'], promotes_outputs=['I_xh'])
 		
 		self.add_subsystem('hull_I_h', HullIH(), promotes_inputs=['net_pressure', 'r_hull', 'r_0', 'l_stiff', 'z_t', 'delta_0', 'f_r', 'sigma_hR'], promotes_outputs=['I_h'])
 		
-		self.add_subsystem('hull_I_R', HullIR(), promotes_inputs=['I_x', 'I_xh', 'I_h'], promotes_outputs=['I_R'])
+		#self.add_subsystem('hull_I_R', HullIR(), promotes_inputs=['I_x', 'I_xh', 'I_h'], promotes_outputs=['I_R'])
+		self.add_subsystem('hull_I_R', HullIR(), promotes_inputs=['I_x', 'I_h'], promotes_outputs=['I_R'])
 		
 		self.add_subsystem('hull_l_ef', HullLEf(), promotes_inputs=['r_hull', 'wt_spar_p', 'l_stiff'], promotes_outputs=['l_ef'])
 		

@@ -34,7 +34,6 @@ EC_ext = {\
 
 prob = Problem()
 ivc = IndepVarComp()
-
 ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m')
 #ivc.add_output('D_spar_cp', val=np.array([12., 12., 12., 12., 8.3]), units='m')
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
@@ -102,7 +101,6 @@ from ECs_ext import ECsExt
 from condition_group_reduced_fat import ConditionFat
 from condition_group_reduced_ext import ConditionExt
 from total_tower_fatigue_damage import TotalTowerFatigueDamage
-from total_std_dev_rotspeed import TotalStdDevRotspeed
 
 prob.model.add_subsystem('ECs_fat', ECsFat(EC=EC_fat), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
 
@@ -122,8 +120,6 @@ parallel_ext = prob.model.add_subsystem('parallel_ext', ParallelGroup(), promote
 
 prob.model.add_subsystem('total_tower_fatigue_damage', TotalTowerFatigueDamage(EC=EC_fat))
 
-prob.model.add_subsystem('total_std_dev_rotspeed', TotalStdDevRotspeed(EC=EC_fat))
-
 for i in xrange(EC_fat['N_EC']):
 	parallel_fat.add_subsystem('cond%d_fat' % i, ConditionFat(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
 	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
@@ -138,9 +134,6 @@ for i in xrange(EC_fat['N_EC']):
 	prob.model.connect('parallel_fat.cond%d_fat.tower_fatigue_damage' % i, 'total_tower_fatigue_damage.tower_fatigue_damage%d' % i)
 	prob.model.connect('p', 'total_tower_fatigue_damage.p%d' % i, src_indices=[i])
 
-	prob.model.connect('parallel_fat.cond%d_fat.stddev_rotspeed' % i, 'total_std_dev_rotspeed.stddev_rotspeed%d' % i)
-	prob.model.connect('p', 'total_std_dev_rotspeed.p%d' % i, src_indices=[i])
-
 prob.model.connect('DFF_tower', 'total_tower_fatigue_damage.DFF_tower')
 
 for i in xrange(EC_ext['N_EC']):
@@ -153,11 +146,6 @@ for i in xrange(EC_ext['N_EC']):
 	prob.model.connect('windspeed_0_ext', 'parallel_ext.cond%d_ext.windspeed_0' % i, src_indices=[i])
 	prob.model.connect('Hs_ext', 'parallel_ext.cond%d_ext.Hs' % i, src_indices=[i])
 	prob.model.connect('Tp_ext', 'parallel_ext.cond%d_ext.Tp' % i, src_indices=[i])
-
-prob.model.add_subsystem('multiobj', ExecComp(['y=x1+1.4e7*x2']))
-
-prob.model.connect('parallel_ext.cond0_ext.total_cost', 'multiobj.x1')
-prob.model.connect('total_std_dev_rotspeed.total_stddev_rotspeed', 'multiobj.x2')
 
 prob.model.linear_solver = LinearRunOnce()
 
@@ -174,37 +162,15 @@ driver.recording_options['record_objectives'] = True
 driver.recording_options['record_constraints'] = True
 driver.recording_options['record_desvars'] = True
 
-recorder = SqliteRecorder("integrated.sql")
+recorder = SqliteRecorder("tower.sql")
 driver.add_recorder(recorder)
-
-#prob.model.add_design_var('D_spar_cp', lower=5.*np.ones(5), upper=20.*np.ones(5))
-#prob.model.add_design_var('L_spar_cp', lower=np.array([3., 3., 3., 10.]), upper=30.*np.ones(4))
-prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
-prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
-prob.model.add_design_var('z_moor', lower=-320., upper=-10.)
 
 prob.model.add_design_var('D_tower_cp', lower=5.*np.ones(4), upper=20.*np.ones(4))
 prob.model.add_design_var('wt_tower_cp', lower=0.01*np.ones(4), upper=0.5*np.ones(4))
 
-prob.model.add_design_var('D_moor', lower=0.01, upper=0.5)
-prob.model.add_design_var('len_hor_moor', lower=700., upper=3000.)
-prob.model.add_design_var('len_tot_moor', lower=800., upper=4000.)
+#prob.model.add_constraint('parallel_ext.cond0_ext.substructure.buoy_mass', lower=0.)
 
-prob.model.add_design_var('k_p', lower=0.001, upper=5.)
-prob.model.add_design_var('k_i', lower=0.001, upper=5.)
-
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.buoy_mass', lower=0.)
-
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_pitch', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moor', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
-prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0.05)
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0.01)
 
 #prob.model.add_constraint('total_tower_fatigue_damage.total_tower_fatigue_damage', upper=np.ones(11))
 #prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_tower_stress', lower=np.zeros(10))
@@ -229,42 +195,8 @@ prob.model.add_constraint('ks_tower_stress2.KS', upper=0.)
 
 prob.model.add_constraint('parallel_ext.cond0_ext.towerdim.taper_angle_tower', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
 
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_moor_ten', lower=0.)
-prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_fairlead', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_moor_ten', lower=0.)
-prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_fairlead', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_moor_ten', lower=0.)
-prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_fairlead', lower=0.)
-
-#prob.model.add_constraint('parallel_fat.cond2_fat.poles', upper=np.zeros(11))
-#prob.model.add_constraint('parallel_fat.cond3_fat.poles', upper=np.zeros(11))
-prob.model.add_subsystem('ks_poles4', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles5', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles6', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles7', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles8', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles9', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles10', KSComp(width=11, rho=10000.))
-prob.model.connect('parallel_fat.cond4_fat.poles', 'ks_poles4.g')
-prob.model.connect('parallel_fat.cond5_fat.poles', 'ks_poles5.g')
-prob.model.connect('parallel_fat.cond6_fat.poles', 'ks_poles6.g')
-prob.model.connect('parallel_fat.cond7_fat.poles', 'ks_poles7.g')
-prob.model.connect('parallel_fat.cond8_fat.poles', 'ks_poles8.g')
-prob.model.connect('parallel_fat.cond9_fat.poles', 'ks_poles9.g')
-prob.model.connect('parallel_fat.cond10_fat.poles', 'ks_poles10.g')
-prob.model.add_constraint('ks_poles4.KS', upper=0.)
-prob.model.add_constraint('ks_poles5.KS', upper=0.)
-prob.model.add_constraint('ks_poles6.KS', upper=0.)
-prob.model.add_constraint('ks_poles7.KS', upper=0.)
-prob.model.add_constraint('ks_poles8.KS', upper=0.)
-prob.model.add_constraint('ks_poles9.KS', upper=0.)
-prob.model.add_constraint('ks_poles10.KS', upper=0.)
-
-#prob.model.add_objective('parallel_ext.cond0_ext.total_cost')
-prob.model.add_objective('multiobj.y')
+prob.model.add_objective('parallel_ext.cond0_ext.tower_cost')
 
 prob.setup()
-#prob.set_solver_print(0)
-prob.run_driver()
 
-#prob.cleanup()
+prob.run_driver()

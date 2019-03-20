@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.special as ss
 
-from openmdao.api import Problem, IndepVarComp, LinearRunOnce, DirectSolver, LinearBlockGS, ScipyKrylov, NonlinearBlockGS, NewtonSolver, SqliteRecorder, ParallelGroup, BroydenSolver, ExecComp, KSComp
+from openmdao.api import Problem, IndepVarComp, LinearRunOnce, DirectSolver, LinearBlockGS, ScipyKrylov, NonlinearBlockGS, NewtonSolver, SqliteRecorder, ParallelGroup, BroydenSolver, ExecComp, BsplinesComp
+
+from openmdao.components.ks_comp import KSComp
 
 blades = {\
 'Rtip' : 89.165, \
@@ -22,21 +24,26 @@ freqs = {\
 #'N_EC' : 1, \
 #'ECfile' : 'prob_bins_test.dat'}
 
-EC_fat = {\
-'N_EC' : 7, \
-'ECfile' : 'prob_bins_fatigue_eq_control.dat'}
+#EC_fat = {\
+#'N_EC' : 4, \
+#'ECfile' : 'prob_bins_fatigue.dat'}
 
-#EC_ext = {\
-#'N_EC' : 3, \
-#'ECfile' : 'prob_bins_extreme.dat'}
+EC_ext = {\
+'N_EC' : 3, \
+'ECfile' : 'prob_bins_extreme.dat'}
 
 prob = Problem()
 ivc = IndepVarComp()
+
 ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m')
+#ivc.add_output('D_spar_cp', val=np.array([12., 12., 12., 12., 8.3]), units='m')
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
 ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m')
+#ivc.add_output('L_spar_cp', val=np.array([13.5, 13.5, 8., 14.]), units='m')
 ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5])*1.3, units='m')
 ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018])*1.5, units='m')
+#ivc.add_output('D_tower_cp', val=np.array([8.3, 7.46500994, 6.63001988, 5.5]), units='m')
+#ivc.add_output('wt_tower_cp', val=np.array([0.038, 0.034, 0.026, 0.018]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
 ivc.add_output('rho_ball', val=2600., units='kg/m**3')
 ivc.add_output('wt_ball', val=0.06, units='m')
@@ -85,37 +92,30 @@ ivc.add_output('maxval_pitch', val=15.*np.pi/180., units='rad')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-from ECs_fat import ECsFat
-#from ECs_ext import ECsExt
-from condition_group_reduced_fat import ConditionFat
-#from condition_group_reduced_ext import ConditionExt
-from total_std_dev_rotspeed import TotalStdDevRotspeed
+#prob.model.add_subsystem('interp_D_spar', BsplinesComp(num_control_points=5, num_points=11, in_name='D_spar_cp', out_name='D_spar_p'), promotes_inputs=['D_spar_cp'], promotes_outputs=['D_spar_p'])
+#prob.model.add_subsystem('interp_L_spar', BsplinesComp(num_control_points=4, num_points=10, in_name='L_spar_cp', out_name='L_spar'), promotes_inputs=['L_spar_cp'], promotes_outputs=['L_spar'])
 
-prob.model.add_subsystem('ECs_fat', ECsFat(EC=EC_fat), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
+from ECs_ext import ECsExt
+from condition_group_reduced_ext import ConditionExt
 
-#prob.model.add_subsystem('ECs_ext', ECsExt(EC=EC_ext), promotes_outputs=['windspeed_0_ext', 'Hs_ext', 'Tp_ext'])
+prob.model.add_subsystem('ECs_ext', ECsExt(EC=EC_ext), promotes_outputs=['windspeed_0_ext', 'Hs_ext', 'Tp_ext'])
 
-parallel_fat = prob.model.add_subsystem('parallel_fat', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
+parallel_ext = prob.model.add_subsystem('parallel_ext', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
 	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
-	'z_moor', 'D_moor', 'gamma_F_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
-	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', \
-	't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
+	'z_moor', 'D_moor', 'gamma_F_moor', 'gamma_F_moor_mean', 'gamma_F_moor_dyn', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
+	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', 'f_y', 'gamma_M_tower', 'gamma_F_tower', \
+	'maxval_surge', 'maxval_pitch', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
 
-prob.model.add_subsystem('total_std_dev_rotspeed', TotalStdDevRotspeed(EC=EC_fat))
-
-for i in xrange(EC_fat['N_EC']):
-	parallel_fat.add_subsystem('cond%d_fat' % i, ConditionFat(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
+for i in xrange(EC_ext['N_EC']):
+	parallel_ext.add_subsystem('cond%d_ext' % i, ConditionExt(blades=blades, freqs=freqs), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
 	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
-	'z_moor', 'D_moor', 'gamma_F_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
-	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', \
-	't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
+	'z_moor', 'D_moor', 'gamma_F_moor', 'gamma_F_moor_mean', 'gamma_F_moor_dyn', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
+	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', 'f_y', 'gamma_M_tower', 'gamma_F_tower', \
+	'maxval_surge', 'maxval_pitch', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff'])
 
-	prob.model.connect('windspeed_0', 'parallel_fat.cond%d_fat.windspeed_0' % i, src_indices=[i])
-	prob.model.connect('Hs', 'parallel_fat.cond%d_fat.Hs' % i, src_indices=[i])
-	prob.model.connect('Tp', 'parallel_fat.cond%d_fat.Tp' % i, src_indices=[i])
-
-	prob.model.connect('parallel_fat.cond%d_fat.stddev_rotspeed' % i, 'total_std_dev_rotspeed.stddev_rotspeed%d' % i)
-	prob.model.connect('p', 'total_std_dev_rotspeed.p%d' % i, src_indices=[i])
+	prob.model.connect('windspeed_0_ext', 'parallel_ext.cond%d_ext.windspeed_0' % i, src_indices=[i])
+	prob.model.connect('Hs_ext', 'parallel_ext.cond%d_ext.Hs' % i, src_indices=[i])
+	prob.model.connect('Tp_ext', 'parallel_ext.cond%d_ext.Tp' % i, src_indices=[i])
 
 prob.model.linear_solver = LinearRunOnce()
 
@@ -132,36 +132,32 @@ driver.recording_options['record_objectives'] = True
 driver.recording_options['record_constraints'] = True
 driver.recording_options['record_desvars'] = True
 
-recorder = SqliteRecorder("control.sql")
+recorder = SqliteRecorder("floater.sql")
 driver.add_recorder(recorder)
 
-prob.model.add_design_var('k_p', lower=0., upper=5.)
-prob.model.add_design_var('k_i', lower=0., upper=5.)
+prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
+prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
+#prob.model.add_design_var('D_spar_cp', lower=8.*np.ones(5), upper=20.*np.ones(5))
+#prob.model.add_design_var('L_spar_cp', lower=np.array([3., 3., 3., 10.]), upper=30.*np.ones(4))
+prob.model.add_design_var('z_moor', lower=-320., upper=-10.)
 
-prob.model.add_subsystem('ks_poles0', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles1', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles2', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles3', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles4', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles5', KSComp(width=11, rho=10000.))
-prob.model.add_subsystem('ks_poles6', KSComp(width=11, rho=10000.))
-prob.model.connect('parallel_fat.cond0_fat.poles', 'ks_poles0.g')
-prob.model.connect('parallel_fat.cond1_fat.poles', 'ks_poles1.g')
-prob.model.connect('parallel_fat.cond2_fat.poles', 'ks_poles2.g')
-prob.model.connect('parallel_fat.cond3_fat.poles', 'ks_poles3.g')
-prob.model.connect('parallel_fat.cond4_fat.poles', 'ks_poles4.g')
-prob.model.connect('parallel_fat.cond5_fat.poles', 'ks_poles5.g')
-prob.model.connect('parallel_fat.cond6_fat.poles', 'ks_poles6.g')
-prob.model.add_constraint('ks_poles0.KS', upper=0.)
-prob.model.add_constraint('ks_poles1.KS', upper=0.)
-prob.model.add_constraint('ks_poles2.KS', upper=0.)
-prob.model.add_constraint('ks_poles3.KS', upper=0.)
-prob.model.add_constraint('ks_poles4.KS', upper=0.)
-prob.model.add_constraint('ks_poles5.KS', upper=0.)
-prob.model.add_constraint('ks_poles6.KS', upper=0.)
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.buoy_mass', lower=0.)
 
-prob.model.add_objective('total_std_dev_rotspeed.total_stddev_rotspeed')
+prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_surge', lower=0.)
+prob.model.add_constraint('parallel_ext.cond0_ext.constr_50_pitch', lower=0.)
+prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_surge', lower=0.)
+prob.model.add_constraint('parallel_ext.cond1_ext.constr_50_pitch', lower=0.)
+prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_surge', lower=0.)
+prob.model.add_constraint('parallel_ext.cond2_ext.constr_50_pitch', lower=0.)
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.lower_bound_z_moor', lower=0.)
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.T_heave', lower=25.)
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.taper_angle_hull', lower=-10.*np.pi/180.*np.ones(10), upper=10.*np.pi/180.*np.ones(10))
+prob.model.add_constraint('parallel_ext.cond0_ext.substructure.CoB_CoG', lower=0.05)
+
+prob.model.add_objective('parallel_ext.cond0_ext.spar_cost')
 
 prob.setup()
-
+#prob.set_solver_print(0)
 prob.run_driver()
+
+#prob.cleanup()

@@ -20,7 +20,7 @@ class ModeshapeEigvector(ExplicitComponent):
 
 		eig_vals, eig_vecs = np.linalg.eig(A)
 
-		#print eig_vals[-3:]
+		print eig_vals[-3:]
 		#print 2. * np.pi / np.sqrt(eig_vals[-3:])
 		
 		outputs['eig_vector'] = eig_vecs[:,-3]
@@ -68,4 +68,4 @@ class ModeshapeEigvector(ExplicitComponent):
 				if eig_val <= 0.:
 					partials['alpha_damp', 'A_eig'][0,len(A)*i+j] = 0.
 				else:
-					partials['alpha_damp', 'A_eig'][0,len(A)*i+j] = -struct_damp_ratio / np.real(eig_val)**(3./2.) * dD[-3]
+					partials['alpha_damp', 'A_eig'][0,len(A)*i+j] = -struct_damp_ratio / np.real(eig_val)**(3./2.) * np.real(dD[-3])

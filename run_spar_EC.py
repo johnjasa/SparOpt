@@ -24,7 +24,7 @@ from postpro_group import Postpro
 from hull_buckling_balance import HullBalance
 from hull_buckling_group import HullBuckling
 from tower_buckling_group import TowerBuckling
-from extreme_response_group_reduced import ExtremeResponse
+from extreme_response_group import ExtremeResponse
 from cost_group import Cost
 
 blades = {\
@@ -38,7 +38,7 @@ blades = {\
 'windfolder' : 'Windspeeds/'}
 
 freqs = {\
-'omega' : np.linspace(0.001,4.5,450), \
+'omega' : np.linspace(0.001,6.5,450), \
 'omega_wave': np.linspace(0.05,4.5,100)}
 
 prob = Problem()
@@ -46,7 +46,7 @@ ivc = IndepVarComp()
 ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m') #[12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
 ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m') #[13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]
-ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
+ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5])*1.7, units='m')
 ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
 ivc.add_output('rho_ball', val=2600., units='kg/m**3')
@@ -68,9 +68,9 @@ ivc.add_output('len_hor_moor', val=848.67, units='m')
 ivc.add_output('len_tot_moor', val=902.2, units='m')
 ivc.add_output('rho_wind', val=1.25, units='kg/m**3')
 ivc.add_output('I_d', val=160234250.0, units='kg*m**2')
-ivc.add_output('windspeed_0', val=21., units='m/s')
-ivc.add_output('Hs', val=9.9, units='m')
-ivc.add_output('Tp', val=14., units='s')
+ivc.add_output('windspeed_0', val=15., units='m/s')
+ivc.add_output('Hs', val=3.5, units='m')
+ivc.add_output('Tp', val=10., units='s')
 ivc.add_output('k_p', val=0.1794, units='rad*s/rad')
 ivc.add_output('k_i', val=0.0165, units='rad/rad')
 ivc.add_output('k_t', val=-0., units='rad*s/m')
@@ -211,15 +211,14 @@ prob.model.add_subsystem('extreme_response', extreme_response_group, promotes_in
 hull_buckling_group = HullBuckling()
 
 prob.model.add_subsystem('hull_buckling', hull_buckling_group, promotes_inputs=['D_spar_p', 'wt_spar_p', 'Z_spar', 'M_spar', 'M_ball', 'L_ball', 'spar_draft', 'M_moor', 'z_moor',\
-'dthrust_dv', 'dmoment_dv', 't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'angle_hull', 'f_y', 'buck_len', 'My_hull', 'A_R', 'r_f'], promotes_outputs=['shell_buckling', \
-'ring_buckling_1', 'ring_buckling_2', 'col_buckling', 'constr_area_ringstiff', 'constr_hoop_stress', 'constr_mom_inertia_ringstiff'])
+	't_w_stiff', 't_f_stiff', 'h_stiff', 'b_stiff', 'l_stiff', 'angle_hull', 'f_y', 'buck_len', 'My_hull', 'A_R', 'r_f'], promotes_outputs=['shell_buckling', \
+	'ring_buckling_1', 'ring_buckling_2', 'col_buckling', 'constr_area_ringstiff', 'constr_hoop_stress', 'constr_mom_inertia_ringstiff'])
 
 cost_group = Cost()
 
 prob.model.add_subsystem('cost', cost_group, promotes_inputs=['D_spar', 'D_spar_p', 'wt_spar', 'L_spar', 'l_stiff', 'h_stiff', 't_f_stiff', 'A_R', 'r_f', 'r_e', \
 	'tot_M_spar', 'D_tower', 'D_tower_p', 'wt_tower', 'L_tower', 'tot_M_tower', 'len_tot_moor', 'mass_dens_moor'], promotes_outputs=['spar_cost', 'tower_cost', \
 	'mooring_cost', 'total_cost'])
-
 
 #aero_group.linear_solver = LinearRunOnce()
 #mooring_group.linear_solver = DirectSolver()
