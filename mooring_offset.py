@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import root, fsolve
+from scipy.optimize import root, fsolve, least_squares
 
 from openmdao.api import ImplicitComponent
 
@@ -16,10 +16,10 @@ class MooringOffset(ImplicitComponent):
 		self.add_input('len_tot_moor', val=0., units='m')
 
 		self.add_output('moor_tension_offset_ww', val=1., units='N')
-		self.add_output('eff_length_offset_ww', val=1., units='m')
+		self.add_output('eff_length_offset_ww', val=600., units='m')
 		self.add_output('moor_tension_offset_lw', val=1., units='N')
-		self.add_output('eff_length_offset_lw', val=1., units='m')
-		self.add_output('moor_offset', val=0., units='m')
+		self.add_output('eff_length_offset_lw', val=500., units='m')
+		self.add_output('moor_offset', val=10., units='m', lower=0.)
 
 		self.declare_partials('*', '*')
 
@@ -58,14 +58,15 @@ class MooringOffset(ImplicitComponent):
 			t_star_lw = x[3] / (mu * 9.80665)
 			return [l_tot - x[0] - l_tot_hor - x[4] + t_star_ww * np.arcsinh(x[0] / t_star_ww) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star_ww * (np.sqrt(1. + (x[0] / t_star_ww)**2.) - 1.), l_tot - x[2] - l_tot_hor + x[4] + t_star_lw * np.arcsinh(x[2] / t_star_lw) + x[3] * x[2] / EA, h - mu * 9.80665 * x[2]**2. / (2. * EA) - t_star_lw * (np.sqrt(1. + (x[2] / t_star_lw)**2.) -1.), x[1] - x[3] - thrust_0 - F0_tower_drag]
 
-		#sol = root(fun, [600.0, 1.0e6, 600.0, 1.0e6, 10.], method='krylov', tol=1e-5) #TODO: zero tension and eff. length as inital guess?
-		sol = fsolve(fun, [600.0, 1.0e6, 500.0, 5.0e5, 5.], xtol=1e-5)
+		#sol = root(fun, [600.0, 1.0e6, 600.0, 1.0e6, 25.], method='krylov', tol=1e-5) #TODO: zero tension and eff. length as inital guess?
+		#sol = fsolve(fun, [600.0, 1.0e6, 500.0, 5.0e5, 5.], xtol=1e-5)
+		sol = least_squares(fun, [600.0, 1.0e6, 500.0, 5.0e5, 5.], bounds=(np.array([0.,0.,0.,0.,0.]),np.array([np.inf,np.inf,np.inf,np.inf,300.])), xtol=1e-5)
 
-		outputs['eff_length_offset_ww'] = sol[0]
-		outputs['moor_tension_offset_ww'] = sol[1]
-		outputs['eff_length_offset_lw'] = sol[2]
-		outputs['moor_tension_offset_lw'] = sol[3]
-		outputs['moor_offset'] = sol[4]
+		outputs['eff_length_offset_ww'] = sol.x[0]
+		outputs['moor_tension_offset_ww'] = sol.x[1]
+		outputs['eff_length_offset_lw'] = sol.x[2]
+		outputs['moor_tension_offset_lw'] = sol.x[3]
+		outputs['moor_offset'] = sol.x[4]
 
 	def linearize(self, inputs, outputs, partials):
 		h = inputs['water_depth'] + inputs['z_moor']

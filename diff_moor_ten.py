@@ -39,7 +39,7 @@ class DiffMoorTen(ImplicitComponent):
 
 		residuals['dmoor_tension_lw_dx'] = -dl_eff_lw_dx + 1. + 1. / (mu * 9.80665) * dt_hor_lw_dx * np.arcsinh(l_eff_lw * mu * 9.80665 / t_hor_lw) + t_hor_lw / (mu * 9.80665) * 1. / np.sqrt(1. + ((l_eff_lw * mu * 9.80665) / t_hor_lw)**2.) * (mu * 9.80665 / t_hor_lw * dl_eff_lw_dx - l_eff_lw * mu * 9.80665 / t_hor_lw**2. * dt_hor_lw_dx) + dt_hor_lw_dx * l_eff_lw / EA + t_hor_lw / EA * dl_eff_lw_dx
 		residuals['deff_length_lw_dx'] = -mu * 9.80665 * l_eff_lw / EA * dl_eff_lw_dx - 1. / (mu * 9.80665) * dt_hor_lw_dx * (np.sqrt(1. + ((l_eff_lw * mu * 9.80665) / t_hor_lw)**2.) - 1.) - t_hor_lw / (mu * 9.80665) * 1. / np.sqrt(1. + ((l_eff_lw * mu * 9.80665) / t_hor_lw)**2.) * (l_eff_lw * mu * 9.80665 / t_hor_lw) * (mu * 9.80665 / t_hor_lw * dl_eff_lw_dx - l_eff_lw * mu * 9.80665 / t_hor_lw**2. * dt_hor_lw_dx)
-	
+
 	def solve_nonlinear(self, inputs, outputs):
 		EA = inputs['EA_moor'][0]
 		mu = inputs['mass_dens_moor'][0]
