@@ -60,7 +60,7 @@ class MooringOffset(ImplicitComponent):
 
 		#sol = root(fun, [600.0, 1.0e6, 600.0, 1.0e6, 25.], method='krylov', tol=1e-5) #TODO: zero tension and eff. length as inital guess?
 		#sol = fsolve(fun, [600.0, 1.0e6, 500.0, 5.0e5, 5.], xtol=1e-5)
-		sol = least_squares(fun, [600.0, 1.0e6, 500.0, 5.0e5, 5.], bounds=(np.array([0.,0.,0.,0.,0.]),np.array([np.inf,np.inf,np.inf,np.inf,300.])), xtol=1e-5)
+		sol = least_squares(fun, [600.0, 1.0e6, 500.0, 5.0e5, 5.], bounds=(np.array([0.,0.,0.,0.,0.]),np.array([np.inf,np.inf,np.inf,np.inf,300.])), xtol=1e-6)
 
 		outputs['eff_length_offset_ww'] = sol.x[0]
 		outputs['moor_tension_offset_ww'] = sol.x[1]

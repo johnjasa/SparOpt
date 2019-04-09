@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import root
+from scipy.optimize import root, least_squares
 
 from openmdao.api import ImplicitComponent
 
@@ -44,7 +44,8 @@ class MoorTenZero(ImplicitComponent):
 			t_star = x[1] / (mu * 9.80665)
 			return [l_tot - x[0] - l_tot_hor + t_star * np.arcsinh(x[0] / t_star) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star * (np.sqrt(1. + (x[0] / t_star)**2.) - 1.)]
 
-		sol = root(fun, [600., 1.0e6])
+		#sol = root(fun, [600., 1.0e6])
+		sol = least_squares(fun, [600.0, 1.0e6], bounds=(np.array([0.,0.]),np.array([np.inf,np.inf])), xtol=1e-6)
 
 		outputs['eff_length_zero'] = sol.x[0]
 		outputs['moor_tension_zero'] = sol.x[1]

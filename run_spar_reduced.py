@@ -166,7 +166,7 @@ from openmdao.api import pyOptSparseDriver
 #driver = prob.driver = ScipyOptimizeDriver()
 driver = prob.driver = pyOptSparseDriver()
 driver.options['optimizer'] = 'SNOPT'
-driver.opt_settings['Major feasibility tolerance'] = 1e-3
+driver.opt_settings['Major feasibility tolerance'] = 1e-5
 driver.opt_settings['Major optimality tolerance'] = 1e-3
 
 driver.recording_options['includes'] = []
@@ -180,7 +180,7 @@ driver.add_recorder(recorder)
 #prob.model.add_design_var('D_spar_cp', lower=5.*np.ones(5), upper=20.*np.ones(5))
 #prob.model.add_design_var('L_spar_cp', lower=np.array([3., 3., 3., 10.]), upper=30.*np.ones(4))
 prob.model.add_design_var('D_spar_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
-prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 10.]), upper=30.*np.ones(10))
+prob.model.add_design_var('L_spar', lower=np.array([3., 3., 3., 3., 3., 3., 3., 3., 3., 11.]), upper=30.*np.ones(10))
 prob.model.add_design_var('z_moor', lower=-320., upper=-10.)
 
 prob.model.add_design_var('D_tower_cp', lower=5.*np.ones(4), upper=20.*np.ones(4))

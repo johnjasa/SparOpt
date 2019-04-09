@@ -16,7 +16,7 @@ from statespace_group import StateSpace
 from wave_spectrum import WaveSpectrum
 from wind_spectrum import WindSpectrum
 from interp_wave_forces import InterpWaveForces
-from viscous_group_ext import Viscous
+from viscous_group import Viscous
 from postpro_group_reduced import Postpro
 from tower_buckling_group import TowerBuckling
 from extreme_response_group_reduced import ExtremeResponse
@@ -58,14 +58,14 @@ class ConditionExt(Group):
 
 		mooring_group = Mooring()
 
-		mooring_group.linear_solver = DirectSolver(assemble_jac=True)
+		mooring_group.linear_solver = DirectSolver()
 
 		self.add_subsystem('mooring', mooring_group, promotes_inputs=['z_moor', 'water_depth', 'EA_moor', 'mass_dens_moor', 'len_hor_moor', 'len_tot_moor', \
 			'thrust_0', 'F0_tower_drag'], promotes_outputs=['M_moor_zero', 'K_moor', 'M_moor', 'moor_offset', 'maxval_fairlead', 'mean_moor_ten'])
 
 		substructure_group = Substructure(freqs=freqs)
 
-		substructure_group.linear_solver = DirectSolver(assemble_jac=True)
+		substructure_group.linear_solver = DirectSolver()
 
 		self.add_subsystem('substructure', substructure_group, promotes_inputs=['D_spar_p', 'L_spar', 'wt_spar_p', 'L_tower', 'wt_tower_p', \
 			'rho_ball', 'wt_ball', 'M_nacelle', 'M_rotor', 'CoG_nacelle', 'CoG_rotor', 'I_rotor', 'water_depth', 'z_moor', 'M_moor_zero', 'K_moor', 'M_moor', \
