@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import root, fsolve
+from scipy.optimize import root, fsolve, least_squares
 
 from openmdao.api import ImplicitComponent
 
@@ -46,11 +46,12 @@ class MaxMooringOffset(ImplicitComponent):
 			return [l_tot - x[0] - l_tot_hor - x[2] + t_star_ww * np.arcsinh(x[0] / t_star_ww) + x[1] * x[0] / EA, h - mu * 9.80665 * x[0]**2. / (2. * EA) - t_star_ww * (np.sqrt(1. + (x[0] / t_star_ww)**2.) - 1.), x[1] / (mu * 9.80665) * np.arcsinh(mu * 9.80665 * x[0] / x[1]) + x[1] * x[0] / EA - l_tot_hor]
 
 		#sol = root(fun, [600.0, 1.0e6, 5.], method='krylov', tol=1e-5)
-		sol = fsolve(fun, [600.0, 1.0e6, 10.], xtol=1e-5)
+		#sol = fsolve(fun, [600.0, 1.0e6, 10.], xtol=1e-5)
+		sol = least_squares(fun, [600.0, 1.0e6, 10.], bounds=(np.array([0.,0.,0.]),np.array([np.inf,np.inf,np.inf])), xtol=1e-6)
 
-		outputs['eff_length_max_offset_ww'] = sol[0]
-		outputs['moor_tension_max_offset_ww'] = sol[1]
-		outputs['maxval_fairlead'] = sol[2]
+		outputs['eff_length_max_offset_ww'] = sol.x[0]
+		outputs['moor_tension_max_offset_ww'] = sol.x[1]
+		outputs['maxval_fairlead'] = sol.x[2]
 
 	def linearize(self, inputs, outputs, partials):
 		h = inputs['water_depth'] + inputs['z_moor']
