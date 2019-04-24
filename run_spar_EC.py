@@ -46,10 +46,10 @@ ivc = IndepVarComp()
 ivc.add_output('D_spar_p', val=np.array([12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]), units='m') #[12., 12., 12., 12., 12., 12., 12., 12., 12., 8.3, 8.3]
 ivc.add_output('wt_spar_p', val=np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]), units='m')
 ivc.add_output('L_spar', val=np.array([13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]), units='m') #[13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 13.5, 8., 14.]
-#ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5])*1.7, units='m')
-#ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
-ivc.add_output('D_tower_cp', val=np.array([8.3, 7.46500994, 6.63001988, 5.5])*1.3, units='m')
-ivc.add_output('wt_tower_cp', val=np.array([0.038, 0.034, 0.026, 0.018])*1.5, units='m')
+ivc.add_output('D_tower_p', val=np.array([8.3, 8.02166998, 7.74333996, 7.46500994, 7.18667992, 6.9083499, 6.63001988, 6.35168986, 6.07335984, 5.79502982, 5.5]), units='m')
+ivc.add_output('wt_tower_p', val=np.array([0.038, 0.038, 0.034, 0.034, 0.030, 0.030, 0.026, 0.026, 0.022, 0.022, 0.018]), units='m')
+#ivc.add_output('D_tower_cp', val=np.array([8.3, 7.46500994, 6.63001988, 5.5])*1.3, units='m')
+#ivc.add_output('wt_tower_cp', val=np.array([0.038, 0.034, 0.026, 0.018])*1.5, units='m')
 ivc.add_output('L_tower', val=np.array([10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 11.13]), units='m')
 ivc.add_output('rho_ball', val=2600., units='kg/m**3')
 ivc.add_output('wt_ball', val=0.06, units='m')
@@ -107,8 +107,8 @@ ivc.add_output('maxval_pitch', val=15.*np.pi/180., units='rad')
 
 prob.model.add_subsystem('prob_vars', ivc, promotes=['*'])
 
-prob.model.add_subsystem('interp_D_tower', BsplinesComp(num_control_points=4, num_points=11, in_name='D_tower_cp', out_name='D_tower_p'), promotes_inputs=['D_tower_cp'], promotes_outputs=['D_tower_p'])
-prob.model.add_subsystem('interp_wt_tower', BsplinesComp(num_control_points=4, num_points=11, in_name='wt_tower_cp', out_name='wt_tower_p'), promotes_inputs=['wt_tower_cp'], promotes_outputs=['wt_tower_p'])
+#prob.model.add_subsystem('interp_D_tower', BsplinesComp(num_control_points=4, num_points=11, in_name='D_tower_cp', out_name='D_tower_p'), promotes_inputs=['D_tower_cp'], promotes_outputs=['D_tower_p'])
+#prob.model.add_subsystem('interp_wt_tower', BsplinesComp(num_control_points=4, num_points=11, in_name='wt_tower_cp', out_name='wt_tower_p'), promotes_inputs=['wt_tower_cp'], promotes_outputs=['wt_tower_p'])
 
 prob.model.add_subsystem('steady_rotspeed', SteadyRotSpeed(), promotes_inputs=['windspeed_0'], promotes_outputs=['rotspeed_0'])
 
@@ -281,12 +281,12 @@ print prob['stddev_surge'][0]
 #print prob['mean_pitch']
 print prob['stddev_pitch'][0]
 #print prob['stddev_bend'] 
-#rint prob['stddev_rotspeed'][0]
+print prob['stddev_rotspeed'][0]
 #print prob['stddev_tower_moment'][0]
 #print prob['tower_fatigue_damage'][0]
 #print prob['stddev_moor_ten'][0]
 #print prob['stddev_moor_ten_dyn'][0]
-#print prob['stddev_bldpitch'][0]
+print prob['stddev_bldpitch'][0]
 #print prob['tower_fatigue_damage'][0]
 #print prob['hull_fatigue_damage'][-1]
 #print prob['total_cost'][0]
