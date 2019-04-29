@@ -48,7 +48,10 @@ class BfbExt(ImplicitComponent):
 
 		x_d_towertop = inputs['x_d_towertop']
 
-		outputs['Bfb_ext'] = np.matmul(np.linalg.inv(M_global + A_global), np.array([[dthrust_dv + Fdyn_tower_drag, 0., 0., 1., 0., 0.],[CoG_rotor * dthrust_dv + Mdyn_tower_drag, dmoment_dv, 0., 0., 1., 0.],[dthrust_dv, x_d_towertop * dmoment_dv, 0., 0., 0., 1.]]))
+		outputs['Bfb_ext'] = np.matmul(np.linalg.inv(M_global + A_global),
+			np.array([[dthrust_dv + Fdyn_tower_drag, 0., 0., 1., 0., 0.],
+					  [CoG_rotor * dthrust_dv + Mdyn_tower_drag, dmoment_dv, 0., 0., 1., 0.],
+					  [dthrust_dv, x_d_towertop * dmoment_dv, 0., 0., 0., 1.]], dtype='float'))
 
 	def linearize(self, inputs, outputs, partials):
 		CoG_rotor = inputs['CoG_rotor']
@@ -63,9 +66,9 @@ class BfbExt(ImplicitComponent):
 		partials['Bfb_ext', 'M_global'] = np.kron(np.identity(3),np.transpose(outputs['Bfb_ext']))
 		partials['Bfb_ext', 'A_global'] = np.kron(np.identity(3),np.transpose(outputs['Bfb_ext']))
 		partials['Bfb_ext', 'CoG_rotor'] = -np.array([np.zeros(6),[dthrust_dv, 0., 0., 0., 0., 0.],np.zeros(6)])
-		partials['Bfb_ext', 'dthrust_dv'] = -np.array([[1., 0., 0., 0., 0., 0.],[CoG_rotor, 0., 0., 0., 0., 0.],[1., 0., 0., 0., 0., 0.]])
-		partials['Bfb_ext', 'dmoment_dv'] = -np.array([np.zeros(6),[0., 1., 0., 0., 0., 0.],[0., x_d_towertop, 0., 0., 0., 0.]])
-		partials['Bfb_ext', 'Fdyn_tower_drag'] = -np.array([[1., 0., 0., 0., 0., 0.],[0, 0., 0., 0., 0., 0.],[0., 0., 0., 0., 0., 0.]])
-		partials['Bfb_ext', 'Mdyn_tower_drag'] = -np.array([np.zeros(6),[1., 0., 0., 0., 0., 0.],[0., 0., 0., 0., 0., 0.]])
-		partials['Bfb_ext', 'x_d_towertop'] = -np.array([np.zeros(6),np.zeros(6),[0., dmoment_dv, 0., 0., 0., 0.]])
+		partials['Bfb_ext', 'dthrust_dv'] = -np.array([[1., 0., 0., 0., 0., 0.],[CoG_rotor, 0., 0., 0., 0., 0.],[1., 0., 0., 0., 0., 0.]], dtype='float')
+		partials['Bfb_ext', 'dmoment_dv'] = -np.array([np.zeros(6),[0., 1., 0., 0., 0., 0.],[0., x_d_towertop, 0., 0., 0., 0.]], dtype='float')
+		partials['Bfb_ext', 'Fdyn_tower_drag'] = -np.array([[1., 0., 0., 0., 0., 0.],[0, 0., 0., 0., 0., 0.],[0., 0., 0., 0., 0., 0.]], dtype='float')
+		partials['Bfb_ext', 'Mdyn_tower_drag'] = -np.array([np.zeros(6),[1., 0., 0., 0., 0., 0.],[0., 0., 0., 0., 0., 0.]], dtype='float')
+		partials['Bfb_ext', 'x_d_towertop'] = -np.array([np.zeros(6),np.zeros(6),[0., dmoment_dv, 0., 0., 0., 0.]], dtype='float')
 		partials['Bfb_ext', 'Bfb_ext'] = np.kron(inputs['M_global'] + inputs['A_global'],np.identity(6))

@@ -99,7 +99,7 @@ for i in xrange(EC['N_EC']):
 	prob.model.connect('windspeed_0', 'parallel.cond%d.windspeed_0' % i, src_indices=[i])
 	prob.model.connect('Hs', 'parallel.cond%d.Hs' % i, src_indices=[i])
 	prob.model.connect('Tp', 'parallel.cond%d.Tp' % i, src_indices=[i])
-	
+
 	prob.model.connect('parallel.cond%d.tower_fatigue_damage' % i, 'total_tower_fatigue_damage.tower_fatigue_damage%d' % i)
 	prob.model.connect('p', 'total_tower_fatigue_damage.p%d' % i, src_indices=[i])
 
@@ -129,7 +129,12 @@ prob.model.add_constraint('parallel.cond0.towerdim.taper_angle_tower', lower=-10
 
 prob.model.add_objective('parallel.cond0.tower_cost')
 
+# prob.model.approx_totals()
+
+prob.set_solver_print(level=-1)
+prob.set_solver_print(level=10, depth=10)
+
 prob.setup()
 
-prob.run_model()
-#prob.run_driver()
+# prob.run_model()
+prob.run_driver()

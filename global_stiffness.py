@@ -27,7 +27,7 @@ class GlobalStiffness(ExplicitComponent):
 		D_spar = inputs['D_spar']
 		tot_M_spar = inputs['tot_M_spar']
 		M_turb = inputs['M_turb']
-		M_ball = inputs['M_ball'] 
+		M_ball = inputs['M_ball']
 		CoG_total = inputs['CoG_total']
 		M_moor = inputs['M_moor']
 		K_moor = inputs['K_moor']
@@ -56,7 +56,7 @@ class GlobalStiffness(ExplicitComponent):
 		D_spar = inputs['D_spar']
 		tot_M_spar = inputs['tot_M_spar']
 		M_turb = inputs['M_turb']
-		M_ball = inputs['M_ball'] 
+		M_ball = inputs['M_ball']
 		CoG_total = inputs['CoG_total']
 		M_moor = inputs['M_moor']
 		K_moor = inputs['K_moor']
@@ -68,15 +68,15 @@ class GlobalStiffness(ExplicitComponent):
 		CoB = inputs['CoB']
 
 		partials['K_global', 'D_spar'] = np.concatenate((np.zeros((4,10)),np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 1025. * 9.80665 * np.pi / 16. * D_spar[-1]**3.]]),np.zeros((4,10))),0)
-		partials['K_global', 'tot_M_spar'] = np.array([0., 0., 0., 0., -9.80665 * CoG_total, 0., 0., 0., 0.])
-		partials['K_global', 'M_turb'] = np.array([0., 0., 0., 0., -9.80665 * CoG_total, 0., 0., 0., 0.])
-		partials['K_global', 'M_ball'] = np.array([0., 0., 0., 0., -9.80665 * CoG_total, 0., 0., 0., 0.])
-		partials['K_global', 'CoG_total'] = np.array([0., 0., 0., 0., -(tot_M_spar + M_ball + M_turb) * 9.80665, 0., 0., 0., 0.])
-		partials['K_global', 'M_moor'] = np.array([0., 0., 0., 0., -9.80665 * z_moor, 0., 0., 0., 0.])
-		partials['K_global', 'K_moor'] = np.array([1., z_moor, 0., z_moor, z_moor**2., 0., 0., 0., 0.])
-		partials['K_global', 'z_moor'] = np.array([0., K_moor, 0., K_moor, 2. * K_moor * z_moor - M_moor * 9.80665, 0., 0., 0., 0.])
-		partials['K_global', 'K17'] = np.array([0., 0., 1., 0., 0., 0., 1., 0., 0.])
-		partials['K_global', 'K57'] = np.array([0., 0., 0., 0., 0., 1., 0., 1., 0.])
-		partials['K_global', 'K77'] = np.array([0., 0., 0., 0., 0., 0., 0., 0., 1.])
-		partials['K_global', 'buoy_spar'] = np.array([0., 0., 0., 0., CoB, 0., 0., 0., 0.])
-		partials['K_global', 'CoB'] = np.array([0., 0., 0., 0., buoy_spar, 0., 0., 0., 0.])
+		partials['K_global', 'tot_M_spar'] = np.array([0., 0., 0., 0., -9.80665 * CoG_total, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'M_turb'] = np.array([0., 0., 0., 0., -9.80665 * CoG_total, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'M_ball'] = np.array([0., 0., 0., 0., -9.80665 * CoG_total, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'CoG_total'] = np.array([0., 0., 0., 0., -(tot_M_spar + M_ball + M_turb) * 9.80665, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'M_moor'] = np.array([0., 0., 0., 0., -9.80665 * z_moor, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'K_moor'] = np.array([1., z_moor, 0., z_moor, z_moor**2., 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'z_moor'] = np.array([0., K_moor, 0., K_moor, 2. * K_moor * z_moor - M_moor * 9.80665, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'K17'] = np.array([0., 0., 1., 0., 0., 0., 1., 0., 0.], dtype='float')
+		partials['K_global', 'K57'] = np.array([0., 0., 0., 0., 0., 1., 0., 1., 0.], dtype='float')
+		partials['K_global', 'K77'] = np.array([0., 0., 0., 0., 0., 0., 0., 0., 1.], dtype='float')
+		partials['K_global', 'buoy_spar'] = np.array([0., 0., 0., 0., CoB, 0., 0., 0., 0.], dtype='float')
+		partials['K_global', 'CoB'] = np.array([0., 0., 0., 0., buoy_spar, 0., 0., 0., 0.], dtype='float')

@@ -24,7 +24,7 @@ class Acontrl(ExplicitComponent):
 		omega_lowpass = inputs['omega_lowpass']
 		omega_notch = inputs['omega_notch']
 		bandwidth_notch = inputs['bandwidth_notch']
-	
-		partials['A_contrl', 'omega_lowpass'] = np.array([[0., 0., 0., 0., 0., -1., 0., -bandwidth_notch, 0., 0., 0., 0., 0., 0., 0., 0.]]).T
-		partials['A_contrl', 'omega_notch'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -2. * omega_notch, 0.]]).T
-		partials['A_contrl', 'bandwidth_notch'] = np.array([[0., 0., 0., 0., 0., 0., 0., -omega_lowpass, 0., 0., 0., 0., 0., 0., 0., -1.]]).T
+
+		partials['A_contrl', 'omega_lowpass'] = np.array([[0., 0., 0., 0., 0., -1., 0., -bandwidth_notch, 0., 0., 0., 0., 0., 0., 0., 0.]], dtype='float').T
+		partials['A_contrl', 'omega_notch'] = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -2. * omega_notch, 0.]], dtype='float').T
+		partials['A_contrl', 'bandwidth_notch'] = np.array([[0., 0., 0., 0., 0., 0., 0., -omega_lowpass, 0., 0., 0., 0., 0., 0., 0., -1.]], dtype='float').T

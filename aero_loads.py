@@ -34,7 +34,7 @@ class AeroLoads(ExplicitComponent):
 		self.add_output('dFt_dv', val=np.ones(self.N_b_elem), units='N*s/m**2')
 		self.add_output('dFt_dbldpitch', val=np.ones(self.N_b_elem), units='N/(m*rad)')
 		self.add_output('dFt_drotspeed', val=np.ones(self.N_b_elem), units='N*s/(m*rad)')
-	
+
 	def compute(self, inputs, outputs):
 		rho_wind = inputs['rho_wind']
 		windspeed_0 = inputs['windspeed_0']
@@ -78,14 +78,14 @@ class AeroLoads(ExplicitComponent):
 		foildata_cl = [[] for _ in xrange(len(foilnames))]
 		foildata_cd = [[] for _ in xrange(len(foilnames))]
 		for i in xrange(len(foilnames)):
-		    f = open(self.foilfolder + foilnames[i] + '.dat','r')                                     
+		    f = open(self.foilfolder + foilnames[i] + '.dat','r')
 		    for line in f:
 		        li = line.split()
-		        foildata_alpha[i].append(float(li[0])) 
+		        foildata_alpha[i].append(float(li[0]))
 		        foildata_cl[i].append(float(li[1]))
 		        foildata_cd[i].append(float(li[2]))
 		    f.close()
-		     
+
 		#interpolate blade data (evenly spaced elements)
 		dr = (Rtip - Rhub) / N_b_elem
 		r  = np.arange(Rhub + dr / 2, Rtip, dr)
@@ -142,21 +142,21 @@ class AeroLoads(ExplicitComponent):
 			v_t_0 = rotspeed_0 * r[i] * a_t_0
 			Vn_0 = windspeed_0 - v_n_0
 			Vt_0 = rotspeed_0 * r[i] + v_t_0
-			
+
 			if TSR0 == 0.:
 				phi_0 = np.pi / 2.
 			else:
 				phi_0 = np.arctan(Vn_0 / Vt_0)
 			alpha_0 = 180. / np.pi * phi_0 - (twistangle0[i] + bldpitch_0 * 180. / np.pi)
-			
+
 			W0 = np.sqrt(Vn_0**2. + Vt_0**2.)
-			
+
 			L0 = 0.5 * rho_wind * f_cl[i](alpha_0) * chordlength0[i] * W0**2.
 			D0 = 0.5 * rho_wind * f_cd[i](alpha_0) * chordlength0[i] * W0**2.
 
 			outputs['Fn_0'][i] = L0 * np.cos(phi_0) + D0 * np.sin(phi_0)
 			outputs['Ft_0'][i] = L0 * np.sin(phi_0) - D0 * np.cos(phi_0)
-			
+
 			if TSR0 == 0.:
 				da_n_dTSR = 0.
 				da_t_dTSR = 0.
@@ -183,7 +183,7 @@ class AeroLoads(ExplicitComponent):
 			dVt_dv = dv_t_dv
 			dVt_dbldpitch = dv_t_dbldpitch
 			dVt_drotspeed = r[i] + dv_t_drotspeed
-			
+
 			if TSR0 == 0.:
 				dphi_dv = 0.
 				dphi_dbldpitch = 0.
@@ -195,7 +195,7 @@ class AeroLoads(ExplicitComponent):
 			dalpha_dv = 180. / np.pi * dphi_dv
 			dalpha_dbldpitch = 180. / np.pi * dphi_dbldpitch - 180. / np.pi
 			dalpha_drotspeed = 180. / np.pi * dphi_drotspeed
-			
+
 			dCl_dalpha = sm.derivative(f_cl[i], alpha_0, dx = 1e-8)
 			dCd_dalpha = sm.derivative(f_cd[i], alpha_0, dx = 1e-8)
 			dCl_dv = dCl_dalpha * dalpha_dv
@@ -204,14 +204,14 @@ class AeroLoads(ExplicitComponent):
 			dCd_dv = dCd_dalpha * dalpha_dv
 			dCd_dbldpitch = dCd_dalpha * dalpha_dbldpitch
 			dCd_drotspeed = dCd_dalpha * dalpha_drotspeed
-			
+
 			dL_dv = 0.5 * rho_wind * chordlength0[i] * (dCl_dv * (Vn_0**2. + Vt_0**2.) + f_cl[i](alpha_0) * (2. * Vn_0 * dVn_dv + 2. * Vt_0 * dVt_dv))
 			dL_dbldpitch = 0.5 * rho_wind * chordlength0[i] * (dCl_dbldpitch * (Vn_0**2. + Vt_0**2.) + f_cl[i](alpha_0) * (2. * Vn_0 * dVn_dbldpitch + 2. * Vt_0 * dVt_dbldpitch))
 			dL_drotspeed = 0.5 * rho_wind * chordlength0[i] * (dCl_drotspeed * (Vn_0**2. + Vt_0**2.) + f_cl[i](alpha_0) * (2. * Vn_0 * dVn_drotspeed + 2. * Vt_0 * dVt_drotspeed))
 			dD_dv = 0.5 * rho_wind * chordlength0[i] * (dCd_dv * (Vn_0**2. + Vt_0**2.) + f_cd[i](alpha_0) * (2. * Vn_0 * dVn_dv + 2. * Vt_0 * dVt_dv))
 			dD_dbldpitch = 0.5 * rho_wind * chordlength0[i] * (dCd_dbldpitch * (Vn_0**2. + Vt_0**2.) + f_cd[i](alpha_0) * (2. * Vn_0 * dVn_dbldpitch + 2. * Vt_0 * dVt_dbldpitch))
 			dD_drotspeed = 0.5 * rho_wind * chordlength0[i] * (dCd_drotspeed * (Vn_0**2. + Vt_0**2.) + f_cd[i](alpha_0) * (2. * Vn_0 * dVn_drotspeed + 2. * Vt_0 * dVt_drotspeed))
-			
+
 			outputs['dFn_dv'][i] = dL_dv * np.cos(phi_0) - L0 * np.sin(phi_0) * dphi_dv + dD_dv * np.sin(phi_0) + D0 * np.cos(phi_0) * dphi_dv
 			outputs['dFn_dbldpitch'][i] = dL_dbldpitch * np.cos(phi_0) - L0 * np.sin(phi_0) * dphi_dbldpitch + dD_dbldpitch * np.sin(phi_0) + D0 * np.cos(phi_0) * dphi_dbldpitch
 			outputs['dFn_drotspeed'][i] = dL_drotspeed * np.cos(phi_0) - L0 * np.sin(phi_0) * dphi_drotspeed + dD_drotspeed * np.sin(phi_0) + D0 * np.cos(phi_0) * dphi_drotspeed

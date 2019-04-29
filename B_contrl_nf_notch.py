@@ -16,5 +16,5 @@ class Bcontrl(ExplicitComponent):
 		outputs['B_contrl'] = np.array([[0., 0.],[inputs['omega_lowpass'], -inputs['omega_lowpass'] * inputs['k_t']],[0., 0.],[1., -inputs['k_t']]])
 
 	def compute_partials(self, inputs, partials):
-		partials['B_contrl', 'omega_lowpass'] = np.array([[0., 0., 1., -inputs['k_t'], 0., 0., 0., 0.]]).T
-		partials['B_contrl', 'k_t'] = np.array([[0., 0., 0., -inputs['omega_lowpass'], 0., 0., 0., -1.]]).T
+		partials['B_contrl', 'omega_lowpass'] = np.array([[0., 0., 1., -inputs['k_t'], 0., 0., 0., 0.]], dtype='float').T
+		partials['B_contrl', 'k_t'] = np.array([[0., 0., 0., -inputs['omega_lowpass'], 0., 0., 0., -1.]], dtype='float').T
