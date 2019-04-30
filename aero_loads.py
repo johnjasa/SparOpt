@@ -102,13 +102,13 @@ class AeroLoads(ExplicitComponent):
 		f_cl = []
 		f_cd = []
 		for i in xrange(len(r)):
-		    if r[i] < endradius[0]:
-		        foilnum.append(int(bladefoil[0]))
-		    else:
-		        for j in xrange(len(endradius)-1):
-		            if (r[i] >= endradius[j]) and (r[i] < endradius[j+1]):
-		                foilnum.append(int(bladefoil[j+1]))
-		                break
+			if r[i] < endradius[0]:
+				foilnum.append(int(bladefoil[0]))
+			else:
+				for j in xrange(len(endradius)-1):
+					if (r[i] >= endradius[j]) and (r[i] < endradius[j+1]):
+						foilnum.append(int(bladefoil[j+1]))
+						break
 
 			ALPHA = foildata_alpha[foilnum[i]]
 			CL = foildata_cl[foilnum[i]]

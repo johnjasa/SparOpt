@@ -12,6 +12,6 @@ class Towerdim(Group):
 
 		self.add_subsystem('tower_diameter', TowerDiameter(), promotes_inputs=['D_tower_p'], promotes_outputs=['D_tower'])
 
-	 	self.add_subsystem('Z_tower', ZTower(), promotes_inputs=['L_tower'], promotes_outputs=['Z_tower'])
+		self.add_subsystem('Z_tower', ZTower(), promotes_inputs=['L_tower'], promotes_outputs=['Z_tower'])
 
-	 	self.add_subsystem('taper_tower', TaperTower(), promotes_inputs=['D_tower_p', 'L_tower'], promotes_outputs=['taper_angle_tower'])
+		self.add_subsystem('taper_tower', TaperTower(), promotes_inputs=['D_tower_p', 'L_tower'], promotes_outputs=['taper_angle_tower'])
