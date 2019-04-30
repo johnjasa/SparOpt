@@ -59,7 +59,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 
 			if z_sparnode[i] >= z_moor:
 				outputs['normforce_mode_elem'][i] += M_moor * 9.80665
-		
+
 		for i in xrange(N_towerelem):
 			outputs['normforce_mode_elem'][N_sparelem+i] = (-M_nacelle - M_rotor - tot_M_tower + np.sum(M_tower[:i])) * 9.80665
 
@@ -119,7 +119,7 @@ class ModeshapeElemNormforce(ExplicitComponent):
 
 			if z_sparnode[i] >= z_moor:
 				partials['normforce_mode_elem', 'M_moor'][i] += 9.80665
-		
+
 		partials['normforce_mode_elem', 'M_tower'] = np.zeros((22,10))
 		partials['normforce_mode_elem', 'M_nacelle'] = np.zeros(22)
 		partials['normforce_mode_elem', 'M_rotor'] = np.zeros(22)

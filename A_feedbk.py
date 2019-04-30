@@ -14,6 +14,9 @@ class Afeedbk(ExplicitComponent):
 
 		self.declare_partials('*', '*')
 
+		# I'm not sure what's going on in the compute_partials (looks like some complicated array stuff),
+		# but I think this could definitely benefit from sparsity in the declare_partials.
+
 	def compute(self, inputs, outputs):
 		outputs['A_feedbk'] = np.concatenate((np.concatenate((inputs['A_struct'],inputs['BsCc']),1),np.concatenate((inputs['BcCs'],inputs['A_contrl']),1)),0)
 
@@ -25,7 +28,7 @@ class Afeedbk(ExplicitComponent):
 		for i in xrange(1,6):
 			As_arr2 = np.concatenate((As_arr2,np.concatenate((np.zeros((9,7*i)),As_arr1,np.zeros((9,7*(6-i)))),1)),0)
 			BsCc_arr2 = np.concatenate((BsCc_arr2,np.concatenate((np.zeros((9,2*i)),BsCc_arr1,np.zeros((9,2*(6-i)))),1)),0)
-		
+
 		As_arr2 = np.concatenate((As_arr2,np.concatenate((np.zeros((9,42)),As_arr1),1)),0)
 		BsCc_arr2 = np.concatenate((BsCc_arr2,np.concatenate((np.zeros((9,12)),BsCc_arr1),1)),0)
 
