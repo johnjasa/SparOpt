@@ -1,0 +1,50 @@
+
+ ==============================
+ S N O P T  7.7.1    (Nov 2018)
+ ==============================
+ 
+ SNMEMB EXIT 100 -- finished successfully
+ SNMEMB INFO 104 -- memory requirements estimated
+
+ ==============================
+ S N O P T  7.7.1    (Nov 2018)
+ ==============================
+ 
+ 
+
+ Nonlinear constraints      21     Linear constraints       0
+ Nonlinear variables        22     Linear variables         0
+ Jacobian  variables        22     Objective variables     22
+ Total constraints          21     Total variables         22
+ 
+
+ 
+ The user has defined     352   out of     352   constraint gradients.
+ The user has defined      22   out of      22   objective  gradients.
+ 
+
+ Major Minors     Step   nCon Feasible  Optimal  MeritFunction     nS Penalty
+     0     22               1 (0.0E+00) 1.5E-02  1.9868427E+06                  r
+ 
+ SNOPTC EXIT  30 -- resource limit error
+ SNOPTC INFO  32 -- major iteration limit reached
+
+ Problem name                 Optimiza
+ No. of iterations                  22   Objective            1.9868426600E+06
+ No. of major iterations             0   Linear    obj. term  0.0000000000E+00
+ Penalty parameter           0.000E+00   Nonlinear obj. term  1.9868426600E+06
+ User function calls (total)         2
+ No. of degenerate steps             0   Percentage                       0.00
+ Max x                       1 8.3E+00   Max pi                      1 0.0E+00
+ Max Primal infeas           0 0.0E+00   Max Dual infeas            13 6.9E+06
+ Nonlinear constraint violn    0.0E+00
+ 
+ 
+
+ Solution printed on file  18
+ 
+ Time for MPS input                             0.00 seconds
+ Time for solving problem                      82.88 seconds
+ Time for solution output                       0.00 seconds
+ Time for constraint functions                 85.75 seconds
+ Time for objective function                    0.00 seconds

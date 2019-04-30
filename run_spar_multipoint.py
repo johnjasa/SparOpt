@@ -1,6 +1,6 @@
 import numpy as np
 
-from openmdao.api import Problem, IndepVarComp, LinearRunOnce, DirectSolver, LinearBlockGS, ScipyKrylov, NonlinearBlockGS, NewtonSolver, SqliteRecorder, ParallelGroup, BroydenSolver, ExecComp
+from openmdao.api import Problem, IndepVarComp, LinearRunOnce, DirectSolver, LinearBlockGS, ScipyKrylov, NonlinearBlockGS, NewtonSolver, SqliteRecorder, ParallelGroup, BroydenSolver, ExecComp, Group
 
 blades = {\
 'Rtip' : 89.165, \
@@ -81,7 +81,7 @@ from total_tower_fatigue_damage import TotalTowerFatigueDamage
 
 prob.model.add_subsystem('ECs', ECs(EC=EC), promotes_outputs=['windspeed_0', 'Hs', 'Tp', 'p'])
 
-parallel = prob.model.add_subsystem('parallel', ParallelGroup(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
+parallel = prob.model.add_subsystem('parallel', Group(), promotes_inputs=['D_spar_p', 'wt_spar_p', 'L_spar', 'D_tower_p', \
 	'wt_tower_p', 'L_tower', 'rho_ball', 'wt_ball', 'M_nacelle', 'CoG_rotor', 'CoG_nacelle', 'I_rotor', 'M_rotor', 'water_depth', \
 	'z_moor', 'D_moor', 'gamma_F_moor', 'len_hor_moor', 'len_tot_moor', 'rho_wind', 'I_d', 'k_p', 'k_i', \
 	'k_t', 'omega_lowpass', 'omega_notch', 'bandwidth_notch', 'Cd', 'Cd_tower', 'struct_damp_ratio', \
@@ -112,14 +112,15 @@ driver = prob.driver = pyOptSparseDriver()
 driver.options['optimizer'] = 'SNOPT'
 driver.opt_settings['Major feasibility tolerance'] = 1e-3
 driver.opt_settings['Major optimality tolerance'] = 1e-3
+driver.opt_settings['Major iterations limit'] = 0
 
-driver.recording_options['includes'] = []
-driver.recording_options['record_objectives'] = True
-driver.recording_options['record_constraints'] = True
-driver.recording_options['record_desvars'] = True
-
-recorder = SqliteRecorder("tower.sql")
-driver.add_recorder(recorder)
+# driver.recording_options['includes'] = []
+# driver.recording_options['record_objectives'] = True
+# driver.recording_options['record_constraints'] = True
+# driver.recording_options['record_desvars'] = True
+#
+# recorder = SqliteRecorder("tower.sql")
+# driver.add_recorder(recorder)
 
 prob.model.add_design_var('D_tower_p', lower=5.*np.ones(11), upper=20.*np.ones(11))
 prob.model.add_design_var('wt_tower_p', lower=0.01*np.ones(11), upper=0.5*np.ones(11))
@@ -134,7 +135,7 @@ prob.model.add_objective('parallel.cond0.tower_cost')
 prob.set_solver_print(level=-1)
 prob.set_solver_print(level=10, depth=10)
 
-prob.setup()
+prob.setup(check=True)
 
 # prob.run_model()
 prob.run_driver()
